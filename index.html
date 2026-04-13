@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>China Travel Hub</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Lucide Icons (UMD — sets window.lucide) — must load before app.js -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- CSS — order matters: main first so variables are available to all -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/nav.css" />
+  <link rel="stylesheet" href="css/overview.css" />
+  <link rel="stylesheet" href="css/city.css" />
+  <link rel="stylesheet" href="css/reminders.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════
+       MAIN APP — two tab panels (Overview + Reminders)
+       Expenses moved to V2.
+       ══════════════════════════════════════════════════════════ -->
+  <main id="app">
+
+    <!-- ── Tab: Overview ──────────────────────────────────────── -->
+    <section
+      id="tab-overview"
+      class="tab-panel active"
+      role="tabpanel"
+      aria-labelledby="nav-overview"
+    >
+      <!-- Planning mode header (countdown + bookings + urgent reminders) -->
+      <div id="planning-header"></div>
+
+      <!-- City cards grid -->
+      <p class="section-title" style="margin-top: 24px;">Your cities</p>
+      <div id="city-grid" role="list"></div>
+    </section>
+
+    <!-- ── Tab: Reminders ─────────────────────────────────────── -->
+    <section
+      id="tab-reminders"
+      class="tab-panel"
+      role="tabpanel"
+      aria-labelledby="nav-reminders"
+    >
+      <div id="pending-reminders"></div>
+      <div id="packing-list"></div>
+      <div id="steps-tracker"></div>
+    </section>
+
+  </main>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       CITY PAGE — full-screen overlay (outside <main>)
+       ══════════════════════════════════════════════════════════ -->
+  <div
+    id="city-page"
+    role="dialog"
+    aria-modal="true"
+    aria-label="City details"
+    aria-hidden="true"
+  >
+    <header class="city-page__header">
+      <button class="city-back-btn" aria-label="Back to overview" id="city-back-btn"></button>
+      <div id="city-header-content"></div>
+    </header>
+
+    <div class="city-tab-bar" role="tablist" aria-label="City sections">
+      <button class="city-tab-btn active" role="tab" data-city-tab="itinerary"
+              aria-selected="true"  aria-controls="city-panel-itinerary">Itinerary</button>
+      <button class="city-tab-btn" role="tab" data-city-tab="places"
+              aria-selected="false" aria-controls="city-panel-places">Places</button>
+      <button class="city-tab-btn" role="tab" data-city-tab="food"
+              aria-selected="false" aria-controls="city-panel-food">Food</button>
+      <button class="city-tab-btn" role="tab" data-city-tab="tips"
+              aria-selected="false" aria-controls="city-panel-tips">Tips</button>
+    </div>
+
+    <div id="city-panel-itinerary" class="city-panel active" role="tabpanel"></div>
+    <div id="city-panel-places"    class="city-panel"        role="tabpanel"></div>
+    <div id="city-panel-food"      class="city-panel"        role="tabpanel"></div>
+    <div id="city-panel-tips"      class="city-panel"        role="tabpanel"></div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       BOTTOM NAV — 2 tabs only (Expenses deferred to V2)
+       ══════════════════════════════════════════════════════════ -->
+  <nav id="bottom-nav" aria-label="Main navigation">
+    <button
+      class="nav-tab active"
+      id="nav-overview"
+      data-tab="overview"
+      role="tab"
+      aria-selected="true"
+      aria-controls="tab-overview"
+    >
+      <i data-lucide="map" aria-hidden="true"></i>
+      <span class="nav-label">Overview</span>
+    </button>
+
+    <button
+      class="nav-tab"
+      id="nav-reminders"
+      data-tab="reminders"
+      role="tab"
+      aria-selected="false"
+      aria-controls="tab-reminders"
+    >
+      <i data-lucide="bell" aria-hidden="true"></i>
+      <span class="nav-label">Reminders</span>
+    </button>
+  </nav>
+
+
+  <!-- Single script — no type="module", works with file:// directly -->
+  <script src="js/app.js"></script>
+
+</body>
+</html>

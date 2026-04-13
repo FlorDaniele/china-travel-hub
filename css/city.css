@@ -1,0 +1,318 @@
+/* ============================================================
+   CITY.CSS — Full-screen city page overlay
+   Slides up from bottom when a city card is tapped.
+   ============================================================ */
+
+/* ── Overlay container ──────────────────────────────────────── */
+
+#city-page {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-city-page);
+  background: var(--background);
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Start off-screen below the viewport */
+  transform: translateY(100%);
+  transition: transform 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* Prevent interaction while hidden */
+  pointer-events: none;
+}
+
+#city-page.is-open {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Sticky header ──────────────────────────────────────────── */
+
+.city-page__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: max(var(--space-4), env(safe-area-inset-top)) var(--space-4) var(--space-3);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+/* ── Back button ────────────────────────────────────────────── */
+
+.city-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: background 150ms ease;
+}
+
+.city-back-btn:hover {
+  background: var(--light-purple);
+}
+
+.city-back-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── City header content (name + badge) ─────────────────────── */
+
+#city-header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.city-header__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.city-header__dates {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  font-weight: 500;
+  margin-top: var(--space-1);
+}
+
+.city-header__dates svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ── Inner city tab bar ─────────────────────────────────────── */
+
+.city-tab-bar {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.city-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.city-tab-btn {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1.5px solid transparent;
+  min-height: 36px;
+  transition: all 150ms ease;
+}
+
+.city-tab-btn:hover {
+  color: var(--accent);
+  background: var(--light-purple);
+}
+
+.city-tab-btn.active {
+  color: var(--accent);
+  background: var(--light-purple);
+  border-color: var(--border);
+}
+
+/* ── City content panels ────────────────────────────────────── */
+
+.city-panel {
+  display: none;
+  padding: var(--space-4);
+  /* Extra padding at bottom so last item isn't hidden */
+  padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom));
+}
+
+.city-panel.active {
+  display: block;
+}
+
+/* ── Itinerary timeline ─────────────────────────────────────── */
+
+.timeline-day {
+  margin-bottom: var(--space-6);
+}
+
+.timeline-day__header {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.timeline-day__header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.timeline-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--border);
+  margin-left: var(--space-2);
+}
+
+.timeline-item {
+  position: relative;
+  padding: var(--space-2) 0 var(--space-3) var(--space-4);
+}
+
+.timeline-item::before {
+  /* Dot on the timeline line */
+  content: '';
+  position: absolute;
+  left: calc(-1 * var(--space-4) - 5px);
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  border: 2px solid var(--surface);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.timeline-item__time {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.timeline-item__title {
+  font-size: var(--font-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.timeline-item__note {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ── Places list ────────────────────────────────────────────── */
+
+.places-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.place-item {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  justify-content: space-between;
+}
+
+.place-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.place-item__category {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-1);
+}
+
+/* ── Food grid ──────────────────────────────────────────────── */
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.food-item {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.food-item__emoji {
+  font-size: 36px;
+  line-height: 1;
+  text-align: center;
+  padding: var(--space-2) 0;
+}
+
+.food-item__footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Tips list ──────────────────────────────────────────────── */
+
+.tips-section {
+  margin-bottom: var(--space-5);
+}
+
+.tips-section__category {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  margin-bottom: var(--space-2);
+}
+
+.tip-item {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-2);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  line-height: 1.5;
+  border-left: 3px solid var(--accent);
+}

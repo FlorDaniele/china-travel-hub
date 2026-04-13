@@ -1,0 +1,323 @@
+/* ============================================================
+   MAIN.CSS — CSS custom properties, reset, base typography,
+   and shared utility classes.
+   All other CSS files depend on the variables defined here.
+   ============================================================ */
+
+/* ── Custom Properties ─────────────────────────────────────── */
+
+:root {
+  /* Brand colours */
+  --accent:          #4F3FA6;
+  --accent-light:    #7D6BE6;
+  --background:      #F6F6F6;
+  --surface:         #FFFFFF;
+  --text-primary:    #45455B;
+  --text-secondary:  #6B6B80;
+  --light-purple:    #F0F0FF;
+  --light-blue:      #E5F5FF;
+  --border:          #D1D1F9;
+  --success:         #27AE60;
+  --warning:         #F39C12;
+  --danger:          #E74C3C;
+
+  /* Shadows */
+  --shadow-card:  0 2px 12px rgba(79, 63, 166, 0.08);
+  --shadow-nav:   0 -2px 24px rgba(79, 63, 166, 0.10);
+  --shadow-float: 0 4px 24px rgba(79, 63, 166, 0.16);
+
+  /* Spacing (4 px base grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Border radius */
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-pill: 100px;
+
+  /* Typography scale */
+  --font-xs:   11px;
+  --font-sm:   13px;
+  --font-base: 15px;
+  --font-md:   17px;
+  --font-lg:   20px;
+  --font-xl:   28px;
+  --font-2xl:  40px;
+
+  /* Z-index layers */
+  --z-nav:       100;
+  --z-city-page: 200;
+
+  /* Nav bar height — used to pad main content */
+  --nav-height: 72px;
+}
+
+/* ── Reset ──────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont,
+               'Segoe UI', sans-serif;
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: var(--font-base);
+}
+
+/* ── Focus visible ──────────────────────────────────────────── */
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── App shell ──────────────────────────────────────────────── */
+
+#app {
+  /* Push content above the fixed bottom nav */
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--space-4));
+  padding-top: var(--space-4);
+  min-height: 100dvh;
+}
+
+/* ── Tab panels ─────────────────────────────────────────────── */
+
+.tab-panel {
+  display: none;
+  padding: 0 var(--space-4);
+  animation: fadeIn 180ms ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Shared card ────────────────────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+}
+
+/* ── Section headings ───────────────────────────────────────── */
+
+.section-title {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+/* ── Badges ─────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.badge--upcoming {
+  background: var(--light-purple);
+  color: var(--accent);
+}
+
+.badge--current {
+  background: var(--light-blue);
+  color: #0066CC;
+}
+
+.badge--visited {
+  background: #E8F5E9;
+  color: var(--success);
+}
+
+.badge--warning {
+  background: #FEF3E2;
+  color: var(--warning);
+}
+
+.badge--task {
+  background: var(--light-purple);
+  color: var(--accent);
+}
+
+.badge--booking {
+  background: var(--light-blue);
+  color: #0066CC;
+}
+
+/* ── Empty state ────────────────────────────────────────────── */
+
+.empty-state {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  padding: var(--space-8) var(--space-4);
+}
+
+/* ── Toggle pill button ─────────────────────────────────────── */
+
+.toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--surface);
+  min-height: 28px;
+  transition: all 150ms ease;
+}
+
+.toggle-pill.is-done {
+  background: var(--light-purple);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Primary button ─────────────────────────────────────────── */
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--accent);
+  color: #FFFFFF;
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  font-weight: 600;
+  min-height: 48px;
+  transition: background 150ms ease, transform 100ms ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-light);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* ── Screen-reader only ─────────────────────────────────────── */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Trilingual name block ──────────────────────────────────── */
+
+.name-block {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.name-block__en {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.name-block__zh {
+  font-size: var(--font-base);
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.name-block__py {
+  font-size: var(--font-sm);
+  font-weight: 400;
+  color: var(--text-secondary);
+  line-height: 1.3;
+  font-style: italic;
+}
+
+/* ── Divider ────────────────────────────────────────────────── */
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: var(--space-4) 0;
+  opacity: 0.5;
+}

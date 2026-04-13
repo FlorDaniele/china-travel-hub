@@ -1,0 +1,250 @@
+/* ============================================================
+   REMINDERS.CSS — Reminders, packing list, steps tracker
+   ============================================================ */
+
+/* ── Shared section spacing ─────────────────────────────────── */
+
+.reminders-section,
+.packing-section,
+.steps-section {
+  margin-bottom: var(--space-6);
+}
+
+/* ── Reminder cards ─────────────────────────────────────────── */
+
+.reminder-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.reminder-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-left: 3px solid var(--warning);
+}
+
+.reminder-card__left {
+  flex: 1;
+  min-width: 0;
+}
+
+.reminder-card__title {
+  font-size: var(--font-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.reminder-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.reminder-card__due {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--warning);
+}
+
+/* ── Packing list ───────────────────────────────────────────── */
+
+.packing-category {
+  margin-bottom: var(--space-4);
+}
+
+.packing-category__title {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  margin-bottom: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.packing-category__title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.packing-items {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.packing-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  min-height: 48px;
+  border-bottom: 1px solid var(--border);
+}
+
+.packing-item:last-child {
+  border-bottom: none;
+}
+
+/* Custom checkbox */
+.packing-item__checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 150ms ease;
+}
+
+.packing-item__checkbox:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.packing-item__checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #FFFFFF;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.packing-item__label {
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  cursor: pointer;
+  flex: 1;
+}
+
+.packing-item__checkbox:checked + .packing-item__label {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+/* ── Steps tracker ──────────────────────────────────────────── */
+
+.steps-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+}
+
+.steps-input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.steps-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.steps-label {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.steps-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--background);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  min-height: 40px;
+  text-align: center;
+  font-weight: 600;
+  transition: border-color 150ms ease;
+}
+
+.steps-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.steps-log-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--space-2) var(--space-4);
+  background: var(--light-purple);
+  color: var(--accent);
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  font-weight: 700;
+  min-height: 44px;
+  margin-bottom: var(--space-4);
+  transition: background 150ms ease;
+}
+
+.steps-log-btn:hover {
+  background: var(--border);
+}
+
+.steps-totals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.steps-total-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+}
+
+.steps-total-value {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.steps-total-label {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.steps-total-since {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: var(--space-2);
+}

@@ -1,0 +1,309 @@
+/* ============================================================
+   OVERVIEW.CSS — Planning header + city cards grid
+   ============================================================ */
+
+/* ── Planning header wrapper ────────────────────────────────── */
+
+.planning-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+/* ── Countdown card ─────────────────────────────────────────── */
+
+.countdown-card {
+  background: linear-gradient(135deg, var(--light-purple) 0%, #E8E4FF 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+}
+
+.countdown-card__left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.countdown-card__label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.countdown-card__days {
+  font-size: var(--font-2xl);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.countdown-card__sublabel {
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--accent-light);
+}
+
+.countdown-card__right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.countdown-card__date-label {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.countdown-card__date {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.countdown-card__icon {
+  margin-top: var(--space-2);
+  color: var(--accent);
+  opacity: 0.5;
+}
+
+.countdown-card__icon svg {
+  width: 32px;
+  height: 32px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Booking progress row ───────────────────────────────────── */
+
+.booking-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.booking-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.booking-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+}
+
+.booking-card__header svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.booking-card__type {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.booking-card__fraction {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.booking-card__fraction span {
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.progress-bar-track {
+  height: 4px;
+  background: var(--light-purple);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: width 400ms ease;
+}
+
+/* ── Urgent reminders ───────────────────────────────────────── */
+
+.urgent-section {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.urgent-section__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.urgent-section__header svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--warning);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.urgent-section__title {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.urgent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-3);
+}
+
+.urgent-item + .urgent-item {
+  border-top: 1px solid var(--border);
+}
+
+.urgent-item__title {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.urgent-item__due {
+  font-size: var(--font-xs);
+  color: var(--warning);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── City cards grid ────────────────────────────────────────── */
+
+#city-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+}
+
+/* ── Individual city card ───────────────────────────────────── */
+
+.city-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border: 1.5px solid transparent;
+  transition: border-color 150ms ease, box-shadow 150ms ease, transform 100ms ease;
+  /* Minimum touch target height */
+  min-height: 88px;
+}
+
+.city-card:hover {
+  border-color: var(--border);
+  box-shadow: var(--shadow-float);
+}
+
+.city-card:active {
+  transform: scale(0.98);
+}
+
+.city-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.city-card__dates {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-secondary);
+  font-size: var(--font-xs);
+  font-weight: 500;
+}
+
+.city-card__dates svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.city-card__arrow {
+  color: var(--text-secondary);
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.city-card__arrow svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Responsive: 2-column on tablet+ ───────────────────────── */
+
+@media (min-width: 640px) {
+  #city-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  #city-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

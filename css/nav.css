@@ -1,0 +1,71 @@
+/* ============================================================
+   NAV.CSS — Floating bottom navigation pill
+   ============================================================ */
+
+#bottom-nav {
+  position: fixed;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 32px);
+  max-width: 420px;
+  background: var(--surface);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-nav), 0 1px 0 0 rgba(209, 209, 249, 0.5) inset;
+  z-index: var(--z-nav);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: var(--space-2) var(--space-4);
+  /* Prevent the nav from shrinking below its content */
+  flex-shrink: 0;
+}
+
+/* ── Individual tab button ──────────────────────────────────── */
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--space-2) var(--space-5);
+  min-width: 64px;
+  min-height: 52px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: color 180ms ease;
+  border-radius: var(--radius-lg);
+  /* Ensure tap target is adequate */
+  justify-content: center;
+}
+
+.nav-tab:hover {
+  color: var(--accent-light);
+}
+
+.nav-tab.active {
+  color: var(--accent);
+}
+
+/* ── Lucide icon inside nav tab ─────────────────────────────── */
+
+.nav-tab svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ── Label text ─────────────────────────────────────────────── */
+
+.nav-label {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}

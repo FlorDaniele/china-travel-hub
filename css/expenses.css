@@ -1,0 +1,218 @@
+/* ============================================================
+   EXPENSES.CSS — Summary card, add form, expense list
+   ============================================================ */
+
+/* ── Summary card ───────────────────────────────────────────── */
+
+.expenses-summary-card {
+  background: linear-gradient(135deg, var(--light-purple) 0%, #E8E4FF 100%);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6);
+  border: 1px solid var(--border);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.expenses-summary__totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.expenses-summary__main {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.expenses-summary__sub {
+  font-size: var(--font-sm);
+  color: var(--accent-light);
+  font-weight: 500;
+}
+
+.expenses-summary__stats {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-pill__value {
+  font-size: var(--font-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stat-pill__label {
+  font-size: var(--font-xs);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ── Donut chart placeholder ────────────────────────────────── */
+
+.donut-placeholder {
+  flex-shrink: 0;
+  width: 72px;
+  height: 72px;
+}
+
+.donut-placeholder svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Add expense form ───────────────────────────────────────── */
+
+.add-expense-form {
+  margin-bottom: var(--space-4);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-4);
+}
+
+.form-row {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  align-items: flex-end;
+}
+
+.form-row .form-group {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.form-optional {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--background);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  color: var(--text-primary);
+  min-height: 44px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79, 63, 166, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+/* ── Currency toggle ────────────────────────────────────────── */
+
+.currency-toggle {
+  display: flex;
+  background: var(--background);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  min-height: 44px;
+}
+
+.currency-btn {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+  min-width: 56px;
+}
+
+.currency-btn.active {
+  background: var(--accent);
+  color: #FFFFFF;
+  border-radius: calc(var(--radius-md) - 2px);
+}
+
+/* ── Category pills ─────────────────────────────────────────── */
+
+.category-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.category-pill {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--background);
+  min-height: 36px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.category-pill:hover {
+  border-color: var(--accent-light);
+  color: var(--accent);
+}
+
+.category-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #FFFFFF;
+}
+
+/* ── Expense list ───────────────────────────────────────────── */
+
+#expense-list {
+  margin-top: var(--space-2);
+}
+
+.expense-day-group {
+  margin-bottom: var(--space-4);
+}
+
+.expense-day-label {
+  font-size: var(--font-xs);
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-2);
+}
