@@ -1,0 +1,414 @@
+/* ============================================================
+   OVERVIEW.CSS — Overview tab
+   Bento layout: hero card, booking cards, city cards
+   ============================================================ */
+
+/* ── Mode toggle ───────────────────────────────────────────── */
+
+.mode-toggle-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.mode-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  box-shadow: var(--shadow-sm);
+  min-height: 44px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.mode-toggle-btn:hover {
+  background: var(--color-accent-light);
+  color: var(--color-accent);
+  border-color: rgba(212, 84, 58, 0.3);
+}
+
+.mode-toggle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+
+/* ── Bento outer wrapper ───────────────────────────────────── */
+
+.overview-bento {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* ── Hero card (Shanghai image + countdown overlay) ────────── */
+
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  height: 200px;
+  box-shadow: var(--shadow-md);
+}
+
+.hero-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* Gradient — dark bottom so white text is readable (>7:1 contrast) */
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 20%,
+    rgba(0, 0, 0, 0.18) 55%,
+    rgba(0, 0, 0, 0.62) 100%
+  );
+  pointer-events: none;
+}
+
+.hero-content {
+  position: absolute;
+  bottom: var(--space-md);
+  left: var(--space-md);
+}
+
+.hero-countdown-number {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: #ffffff;
+  line-height: var(--line-height-tight);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.hero-countdown-label {
+  font-size: var(--font-size-sm);
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: var(--font-weight-medium);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  margin-top: 1px;
+}
+
+/* ── Booking bento row (Hotels / Trains / Tours) ───────────── */
+
+.booking-bento-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
+}
+
+.booking-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md) var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.booking-card-type {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.booking-card-count {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.booking-card-count .count-booked {
+  color: var(--color-success);
+}
+
+.booking-card-count .count-total {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
+}
+
+/* Thin divider before checklist */
+.booking-card-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 0 calc(-1 * var(--space-sm));
+}
+
+/* ── Booking checklist ─────────────────────────────────────── */
+
+.booking-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.booking-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  min-height: 44px;
+  padding: 2px 0;
+}
+
+/* Custom checkbox — native <input> for accessibility */
+.booking-check-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 2px;
+  background: var(--color-surface);
+  transition: background 0.12s ease, border-color 0.12s ease;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.booking-check-item input[type="checkbox"]:checked {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.booking-check-item input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.booking-check-item input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.booking-check-item label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  line-height: var(--line-height-normal);
+  flex: 1;
+}
+
+/* Dim label while async save is in flight */
+.booking-check-item.is-saving label,
+.booking-check-item.is-saving input {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* All items booked confirmation */
+.booking-all-done {
+  font-size: var(--font-size-xs);
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+  padding: var(--space-xs) 0;
+}
+
+/* ── Planning: urgent reminders (compact row below cards) ──── */
+
+.urgent-reminders-compact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.urgent-reminder-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: #FFFBEB;
+  border: 1px solid #FCD34D;
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  min-height: 44px;
+}
+
+.urgency-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-warning);
+  flex-shrink: 0;
+}
+
+.reminder-title {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.reminder-due {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+/* ── Travel mode: today block ──────────────────────────────── */
+
+.travel-today-block {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.travel-today-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+/* ── Travel mode: today's activities ──────────────────────── */
+
+.today-activities {
+  margin-bottom: var(--space-md);
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-sm);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  min-height: 44px;
+}
+
+.activity-time {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  min-width: 48px;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+
+.activity-title {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* ── Travel mode: next booking ─────────────────────────────── */
+
+.next-booking-block {
+  background: var(--color-accent-light);
+  border: 1px solid rgba(212, 84, 58, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.next-booking-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-xs);
+}
+
+.next-booking-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.next-booking-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin-top: 2px;
+}
+
+/* ── City bento grid ───────────────────────────────────────── */
+
+.city-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+}
+
+/* First city spans full width — featured card */
+.city-bento-grid .city-card--featured {
+  grid-column: 1 / -1;
+}
+
+/* ── City card ─────────────────────────────────────────────── */
+
+.city-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.city-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.city-card.is-current {
+  border-color: var(--color-accent);
+  border-width: 2px;
+}
+
+.city-card.is-visited {
+  opacity: 0.6;
+}
+
+.city-card--featured {
+  padding: var(--space-lg) var(--space-md);
+}
+
+.city-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.city-card-dates {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+}

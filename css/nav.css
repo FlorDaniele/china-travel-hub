@@ -1,0 +1,73 @@
+/* ============================================================
+   NAV.CSS — Floating bottom nav bar
+   Light frosted glass pill, soft drop shadow, 3 tabs
+   ============================================================ */
+
+.bottom-nav {
+  position: fixed;
+  bottom: var(--nav-bottom-offset);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: var(--color-nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-nav-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-nav);
+  z-index: 100;
+  /* Don't stretch edge-to-edge on wide screens */
+  max-width: calc(100vw - var(--space-xl));
+}
+
+/* ── Individual tab button ─────────────────────────────────── */
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--space-sm) var(--space-lg);
+  /* WCAG 2.1 minimum touch target */
+  min-width: 80px;
+  min-height: 52px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-tab:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--color-text-primary);
+}
+
+/* Active state — terracotta fill */
+.nav-tab.active {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.nav-tab:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── Icon and label ────────────────────────────────────────── */
+
+.nav-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.nav-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+}
