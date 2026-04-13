@@ -2,7 +2,7 @@
    OVERVIEW.JS — Overview tab
    Loads settings, itinerary, bookings, reminders from Supabase.
    Detects planning vs travel mode.
-   Renders context-aware header + city cards grid.
+   Renders context-aware header + city bento grid.
    Falls back to localStorage if Supabase is unavailable.
    ============================================================ */
 
@@ -10,6 +10,31 @@ import { supabase } from './supabase.js';
 import { saveToStorage, loadFromStorage } from './storage.js';
 
 const DEPARTURE_DATE = '2026-06-06';
+
+/* ── Static city data (fallback until Supabase itinerary is populated) ─ */
+
+const STATIC_CITIES = [
+  {
+    city: 'Beijing',    city_zh: '北京',   city_pinyin: 'Běijīng',
+    date_start: '2026-06-06', date_end: '2026-06-12',
+  },
+  {
+    city: "Xi'an",      city_zh: '西安',   city_pinyin: "Xī'ān",
+    date_start: '2026-06-13', date_end: '2026-06-16',
+  },
+  {
+    city: 'Chengdu',    city_zh: '成都',   city_pinyin: 'Chéngdū',
+    date_start: '2026-06-17', date_end: '2026-06-21',
+  },
+  {
+    city: 'Chongqing',  city_zh: '重庆',   city_pinyin: 'Chóngqìng',
+    date_start: '2026-06-22', date_end: '2026-06-25',
+  },
+  {
+    city: 'Shanghai',   city_zh: '上海',   city_pinyin: 'Shànghǎi',
+    date_start: '2026-06-26', date_end: '2026-07-05',
+  },
+];
 
 /* ── XSS protection ────────────────────────────────────────── */
 
@@ -102,18 +127,51 @@ async function loadReminders() {
   return data;
 }
 
+/* ── Render: single booking type card ──────────────────────── */
+
+function renderBookingCard(type, items) {
+  const label   = type === 'hotel' ? 'Hotels' : type === 'train' ? 'Trains' : 'Tours';
+  const booked  = items.filter(b => b.status === 'booked').length;
+  const pending = items.filter(b => b.status !== 'booked');
+
+  const checklistHTML = pending.length > 0
+    ? `<div class="booking-card-divider" aria-hidden="true"></div>
+       <div class="booking-checklist">
+         ${pending.map(b => `
+           <div class="booking-check-item" data-booking-id="${esc(b.id)}">
+             <input
+               type="checkbox"
+               id="booking-cb-${esc(b.id)}"
+               data-booking-id="${esc(b.id)}"
+             >
+             <label for="booking-cb-${esc(b.id)}">${esc(b.title)}</label>
+           </div>
+         `).join('')}
+       </div>`
+    : `<div class="booking-card-divider" aria-hidden="true"></div>
+       <p class="booking-all-done">All booked ✓</p>`;
+
+  return `
+    <div class="booking-card" data-type="${esc(type)}">
+      <div class="booking-card-type">${esc(label)}</div>
+      <div class="booking-card-count">
+        <span class="count-booked">${booked}</span><span class="count-total">/${items.length}</span>
+      </div>
+      ${items.length > 0 ? checklistHTML : ''}
+    </div>
+  `;
+}
+
 /* ── Render: planning mode header ──────────────────────────── */
 
 function renderPlanningHeader(bookings, reminders) {
   const days = daysUntilDeparture();
 
-  const hotels  = bookings.filter(b => b.type === 'hotel');
-  const trains  = bookings.filter(b => b.type === 'train');
-  const tours   = bookings.filter(b => b.type === 'tour');
+  const hotels = bookings.filter(b => b.type === 'hotel');
+  const trains = bookings.filter(b => b.type === 'train');
+  const tours  = bookings.filter(b => b.type === 'tour');
 
-  const countBooked = arr => arr.filter(b => b.status === 'booked').length;
-
-  // Reminders due within 7 days, not yet done
+  // Urgent reminders due within 7 days, not yet done
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const in7 = new Date(today);
@@ -127,7 +185,7 @@ function renderPlanningHeader(bookings, reminders) {
 
   const urgentHTML = urgent.length > 0
     ? `<p class="section-title">Urgent</p>
-       <div class="urgent-reminders">
+       <div class="urgent-reminders-compact">
          ${urgent.map(r => `
            <div class="urgent-reminder-item">
              <span class="urgency-dot" aria-hidden="true"></span>
@@ -139,34 +197,31 @@ function renderPlanningHeader(bookings, reminders) {
     : '';
 
   return `
-    <div class="countdown-block">
-      <div class="countdown-number">${days}</div>
-      <div class="countdown-label">${days === 1 ? 'day' : 'days'} until Beijing</div>
-    </div>
+    <div class="overview-bento">
 
-    <p class="section-title">Bookings</p>
-    <div class="booking-progress-row">
-      <div class="booking-progress-card">
-        <div class="booking-progress-count">
-          <span class="booked">${countBooked(hotels)}</span>/${hotels.length}
+      <div class="hero-card">
+        <img
+          src="assets/shanghai-hero.jpg"
+          alt="The Oriental Pearl Tower and Pudong skyline, Shanghai"
+          loading="eager"
+        >
+        <div class="hero-gradient" aria-hidden="true"></div>
+        <div class="hero-content">
+          <div class="hero-countdown-number">${days}</div>
+          <div class="hero-countdown-label">${days === 1 ? 'day' : 'days'} to Beijing</div>
         </div>
-        <div class="booking-progress-label">Hotels</div>
       </div>
-      <div class="booking-progress-card">
-        <div class="booking-progress-count">
-          <span class="booked">${countBooked(trains)}</span>/${trains.length}
-        </div>
-        <div class="booking-progress-label">Trains</div>
-      </div>
-      <div class="booking-progress-card">
-        <div class="booking-progress-count">
-          <span class="booked">${countBooked(tours)}</span>/${tours.length}
-        </div>
-        <div class="booking-progress-label">Tours</div>
-      </div>
-    </div>
 
-    ${urgentHTML}
+      <p class="section-title">Bookings</p>
+      <div class="booking-bento-row" id="booking-bento">
+        ${renderBookingCard('hotel', hotels)}
+        ${renderBookingCard('train', trains)}
+        ${renderBookingCard('tour',  tours)}
+      </div>
+
+      ${urgentHTML}
+
+    </div>
   `;
 }
 
@@ -229,25 +284,16 @@ function renderTravelHeader(itinerary, bookings) {
   `;
 }
 
-/* ── Render: city cards ────────────────────────────────────── */
+/* ── Render: city bento grid ───────────────────────────────── */
 
 function renderCityCards(itinerary) {
-  if (itinerary.length === 0) {
-    return `
-      <div class="empty-state">
-        <div class="empty-state-icon" aria-hidden="true">🗺️</div>
-        <p class="empty-state-message">No cities added yet.</p>
-        <p class="empty-state-sub">Add rows to the itinerary table in Supabase to get started.</p>
-      </div>
-    `;
-  }
-
-  const today = todayStr();
+  const cities = itinerary.length > 0 ? itinerary : STATIC_CITIES;
+  const today  = todayStr();
 
   return `
     <p class="section-title">Your trip</p>
-    <div class="city-cards-grid">
-      ${itinerary.map(city => {
+    <div class="city-bento-grid">
+      ${cities.map((city, index) => {
         let statusClass = '';
         let badge = '';
 
@@ -266,9 +312,12 @@ function renderCityCards(itinerary) {
           .map(formatDate)
           .join(' – ');
 
+        // First city = featured full-width bento card
+        const featuredClass = index === 0 ? 'city-card--featured' : '';
+
         return `
           <button
-            class="city-card ${statusClass}"
+            class="city-card ${statusClass} ${featuredClass}"
             data-city="${esc(city.city)}"
             aria-label="Open ${esc(city.city)} details"
           >
@@ -311,10 +360,42 @@ function renderModeToggle(mode) {
 
 function renderSkeletons() {
   return `
-    <div class="skeleton skeleton-card" aria-hidden="true" style="height:120px"></div>
+    <div class="skeleton skeleton-card" aria-hidden="true" style="height:200px;border-radius:24px"></div>
     <div class="skeleton skeleton-card" aria-hidden="true" style="height:80px"></div>
     <div class="skeleton skeleton-card" aria-hidden="true" style="height:60px"></div>
   `;
+}
+
+/* ── Booking check handler ─────────────────────────────────── */
+
+async function handleBookingCheck(bookingId, checkboxEl) {
+  const item = checkboxEl.closest('.booking-check-item');
+  if (!item) return;
+
+  // Optimistic UI: dim the row while the async save is in flight
+  item.classList.add('is-saving');
+
+  try {
+    const { error } = await supabase
+      .from('bookings')
+      .update({ status: 'booked' })
+      .eq('id', bookingId);
+    if (error) throw error;
+
+    // Keep localStorage cache in sync
+    const cached  = loadFromStorage('bookings') ?? [];
+    const updated = cached.map(b =>
+      String(b.id) === String(bookingId) ? { ...b, status: 'booked' } : b
+    );
+    saveToStorage('bookings', updated);
+
+    // Re-render so the count updates
+    initOverview();
+  } catch (err) {
+    console.warn('[overview] booking check failed:', err);
+    checkboxEl.checked = false;
+    item.classList.remove('is-saving');
+  }
 }
 
 /* ── Mode toggle handler ───────────────────────────────────── */
@@ -391,4 +472,13 @@ export async function initOverview() {
   // Wire up mode toggle
   document.getElementById('mode-toggle-btn')
     ?.addEventListener('click', () => handleModeToggle(mode));
+
+  // Event delegation for booking checkboxes
+  document.getElementById('booking-bento')
+    ?.addEventListener('change', e => {
+      const cb = e.target;
+      if (cb.matches('input[type="checkbox"]') && cb.dataset.bookingId) {
+        handleBookingCheck(cb.dataset.bookingId, cb);
+      }
+    });
 }
