@@ -149,7 +149,7 @@ a {
   top: var(--space-md);
   left: 50%;
   transform: translateX(-50%);
-  background: var(--color-warning);
+  background: #4F3FA6;
   color: #fff;
   padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-full);
