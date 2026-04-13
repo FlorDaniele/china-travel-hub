@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="css/nav.css">
   <link rel="stylesheet" href="css/overview.css">
   <link rel="stylesheet" href="css/city.css">
-  <link rel="stylesheet" href="css/expenses.css">
+
   <link rel="stylesheet" href="css/reminders.css">
 </head>
 <body>
@@ -40,23 +40,7 @@
       <div id="city-page-content"></div>
     </section>
 
-    <!-- ── Tab 2: Expenses ─────────────────────────────── -->
-    <section
-      id="tab-expenses"
-      class="tab-panel hidden"
-      role="tabpanel"
-      aria-labelledby="nav-expenses"
-    >
-      <div id="expenses-content">
-        <div class="empty-state">
-          <div class="empty-state-icon" aria-hidden="true">💰</div>
-          <p class="empty-state-message">Expenses coming soon.</p>
-          <p class="empty-state-sub">This tab will be built in a future session.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── Tab 3: Reminders ────────────────────────────── -->
+    <!-- ── Tab 2: Reminders ────────────────────────────── -->
     <section
       id="tab-reminders"
       class="tab-panel hidden"
@@ -97,18 +81,6 @@
     >
       <span class="nav-icon" aria-hidden="true">🗺</span>
       <span class="nav-label">Overview</span>
-    </button>
-
-    <button
-      class="nav-tab"
-      id="nav-expenses"
-      role="tab"
-      aria-selected="false"
-      aria-controls="tab-expenses"
-      data-tab="expenses"
-    >
-      <span class="nav-icon" aria-hidden="true">💰</span>
-      <span class="nav-label">Expenses</span>
     </button>
 
     <button
