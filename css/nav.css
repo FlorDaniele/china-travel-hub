@@ -48,22 +48,27 @@
   color: var(--color-text-primary);
 }
 
-/* Active state — terracotta fill */
+/* Active state — brand purple */
 .nav-tab.active {
-  background: var(--color-accent);
+  background: #4F3FA6;
   color: #ffffff;
 }
 
 .nav-tab:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid #4F3FA6;
   outline-offset: 2px;
 }
 
 /* ── Icon and label ────────────────────────────────────────── */
 
+/* Lucide replaces <i data-lucide> with <svg class="nav-icon"> */
 .nav-icon {
-  font-size: 18px;
-  line-height: 1;
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
 }
 
 .nav-label {
