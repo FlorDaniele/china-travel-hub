@@ -1341,5 +1341,17 @@
     margin-top: 2px;
   }
 
+  /* ── Travel mode: swap row 2 and row 3 ─────────────────── */
+
+  /* In travel mode, content cards (itinerary/calendar/next up) rise to Row 2
+     and admin cards (bookings/reminders/packing) sink to Row 3. */
+
+  .desktop-layout.mode-travel .dk-itinerary { order: 1; }
+  .desktop-layout.mode-travel .dk-stack     { order: 2; }
+  .desktop-layout.mode-travel .dk-next-up   { order: 3; }
+  .desktop-layout.mode-travel .dk-bookings  { order: 4; }
+  .desktop-layout.mode-travel .dk-reminders { order: 5; }
+  .desktop-layout.mode-travel .dk-packing   { order: 6; }
+
 }
 /* end @media desktop */

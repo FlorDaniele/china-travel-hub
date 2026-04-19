@@ -201,8 +201,8 @@ function renderPlanningHeader(bookings, reminders) {
 
       <div class="hero-card">
         <img
-          src="assets/shanghai-hero.jpg"
-          alt="The Oriental Pearl Tower and Pudong skyline, Shanghai"
+          src="assets/beijing-hero.jpg"
+          alt="Aerial view of Beijing city centre during daytime"
           loading="eager"
         >
         <div class="hero-gradient" aria-hidden="true"></div>
@@ -411,6 +411,27 @@ async function handleModeToggle(currentMode) {
     console.warn('[overview] mode toggle save failed:', e);
   }
   initOverview();
+}
+
+/* ── Desktop mode toggle ───────────────────────────────────── */
+
+export function initDesktopToggle() {
+  const layout = document.querySelector('.desktop-layout');
+  if (!layout) return;
+
+  layout.querySelectorAll('.dk-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      layout.querySelectorAll('.dk-mode-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+
+      const isTravel = btn.textContent.trim() === 'Travel';
+      layout.classList.toggle('mode-travel', isTravel);
+    });
+  });
 }
 
 /* ── Main init ─────────────────────────────────────────────── */

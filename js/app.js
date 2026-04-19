@@ -3,7 +3,7 @@
    Tab switching, app initialisation.
    ============================================================ */
 
-import { initOverview } from './overview.js';
+import { initOverview, initDesktopToggle } from './overview.js';
 
 /* ── Tab switching ─────────────────────────────────────────── */
 
@@ -30,6 +30,7 @@ navTabs.forEach(tab => {
 
 async function init() {
   activateTab('overview');
+  initDesktopToggle();
   await initOverview();
 }
 
