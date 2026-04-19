@@ -412,3 +412,934 @@
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-medium);
 }
+
+/* ============================================================
+   DESKTOP LAYOUT — 1024px and above
+   3-column bento grid: 3fr 2fr 2fr
+   All selectors prefixed with .desktop-layout or .dk-
+   to avoid collisions with existing mobile styles.
+   ============================================================ */
+
+/* Hidden on mobile — shown only at desktop breakpoint */
+.desktop-layout {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+
+  /* Override tab-panel constraints for the overview desktop view */
+  #tab-overview {
+    max-width: 1400px;
+    padding: 24px;
+  }
+
+  /* Hide mobile JS-rendered content; show desktop grid */
+  #overview-header,
+  #city-cards-grid {
+    display: none;
+  }
+
+  .desktop-layout {
+    display: grid;
+    grid-template-columns: 3fr 2fr 2fr;
+    gap: 16px;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Hero spans all 3 columns */
+  .dk-hero {
+    grid-column: 1 / -1;
+  }
+
+  /* Col B row 3: flex column wrapper for Calendar + Cities */
+  .dk-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  /* ── Card base ──────────────────────────────────────────── */
+
+  .dk-card {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    padding: 16px;
+    min-width: 0;
+  }
+
+  .dk-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .dk-card-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .dk-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .dk-header-tag {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .dk-header-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .dk-header-badge {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: #F0F0F0;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  /* ── Shared button atoms ────────────────────────────────── */
+
+  .dk-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    color: var(--text-secondary);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    /* Expand click area without changing visual size */
+    position: relative;
+  }
+
+  .dk-icon-btn::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+  }
+
+  .dk-icon-btn:hover {
+    background: #E0E0E0;
+    color: var(--text-primary);
+  }
+
+  .dk-icon-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 3px;
+  }
+
+  .dk-add-btn {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    min-height: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-add-btn:hover {
+    background: var(--warm-gold-light);
+    color: var(--text-primary);
+    border-color: var(--warm-gold);
+  }
+
+  .dk-add-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  .dk-remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 15px;
+    cursor: pointer;
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s ease;
+    font-family: inherit;
+    /* Expand hit area */
+    position: relative;
+  }
+
+  .dk-remove-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+
+  .dk-remove-btn:hover { color: var(--terracotta); }
+
+  .dk-remove-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  .dk-text-btn {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    min-height: 32px;
+    padding: 0 4px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-text-btn:hover { color: var(--text-primary); }
+
+  .dk-text-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  .dk-add-link {
+    background: none;
+    border: none;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 0;
+    text-align: left;
+    display: block;
+    transition: color 0.15s ease;
+    font-family: inherit;
+    margin-top: 6px;
+  }
+
+  .dk-add-link:hover { color: var(--text-primary); }
+
+  .dk-add-link:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ── Shared checkbox + check-item ───────────────────────── */
+
+  .dk-checklist,
+  .dk-packing-list,
+  .dk-reminder-list,
+  .dk-next-list,
+  .dk-activity-list,
+  .dk-cities-strip,
+  .dk-timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 2px 0;
+  }
+
+  .dk-check-item label {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .dk-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+
+  .dk-checkbox:checked {
+    background: var(--status-success);
+    border-color: var(--status-success);
+  }
+
+  .dk-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .dk-checkbox:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────── */
+
+  .dk-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    height: 320px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .dk-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 60%;
+    display: block;
+  }
+
+  .dk-hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 20%,
+      rgba(0, 0, 0, 0.15) 55%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
+    pointer-events: none;
+  }
+
+  .dk-hero-content {
+    position: absolute;
+    bottom: 24px;
+    left: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dk-countdown-number {
+    font-size: 72px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  .dk-countdown-label {
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Mode toggle pill — top-right inside hero */
+  .dk-mode-toggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .dk-mode-btn {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 20px;
+    min-height: 36px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    background: transparent;
+    transition: background 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-mode-btn.active,
+  .dk-mode-btn[aria-pressed="true"] {
+    background: #4F3FA6;
+    color: #ffffff;
+  }
+
+  .dk-mode-btn:hover:not(.active):not([aria-pressed="true"]) {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .dk-mode-btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  /* ── Bookings card ──────────────────────────────────────── */
+
+  .dk-subcard-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .dk-subcard {
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-align: center;
+  }
+
+  .dk-subcard-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .dk-subcard-count {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--text-primary);
+  }
+
+  .dk-count-booked {
+    color: var(--terracotta);
+    font-weight: 500;
+  }
+
+  .dk-count-slash {
+    color: var(--text-secondary);
+    font-size: 16px;
+    margin: 0 1px;
+  }
+
+  .dk-count-total {
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .dk-subcard-pending {
+    font-size: 10px;
+    color: var(--terracotta);
+    font-weight: 500;
+  }
+
+  /* ── Reminders card ─────────────────────────────────────── */
+
+  .dk-reminder-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    min-height: 36px;
+  }
+
+  .dk-reminder-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 1px;
+  }
+
+  .dk-reminder-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .dk-reminder-due {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .dk-due-overdue { color: var(--terracotta); }
+  .dk-due-today   { color: var(--warm-gold); }
+  .dk-due-future  { color: var(--text-secondary); }
+
+  .dk-reminder-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .dk-reminder-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 4px;
+  }
+
+  .dk-reminder-divider::before,
+  .dk-reminder-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px dashed var(--border);
+  }
+
+  .dk-divider-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .dk-reminder-item--done .dk-reminder-title {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+  }
+
+  .dk-reminder-item--done .dk-checkbox {
+    opacity: 0.45;
+  }
+
+  /* ── Packing list card ──────────────────────────────────── */
+
+  .dk-packing-list-wrapper {
+    position: relative;
+    max-height: 200px;
+    overflow: hidden;
+  }
+
+  .dk-packing-category {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 10px 0 4px;
+    display: block;
+  }
+
+  .dk-packing-list > li.dk-packing-category:first-child {
+    padding-top: 0;
+  }
+
+  .dk-packing-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 52px;
+    background: linear-gradient(to bottom, transparent, var(--surface));
+    pointer-events: none;
+  }
+
+  .dk-see-all {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Itinerary card ─────────────────────────────────────── */
+
+  .dk-filter-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .dk-filter-sublabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    padding-top: 6px;
+    min-width: 28px;
+  }
+
+  .dk-filter-tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .dk-filter-tab {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    background: #F5F5F5;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    min-height: 28px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-filter-tab:hover {
+    background: #EBEBEB;
+    color: var(--text-primary);
+  }
+
+  .dk-filter-tab.active,
+  .dk-filter-tab[aria-selected="true"] {
+    background: var(--text-primary);
+    color: #ffffff;
+    border-color: var(--text-primary);
+  }
+
+  .dk-filter-tab:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  .dk-filter-add {
+    border-style: dashed;
+  }
+
+  .dk-filter-remove {
+    color: var(--terracotta);
+    border-color: rgba(238, 97, 70, 0.3);
+    background: rgba(238, 97, 70, 0.05);
+  }
+
+  .dk-filter-remove:hover {
+    background: rgba(238, 97, 70, 0.1);
+    color: var(--dark-red);
+  }
+
+  /* Timeline */
+
+  .dk-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 14px;
+  }
+
+  .dk-timeline-group {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .dk-timeline-marker {
+    width: 11px;
+    height: 11px;
+    min-width: 11px;
+    border-radius: 50%;
+    border: 2px solid var(--text-secondary);
+    background: var(--surface);
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  .dk-timeline-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .dk-timeline-period {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .dk-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dk-activity-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 44px;
+  }
+
+  .dk-drag-handle {
+    font-size: 13px;
+    color: #CCCCCC;
+    cursor: grab;
+    flex-shrink: 0;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .dk-activity-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .dk-activity-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dk-activity-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Calendar card ──────────────────────────────────────── */
+
+  .dk-cal-grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 3px;
+    margin: 0 -3px;
+    width: calc(100% + 6px);
+    margin-bottom: 10px;
+  }
+
+  .dk-cal-grid thead th {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 3px 0;
+  }
+
+  .dk-cal-day {
+    background: var(--warm-gold-light);
+    border-radius: 5px;
+    text-align: center;
+    padding: 7px 2px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-primary);
+  }
+
+  .dk-cal-empty {
+    background: transparent;
+  }
+
+  .dk-cal-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin-top: 6px;
+  }
+
+  .dk-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+
+  .dk-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Cities card ────────────────────────────────────────── */
+
+  .dk-cities-count {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 3px;
+  }
+
+  .dk-cities-strip-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 -16px;
+    padding: 4px 16px 8px;
+  }
+
+  .dk-cities-strip-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dk-cities-strip-wrapper:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .dk-cities-strip {
+    display: flex;
+    gap: 10px;
+    width: max-content;
+  }
+
+  .dk-city-card {
+    width: 110px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .dk-city-photo {
+    width: 100%;
+    height: 60px;
+    background: var(--warm-gold-light);
+    border-radius: 8px;
+  }
+
+  .dk-city-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .dk-city-pinyin {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .dk-city-hanzi {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .dk-city-dates {
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+
+  .dk-city-actions {
+    display: flex;
+    align-items: center;
+  }
+
+  /* ── Next Up card ───────────────────────────────────────── */
+
+  .dk-next-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .dk-next-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dk-next-photo {
+    width: 100%;
+    height: 80px;
+    background: var(--warm-gold-light);
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .dk-next-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dk-next-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .dk-next-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .dk-next-booking-link {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 2px;
+    transition: color 0.15s ease;
+  }
+
+  .dk-next-booking-link:hover {
+    color: var(--text-primary);
+  }
+
+  .dk-next-booking-link:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .dk-next-actions {
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
+  }
+
+}
+/* end @media desktop */

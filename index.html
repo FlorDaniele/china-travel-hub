@@ -6,6 +6,11 @@
   <meta name="description" content="China Travel Hub — personal trip planner for a solo trip across China">
   <title>China Travel Hub</title>
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+
   <!-- Styles -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/nav.css">
@@ -29,6 +34,389 @@
       <div id="overview-header"></div>
       <!-- City cards grid -->
       <div id="city-cards-grid"></div>
+
+      <!-- ── Desktop overview grid — visible at ≥ 1024px ── -->
+      <div class="desktop-layout">
+
+        <!-- Row 1: Hero (full width) -->
+        <div class="dk-hero">
+          <img src="assets/shanghai-hero.jpg" alt="Shanghai skyline at dusk, with the Huangpu River in the foreground" class="dk-hero-img">
+          <div class="dk-hero-gradient" aria-hidden="true"></div>
+          <div class="dk-hero-content">
+            <span class="dk-countdown-number">49</span>
+            <span class="dk-countdown-label">days to Beijing</span>
+          </div>
+          <div class="dk-mode-toggle" role="group" aria-label="Switch app mode">
+            <button class="dk-mode-btn active" aria-pressed="true">Planning</button>
+            <button class="dk-mode-btn" aria-pressed="false">Travel</button>
+          </div>
+        </div>
+
+        <!-- Row 2, Col A: Bookings -->
+        <section class="dk-card dk-bookings" aria-labelledby="dk-bookings-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-bookings-title">Bookings</h2>
+            <div class="dk-header-actions">
+              <span class="dk-header-tag">Pending only</span>
+              <button class="dk-icon-btn" aria-label="Add booking">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="dk-subcard-row">
+            <div class="dk-subcard">
+              <span class="dk-subcard-label">Hotels</span>
+              <div class="dk-subcard-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">5</span></div>
+              <span class="dk-subcard-pending">2 pending</span>
+            </div>
+            <div class="dk-subcard">
+              <span class="dk-subcard-label">Trains</span>
+              <div class="dk-subcard-count"><strong class="dk-count-booked">1</strong><span class="dk-count-slash">/</span><span class="dk-count-total">4</span></div>
+              <span class="dk-subcard-pending">3 pending</span>
+            </div>
+            <div class="dk-subcard">
+              <span class="dk-subcard-label">Tours</span>
+              <div class="dk-subcard-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">6</span></div>
+              <span class="dk-subcard-pending">3 pending</span>
+            </div>
+          </div>
+          <ul class="dk-checklist" role="list" aria-label="Pending bookings checklist">
+            <li class="dk-check-item">
+              <input type="checkbox" id="bk-1" class="dk-checkbox">
+              <label for="bk-1">Chongqing hotel — TBD</label>
+              <button class="dk-remove-btn" aria-label="Remove Chongqing hotel">×</button>
+            </li>
+            <li class="dk-check-item">
+              <input type="checkbox" id="bk-2" class="dk-checkbox">
+              <label for="bk-2">Shanghai hotel — TBD</label>
+              <button class="dk-remove-btn" aria-label="Remove Shanghai hotel">×</button>
+            </li>
+            <li class="dk-check-item">
+              <input type="checkbox" id="bk-3" class="dk-checkbox">
+              <label for="bk-3">Xi'an → Chengdu train</label>
+              <button class="dk-remove-btn" aria-label="Remove Xi'an to Chengdu train">×</button>
+            </li>
+            <li class="dk-check-item">
+              <input type="checkbox" id="bk-4" class="dk-checkbox">
+              <label for="bk-4">Chengdu → Chongqing train</label>
+              <button class="dk-remove-btn" aria-label="Remove Chengdu to Chongqing train">×</button>
+            </li>
+            <li class="dk-check-item">
+              <input type="checkbox" id="bk-5" class="dk-checkbox">
+              <label for="bk-5">Chongqing → Shanghai train</label>
+              <button class="dk-remove-btn" aria-label="Remove Chongqing to Shanghai train">×</button>
+            </li>
+          </ul>
+          <button class="dk-add-link">+ Add item</button>
+        </section>
+
+        <!-- Row 2, Col B: Reminders -->
+        <section class="dk-card dk-reminders" aria-labelledby="dk-reminders-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-reminders-title">Reminders</h2>
+            <button class="dk-add-btn" aria-label="Add reminder">+ Add</button>
+          </div>
+          <ul class="dk-reminder-list" role="list" aria-label="Active reminders">
+            <li class="dk-reminder-item">
+              <input type="checkbox" id="rm-1" class="dk-checkbox" aria-describedby="rm-1-due">
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Book Xi'an → Chengdu</span>
+                <span class="dk-reminder-due dk-due-overdue" id="rm-1-due">Apr 15 · Overdue</span>
+              </div>
+              <div class="dk-reminder-actions">
+                <button class="dk-text-btn" aria-label="Edit Book Xi'an to Chengdu">Edit</button>
+                <button class="dk-remove-btn" aria-label="Delete Book Xi'an to Chengdu">×</button>
+              </div>
+            </li>
+            <li class="dk-reminder-item">
+              <input type="checkbox" id="rm-2" class="dk-checkbox" aria-describedby="rm-2-due">
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Book Chengdu → Chongqing</span>
+                <span class="dk-reminder-due dk-due-today" id="rm-2-due">Apr 18 · Due today</span>
+              </div>
+              <div class="dk-reminder-actions">
+                <button class="dk-text-btn" aria-label="Edit Book Chengdu to Chongqing">Edit</button>
+                <button class="dk-remove-btn" aria-label="Delete Book Chengdu to Chongqing">×</button>
+              </div>
+            </li>
+            <li class="dk-reminder-item">
+              <input type="checkbox" id="rm-3" class="dk-checkbox" aria-describedby="rm-3-due">
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Book Chongqing → Shanghai</span>
+                <span class="dk-reminder-due dk-due-future" id="rm-3-due">Apr 20 · 2 days</span>
+              </div>
+              <div class="dk-reminder-actions">
+                <button class="dk-text-btn" aria-label="Edit Book Chongqing to Shanghai">Edit</button>
+                <button class="dk-remove-btn" aria-label="Delete Book Chongqing to Shanghai">×</button>
+              </div>
+            </li>
+          </ul>
+          <div class="dk-reminder-divider" role="separator" aria-label="Completed reminders">
+            <span class="dk-divider-label">Done</span>
+          </div>
+          <ul class="dk-reminder-list" role="list" aria-label="Completed reminders">
+            <li class="dk-reminder-item dk-reminder-item--done">
+              <input type="checkbox" id="rm-done-1" class="dk-checkbox" checked>
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Get travel insurance</span>
+              </div>
+              <div class="dk-reminder-actions">
+                <button class="dk-text-btn" aria-label="Edit Get travel insurance">Edit</button>
+                <button class="dk-remove-btn" aria-label="Delete Get travel insurance">×</button>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Row 2, Col C: Packing list -->
+        <section class="dk-card dk-packing" aria-labelledby="dk-packing-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-packing-title">Packing list</h2>
+            <div class="dk-header-actions">
+              <span class="dk-header-badge">25 items</span>
+              <button class="dk-icon-btn" aria-label="Add packing item">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="dk-packing-list-wrapper">
+            <ul class="dk-packing-list" role="list" aria-label="Packing list preview">
+              <li class="dk-packing-category" role="presentation">Documents</li>
+              <li class="dk-check-item">
+                <input type="checkbox" id="pk-1" class="dk-checkbox">
+                <label for="pk-1">Passport</label>
+              </li>
+              <li class="dk-check-item">
+                <input type="checkbox" id="pk-2" class="dk-checkbox">
+                <label for="pk-2">Visa printout</label>
+              </li>
+              <li class="dk-packing-category" role="presentation">Tech</li>
+              <li class="dk-check-item">
+                <input type="checkbox" id="pk-3" class="dk-checkbox">
+                <label for="pk-3">Camera &amp; GoPro</label>
+              </li>
+              <li class="dk-check-item">
+                <input type="checkbox" id="pk-4" class="dk-checkbox">
+                <label for="pk-4">Laptop &amp; Charger</label>
+              </li>
+              <li class="dk-packing-category" role="presentation">Health</li>
+              <li class="dk-check-item">
+                <input type="checkbox" id="pk-5" class="dk-checkbox">
+                <label for="pk-5">Medical Aid</label>
+              </li>
+            </ul>
+            <div class="dk-packing-fade" aria-hidden="true"></div>
+          </div>
+          <button class="dk-add-link dk-see-all">See all 25 items →</button>
+        </section>
+
+        <!-- Row 3, Col A: Itinerary -->
+        <section class="dk-card dk-itinerary" aria-labelledby="dk-itinerary-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-itinerary-title">Itinerary</h2>
+          </div>
+          <!-- City filter -->
+          <div class="dk-filter-group" role="group" aria-label="Filter by city">
+            <span class="dk-filter-sublabel" aria-hidden="true">City</span>
+            <div class="dk-filter-tabs" role="tablist" aria-label="City filter">
+              <button class="dk-filter-tab active" role="tab" aria-selected="true">Beijing</button>
+              <button class="dk-filter-tab" role="tab" aria-selected="false">Xi'an</button>
+              <button class="dk-filter-tab" role="tab" aria-selected="false">Chengdu</button>
+              <button class="dk-filter-tab dk-filter-add" aria-label="Add city to itinerary">+ city</button>
+              <button class="dk-filter-tab dk-filter-remove" aria-label="Remove selected city from itinerary">× city</button>
+            </div>
+          </div>
+          <!-- Date filter -->
+          <div class="dk-filter-group" role="group" aria-label="Filter by date">
+            <span class="dk-filter-sublabel" aria-hidden="true">Date</span>
+            <div class="dk-filter-tabs" role="tablist" aria-label="Date filter">
+              <button class="dk-filter-tab active" role="tab" aria-selected="true">7 Jun</button>
+              <button class="dk-filter-tab" role="tab" aria-selected="false">8 Jun</button>
+              <button class="dk-filter-tab" role="tab" aria-selected="false">9 Jun</button>
+              <button class="dk-filter-tab" role="tab" aria-selected="false">10 Jun</button>
+            </div>
+          </div>
+          <!-- Timeline -->
+          <ol class="dk-timeline" role="list" aria-label="Daily itinerary for 7 Jun, Beijing">
+            <li class="dk-timeline-group">
+              <div class="dk-timeline-marker" aria-hidden="true"></div>
+              <div class="dk-timeline-content">
+                <span class="dk-timeline-period">Morning</span>
+                <ul class="dk-activity-list" role="list">
+                  <li class="dk-activity-card">
+                    <span class="dk-drag-handle" aria-hidden="true">⠿</span>
+                    <div class="dk-activity-body">
+                      <span class="dk-activity-title">Mutianyu Great Wall</span>
+                      <span class="dk-activity-meta">07:50 · GetYourGuide</span>
+                    </div>
+                    <button class="dk-remove-btn" aria-label="Remove Mutianyu Great Wall from itinerary">×</button>
+                  </li>
+                  <li class="dk-activity-card">
+                    <span class="dk-drag-handle" aria-hidden="true">⠿</span>
+                    <div class="dk-activity-body">
+                      <span class="dk-activity-title">Forbidden City</span>
+                      <span class="dk-activity-meta">13:00 · Self-organised</span>
+                    </div>
+                    <button class="dk-remove-btn" aria-label="Remove Forbidden City from itinerary">×</button>
+                  </li>
+                </ul>
+                <button class="dk-add-link">+ Add activity</button>
+              </div>
+            </li>
+            <li class="dk-timeline-group">
+              <div class="dk-timeline-marker" aria-hidden="true"></div>
+              <div class="dk-timeline-content">
+                <span class="dk-timeline-period">Afternoon</span>
+                <ul class="dk-activity-list" role="list">
+                  <li class="dk-activity-card">
+                    <span class="dk-drag-handle" aria-hidden="true">⠿</span>
+                    <div class="dk-activity-body">
+                      <span class="dk-activity-title">Temple of Heaven</span>
+                      <span class="dk-activity-meta">15:30 · Self-organised</span>
+                    </div>
+                    <button class="dk-remove-btn" aria-label="Remove Temple of Heaven from itinerary">×</button>
+                  </li>
+                </ul>
+                <button class="dk-add-link">+ Add activity</button>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        <!-- Row 3, Col B: Calendar + Cities (stacked) -->
+        <div class="dk-stack">
+
+          <section class="dk-card dk-calendar" aria-labelledby="dk-calendar-title">
+            <div class="dk-card-header">
+              <h2 class="dk-card-title" id="dk-calendar-title">Calendar</h2>
+              <span class="dk-header-label">City color bands · Jun–Jul</span>
+            </div>
+            <table class="dk-cal-grid" role="grid" aria-label="Trip calendar June–July 2026">
+              <thead>
+                <tr>
+                  <th scope="col" abbr="Monday">Mo</th>
+                  <th scope="col" abbr="Tuesday">Tu</th>
+                  <th scope="col" abbr="Wednesday">We</th>
+                  <th scope="col" abbr="Thursday">Th</th>
+                  <th scope="col" abbr="Friday">Fr</th>
+                  <th scope="col" abbr="Saturday">Sa</th>
+                  <th scope="col" abbr="Sunday">Su</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="dk-cal-empty" aria-hidden="true"></td>
+                  <td class="dk-cal-empty" aria-hidden="true"></td>
+                  <td class="dk-cal-empty" aria-hidden="true"></td>
+                  <td class="dk-cal-empty" aria-hidden="true"></td>
+                  <td class="dk-cal-empty" aria-hidden="true"></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-06">6</time></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-07">7</time></td>
+                </tr>
+                <tr>
+                  <td class="dk-cal-day"><time datetime="2026-06-08">8</time></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-09">9</time></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-10">10</time></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-11">11</time></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-12">12</time></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-13">13</time></td>
+                  <td class="dk-cal-day"><time datetime="2026-06-14">14</time></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="dk-cal-legend" role="list" aria-label="City color legend">
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#c8b8d8" aria-hidden="true"></span>Beijing</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#b8cce4" aria-hidden="true"></span>Xi'an</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#b8d8c8" aria-hidden="true"></span>Chengdu</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#f4c89e" aria-hidden="true"></span>Chongqing</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#f4b8c0" aria-hidden="true"></span>Shanghai</span>
+            </div>
+          </section>
+
+          <section class="dk-card dk-cities" aria-labelledby="dk-cities-title">
+            <div class="dk-card-header">
+              <h2 class="dk-card-title" id="dk-cities-title">Cities <span class="dk-cities-count">5 total</span></h2>
+              <button class="dk-add-btn" aria-label="Add city">+ City</button>
+            </div>
+            <div class="dk-cities-strip-wrapper" tabindex="0" aria-label="Scroll to see all cities">
+              <ul class="dk-cities-strip" role="list" aria-label="Trip cities">
+                <li class="dk-city-card" role="listitem">
+                  <div class="dk-city-photo" role="img" aria-label="Photo placeholder for Beijing"></div>
+                  <div class="dk-city-info">
+                    <span class="dk-city-pinyin">Běijīng</span>
+                    <span class="dk-city-hanzi">北京</span>
+                    <span class="dk-city-dates">6–12 Jun</span>
+                  </div>
+                  <div class="dk-city-actions">
+                    <button class="dk-text-btn" aria-label="Edit Beijing">Edit</button>
+                    <button class="dk-remove-btn" aria-label="Remove Beijing">×</button>
+                  </div>
+                </li>
+                <li class="dk-city-card" role="listitem">
+                  <div class="dk-city-photo" role="img" aria-label="Photo placeholder for Xi'an"></div>
+                  <div class="dk-city-info">
+                    <span class="dk-city-pinyin">Xī'ān</span>
+                    <span class="dk-city-hanzi">西安</span>
+                    <span class="dk-city-dates">12–15 Jun</span>
+                  </div>
+                  <div class="dk-city-actions">
+                    <button class="dk-text-btn" aria-label="Edit Xi'an">Edit</button>
+                    <button class="dk-remove-btn" aria-label="Remove Xi'an">×</button>
+                  </div>
+                </li>
+                <li class="dk-city-card" role="listitem">
+                  <div class="dk-city-photo" role="img" aria-label="Photo placeholder for Chengdu"></div>
+                  <div class="dk-city-info">
+                    <span class="dk-city-pinyin">Chéngdū</span>
+                    <span class="dk-city-hanzi">成都</span>
+                    <span class="dk-city-dates">15–18 Jun</span>
+                  </div>
+                  <div class="dk-city-actions">
+                    <button class="dk-text-btn" aria-label="Edit Chengdu">Edit</button>
+                    <button class="dk-remove-btn" aria-label="Remove Chengdu">×</button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Row 3, Col C: Next Up -->
+        <section class="dk-card dk-next-up" aria-labelledby="dk-next-up-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-next-up-title">Next up</h2>
+            <button class="dk-add-btn" aria-label="Add activity to Next up">+ Add</button>
+          </div>
+          <ul class="dk-next-list" role="list" aria-label="Upcoming activities">
+            <li class="dk-next-item">
+              <div class="dk-next-photo" role="img" aria-label="Photo placeholder for Mutianyu Great Wall"></div>
+              <div class="dk-next-body">
+                <span class="dk-next-title">Mutianyu Great Wall</span>
+                <span class="dk-next-meta">Jun 7 · 07:50 · 10h · GetYourGuide</span>
+                <a href="#" class="dk-next-booking-link">View booking ↗</a>
+                <div class="dk-next-actions">
+                  <button class="dk-text-btn" aria-label="Edit Mutianyu Great Wall">Edit</button>
+                  <button class="dk-remove-btn" aria-label="Remove Mutianyu Great Wall">×</button>
+                </div>
+              </div>
+            </li>
+            <li class="dk-next-item">
+              <div class="dk-next-photo" role="img" aria-label="Photo placeholder for Historic Walking Tour"></div>
+              <div class="dk-next-body">
+                <span class="dk-next-title">Historic Walking Tour</span>
+                <span class="dk-next-meta">Jun 8 · 10:00 · 3.5h · GuruWalk</span>
+                <a href="#" class="dk-next-booking-link">View booking ↗</a>
+                <div class="dk-next-actions">
+                  <button class="dk-text-btn" aria-label="Edit Historic Walking Tour">Edit</button>
+                  <button class="dk-remove-btn" aria-label="Remove Historic Walking Tour">×</button>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+      </div><!-- /.desktop-layout -->
     </section>
 
     <!-- ── City page (sub-view inside Overview) ────────── -->

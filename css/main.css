@@ -21,6 +21,22 @@
   --color-nav-bg:     rgba(255, 255, 255, 0.92);
   --color-nav-border: rgba(0, 0, 0, 0.08);
 
+  /* Desktop palette */
+  --warm-gold-light: #e6e0ae;
+  --warm-gold:       #dfbc5e;
+  --terracotta:      #ee6146;
+  --deep-red:        #d73c37;
+  --dark-red:        #b51f09;
+  --text-primary:    #45455B;
+  --text-secondary:  #6B6B80;
+  --background:      #F6F6F6;
+  --surface:         #FFFFFF;
+  --border:          #E8E8E8;
+  --status-success:  #27AE60;
+  --status-pending:  #dfbc5e;
+  --status-error:    #888780;
+  --status-overdue:  #ee6146;
+
   /* Spacing */
   --space-xs:  4px;
   --space-sm:  8px;
