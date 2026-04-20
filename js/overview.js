@@ -127,46 +127,48 @@ async function loadReminders() {
   return data;
 }
 
-async function loadNextUpBooking() {
+async function loadNextUpBookings() {
   const { data, error } = await supabase
     .from('bookings')
     .select('*')
     .gte('date_start', todayStr())
     .order('date_start', { ascending: true })
-    .limit(1);
+    .limit(2);
   if (error) throw error;
-  saveToStorage('next_up_booking', data);
-  return data[0] ?? null;
+  saveToStorage('next_up_bookings', data);
+  return data;
 }
 
-function renderDesktopNextUpItem(booking) {
-  if (!booking) {
+function renderDesktopNextUpItems(bookings) {
+  if (!bookings || bookings.length === 0) {
     return `<li class="dk-next-item"><span class="dk-next-meta">No upcoming bookings</span></li>`;
   }
-  return `
+  return bookings.map(b => `
     <li class="dk-next-item">
+      <div class="dk-next-photo">
+        <img src="assets/placeholder-tour.jpg" alt="${esc(b.title)}">
+      </div>
       <div class="dk-next-body">
-        <span class="dk-next-title">${esc(booking.title)}</span>
-        <span class="dk-next-meta">${formatDate(booking.date_start)}${booking.type ? ' · ' + esc(booking.type) : ''}</span>
+        <span class="dk-next-title">${esc(b.title)}</span>
+        <span class="dk-next-meta">${formatDate(b.date_start)}${b.type ? ' · ' + esc(b.type) : ''}</span>
       </div>
     </li>
-  `;
+  `).join('');
 }
 
 export async function initDesktopNextUp() {
   const listEl = document.querySelector('.dk-next-up .dk-next-list');
   if (!listEl) return;
 
-  let booking = null;
+  let bookings = [];
   try {
-    booking = await loadNextUpBooking();
+    bookings = await loadNextUpBookings();
   } catch (err) {
     console.warn('[overview] next-up load failed:', err);
-    const cached = loadFromStorage('next_up_booking') ?? [];
-    booking = cached[0] ?? null;
+    bookings = loadFromStorage('next_up_bookings') ?? [];
   }
 
-  listEl.innerHTML = renderDesktopNextUpItem(booking);
+  listEl.innerHTML = renderDesktopNextUpItems(bookings);
 }
 
 /* ── Render: single booking type card ──────────────────────── */
