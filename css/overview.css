@@ -451,12 +451,29 @@
     grid-column: 1 / -1;
   }
 
-  /* Col B row 3: flex column wrapper for Calendar + Cities */
-  .dk-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-width: 0;
+  /* Row 3 explicit placement — 4-row grid:
+     Row 1: Hero  Row 2: Bookings/Reminders/Packing
+     Row 3: Itinerary (span 2) | Calendar | Next Up (span 2)
+     Row 4:                      Cities                       */
+
+  .dk-itinerary {
+    grid-column: 1;
+    grid-row: 3 / 5;
+  }
+
+  .dk-calendar {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .dk-cities {
+    grid-column: 2;
+    grid-row: 4;
+  }
+
+  .dk-next-up {
+    grid-column: 3;
+    grid-row: 3 / 5;
   }
 
   /* ── Card base ──────────────────────────────────────────── */
@@ -1443,17 +1460,9 @@
     margin-top: 2px;
   }
 
-  /* ── Travel mode: swap row 2 and row 3 ─────────────────── */
-
-  /* In travel mode, content cards (itinerary/calendar/next up) rise to Row 2
-     and admin cards (bookings/reminders/packing) sink to Row 3. */
-
-  .desktop-layout.mode-travel .dk-itinerary { order: 1; }
-  .desktop-layout.mode-travel .dk-stack     { order: 2; }
-  .desktop-layout.mode-travel .dk-next-up   { order: 3; }
-  .desktop-layout.mode-travel .dk-bookings  { order: 4; }
-  .desktop-layout.mode-travel .dk-reminders { order: 5; }
-  .desktop-layout.mode-travel .dk-packing   { order: 6; }
+  /* ── Travel mode: explicit placement overrides ──────────── */
+  /* TODO: re-implement travel mode row swap with explicit grid areas
+     once travel mode content is defined. Skipped for planning prototype. */
 
 }
 /* end @media desktop */
