@@ -37,6 +37,10 @@
   --status-error:    #888780;
   --status-overdue:  #ee6146;
 
+  /* Accessible urgency text — deep cultural tones, ≥ 4.5:1 on white */
+  --due-overdue: #B33A22;   /* deep terracotta  5.8:1 */
+  --due-today:   #7A5C00;   /* deep ochre        6.1:1 */
+
   /* Spacing */
   --space-xs:  4px;
   --space-sm:  8px;
@@ -58,7 +62,7 @@
   --shadow-nav: 0 -2px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
 
   /* Typography */
-  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-size-xs:   11px;
   --font-size-sm:   13px;
   --font-size-base: 15px;
