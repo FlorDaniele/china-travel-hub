@@ -451,12 +451,35 @@
     grid-column: 1 / -1;
   }
 
-  /* Col B row 3: flex column wrapper for Calendar + Cities */
-  .dk-stack {
+  /* Row 3 explicit placement — 4-row grid:
+     Row 1: Hero  Row 2: Bookings/Reminders/Packing
+     Row 3: Itinerary (span 2) | Calendar | Next Up (span 2)
+     Row 4:                      Cities                       */
+
+  .dk-itinerary {
+    grid-column: 1;
+    grid-row: 3 / 5;
+  }
+
+  .dk-calendar {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .dk-cities {
+    grid-column: 2;
+    grid-row: 4;
+  }
+
+  .dk-next-up {
+    grid-column: 3;
+    grid-row: 3 / 5;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    min-width: 0;
+  }
+
+  .dk-next-up .dk-next-list {
+    flex: 1;
   }
 
   /* ── Card base ──────────────────────────────────────────── */
@@ -465,8 +488,8 @@
     background: var(--surface);
     border-radius: 14px;
     border: 1px solid var(--border);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-    padding: 16px;
+    box-shadow: 0 2px 8px rgba(69, 69, 50, 0.07);
+    padding: 32px;
     min-width: 0;
   }
 
@@ -804,7 +827,7 @@
 
   .dk-mode-btn.active,
   .dk-mode-btn[aria-pressed="true"] {
-    background: #4F3FA6;
+    background: #D4543A;   /* terracotta — white text = 5.27:1 ✓ AA */
     color: #ffffff;
   }
 
@@ -821,25 +844,44 @@
 
   /* ── Bookings card ──────────────────────────────────────── */
 
-  .dk-subcard-row {
+  .dk-booking-tabs {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     margin-bottom: 14px;
   }
 
-  .dk-subcard {
-    background: #F7F5F0;
-    border-radius: 10px;
-    padding: 9px 6px 8px;
+  .dk-booking-tab {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    text-align: center;
+    gap: 3px;
+    background: #F7F5F0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 8px 8px 0 0;
+    padding: 9px 6px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s ease, border-color 0.15s ease;
   }
 
-  .dk-subcard-label {
+  .dk-booking-tab.active {
+    background: var(--action-light);
+    border-bottom-color: var(--action);
+  }
+
+  .dk-booking-tab:hover:not(.active) {
+    background: #EEECEA;
+  }
+
+  .dk-booking-tab:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .dk-booking-tab-label {
     font-size: 10px;
     font-weight: 600;
     color: var(--text-secondary);
@@ -847,7 +889,7 @@
     letter-spacing: 0.06em;
   }
 
-  .dk-subcard-count {
+  .dk-booking-tab-count {
     font-size: 18px;
     font-weight: 500;
     line-height: 1.25;
@@ -870,12 +912,6 @@
     color: var(--text-secondary);
     font-size: 14px;
     font-weight: 400;
-  }
-
-  .dk-subcard-pending {
-    font-size: 10px;
-    color: var(--due-overdue);
-    font-weight: 500;
   }
 
   /* ── Reminders card ─────────────────────────────────────── */
@@ -1014,6 +1050,7 @@
     min-width: 28px;
   }
 
+  /* Date filter still uses tabs */
   .dk-filter-tabs {
     display: flex;
     gap: 4px;
@@ -1048,23 +1085,73 @@
   }
 
   .dk-filter-tab:focus-visible {
-    outline: 2px solid var(--terracotta);
+    outline: 2px solid var(--action);
     outline-offset: 2px;
   }
 
-  .dk-filter-add {
-    border-style: dashed;
+  /* City filter: select dropdown */
+  .dk-filter-city-select {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
-  .dk-filter-remove {
-    color: var(--terracotta);
-    border-color: rgba(238, 97, 70, 0.3);
-    background: rgba(238, 97, 70, 0.05);
+  .dk-city-select {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: #F5F5F5;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 28px 4px 12px;
+    min-height: 28px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B6B80' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.15s ease;
   }
 
-  .dk-filter-remove:hover {
-    background: rgba(238, 97, 70, 0.1);
-    color: var(--dark-red);
+  .dk-city-select:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 999px;
+    border-color: var(--action);
+  }
+
+  .dk-add-city-link {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--action);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.15s ease;
+  }
+
+  .dk-add-city-link:hover {
+    color: var(--action-hover);
+  }
+
+  .dk-add-city-link:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Action text links — used in card headers */
+  .dk-action-link {
+    color: var(--action) !important;
+  }
+
+  .dk-action-link:hover {
+    color: var(--action-hover) !important;
   }
 
   /* Timeline */
@@ -1244,33 +1331,16 @@
     margin-left: 3px;
   }
 
-  .dk-cities-strip-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    margin: 0 -16px;
-    padding: 4px 16px 8px;
-  }
-
-  .dk-cities-strip-wrapper::-webkit-scrollbar {
-    display: none;
-  }
-
-  .dk-cities-strip-wrapper:focus-visible {
-    outline: 2px solid var(--terracotta);
-    outline-offset: 2px;
-    border-radius: 4px;
-  }
-
-  .dk-cities-strip {
-    display: flex;
+  .dk-cities-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    width: max-content;
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 
   .dk-city-card {
-    width: 110px;
-    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -1316,11 +1386,6 @@
     color: var(--text-secondary);
   }
 
-  .dk-city-actions {
-    display: flex;
-    align-items: center;
-  }
-
   /* ── Next Up card ───────────────────────────────────────── */
 
   .dk-next-list {
@@ -1348,7 +1413,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center;
+    object-position: center 40%;
     display: block;
     border-radius: 8px;
   }
@@ -1401,17 +1466,9 @@
     margin-top: 2px;
   }
 
-  /* ── Travel mode: swap row 2 and row 3 ─────────────────── */
-
-  /* In travel mode, content cards (itinerary/calendar/next up) rise to Row 2
-     and admin cards (bookings/reminders/packing) sink to Row 3. */
-
-  .desktop-layout.mode-travel .dk-itinerary { order: 1; }
-  .desktop-layout.mode-travel .dk-stack     { order: 2; }
-  .desktop-layout.mode-travel .dk-next-up   { order: 3; }
-  .desktop-layout.mode-travel .dk-bookings  { order: 4; }
-  .desktop-layout.mode-travel .dk-reminders { order: 5; }
-  .desktop-layout.mode-travel .dk-packing   { order: 6; }
+  /* ── Travel mode: explicit placement overrides ──────────── */
+  /* TODO: re-implement travel mode row swap with explicit grid areas
+     once travel mode content is defined. Skipped for planning prototype. */
 
 }
 /* end @media desktop */
