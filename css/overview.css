@@ -1334,33 +1334,63 @@
     margin: 0;
   }
 
+  /* Each city: dot column (left) + name-then-photo column (right) */
   .dk-city-card {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 12px;
-    padding-bottom: 20px;
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 8px;
+    padding-bottom: 16px;
     position: relative;
   }
 
-  /* Dashed connector from bottom of photo to top of next city */
+  /* Timeline dot */
+  .dk-city-card::before {
+    content: '';
+    grid-column: 1;
+    grid-row: 1;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #BBBBBB;
+    background: var(--surface);
+    align-self: center;
+    justify-self: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Dashed connector — centered in dot column, starts below dot */
   .dk-city-card:not(:last-child)::after {
     content: '';
     position: absolute;
-    left: 32px;
-    top: 52px;
+    left: 9px;
+    top: 24px;
     bottom: 0;
-    border-left: 1px dashed var(--border);
+    border-left: 1px dashed #BBBBBB;
     pointer-events: none;
   }
 
+  /* Name row: grid col 2, row 1 */
+  .dk-city-info {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-self: center;
+  }
+
+  /* Photo row: grid col 2, row 2 — full width, taller */
   .dk-city-photo {
-    width: 64px;
-    height: 48px;
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    height: 90px;
     background: var(--warm-gold-light);
-    border-radius: 6px;
+    border-radius: 8px;
     overflow: hidden;
-    flex-shrink: 0;
   }
 
   .dk-city-photo img {
@@ -1369,14 +1399,7 @@
     object-fit: cover;
     object-position: center;
     display: block;
-    border-radius: 6px;
-  }
-
-  .dk-city-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding-top: 2px;
+    border-radius: 8px;
   }
 
   .dk-city-pinyin {
