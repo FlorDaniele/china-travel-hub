@@ -474,6 +474,12 @@
   .dk-next-up {
     grid-column: 3;
     grid-row: 3 / 5;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dk-next-up .dk-next-list {
+    flex: 1;
   }
 
   /* ── Card base ──────────────────────────────────────────── */
