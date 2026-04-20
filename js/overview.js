@@ -127,6 +127,48 @@ async function loadReminders() {
   return data;
 }
 
+async function loadNextUpBooking() {
+  const { data, error } = await supabase
+    .from('bookings')
+    .select('*')
+    .gte('date_start', todayStr())
+    .order('date_start', { ascending: true })
+    .limit(1);
+  if (error) throw error;
+  saveToStorage('next_up_booking', data);
+  return data[0] ?? null;
+}
+
+function renderDesktopNextUpItem(booking) {
+  if (!booking) {
+    return `<li class="dk-next-item"><span class="dk-next-meta">No upcoming bookings</span></li>`;
+  }
+  return `
+    <li class="dk-next-item">
+      <div class="dk-next-body">
+        <span class="dk-next-title">${esc(booking.title)}</span>
+        <span class="dk-next-meta">${formatDate(booking.date_start)}${booking.type ? ' · ' + esc(booking.type) : ''}</span>
+      </div>
+    </li>
+  `;
+}
+
+export async function initDesktopNextUp() {
+  const listEl = document.querySelector('.dk-next-up .dk-next-list');
+  if (!listEl) return;
+
+  let booking = null;
+  try {
+    booking = await loadNextUpBooking();
+  } catch (err) {
+    console.warn('[overview] next-up load failed:', err);
+    const cached = loadFromStorage('next_up_booking') ?? [];
+    booking = cached[0] ?? null;
+  }
+
+  listEl.innerHTML = renderDesktopNextUpItem(booking);
+}
+
 /* ── Render: single booking type card ──────────────────────── */
 
 function renderBookingCard(type, items) {

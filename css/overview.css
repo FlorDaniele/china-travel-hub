@@ -467,19 +467,13 @@
   }
 
   .dk-cities {
-    grid-column: 2;
+    grid-column: 2 / 4;
     grid-row: 4;
   }
 
   .dk-next-up {
     grid-column: 3;
-    grid-row: 3 / 5;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .dk-next-up .dk-next-list {
-    flex: 1;
+    grid-row: 3;
   }
 
   /* ── Card base ──────────────────────────────────────────── */
@@ -1467,8 +1461,11 @@
   }
 
   /* ── Travel mode: explicit placement overrides ──────────── */
-  /* TODO: re-implement travel mode row swap with explicit grid areas
-     once travel mode content is defined. Skipped for planning prototype. */
+  /* Same structure as planning mode. Override here when travel layout diverges. */
+  .mode-travel .dk-itinerary { grid-column: 1;     grid-row: 3 / 5; }
+  .mode-travel .dk-calendar  { grid-column: 2;     grid-row: 3; }
+  .mode-travel .dk-next-up   { grid-column: 3;     grid-row: 3; }
+  .mode-travel .dk-cities    { grid-column: 2 / 4; grid-row: 4; }
 
 }
 /* end @media desktop */
