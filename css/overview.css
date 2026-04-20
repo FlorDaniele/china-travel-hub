@@ -451,35 +451,29 @@
     grid-column: 1 / -1;
   }
 
-  /* Row 3 explicit placement — 4-row grid:
+  /* Row 3–4 explicit placement — 4-row grid:
      Row 1: Hero  Row 2: Bookings/Reminders/Packing
-     Row 3: Itinerary (span 2) | Calendar | Next Up (span 2)
-     Row 4:                      Cities                       */
+     Row 3: Cities (span 2) | Itinerary (span 2) | Calendar
+     Row 4:                  |                    | Next Tours */
 
-  .dk-itinerary {
+  .dk-cities {
     grid-column: 1;
     grid-row: 3 / 5;
   }
 
-  .dk-calendar {
+  .dk-itinerary {
     grid-column: 2;
-    grid-row: 3;
+    grid-row: 3 / 5;
   }
 
-  .dk-cities {
-    grid-column: 2;
-    grid-row: 4;
+  .dk-calendar {
+    grid-column: 3;
+    grid-row: 3;
   }
 
   .dk-next-up {
     grid-column: 3;
-    grid-row: 3 / 5;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .dk-next-up .dk-next-list {
-    flex: 1;
+    grid-row: 4;
   }
 
   /* ── Card base ──────────────────────────────────────────── */
@@ -502,7 +496,7 @@
   }
 
   .dk-card-title {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 500;
     color: var(--text-primary);
     line-height: 1.2;
@@ -516,17 +510,17 @@
   }
 
   .dk-header-tag {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
   .dk-header-label {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
   .dk-header-badge {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
     background: #F0F0F0;
     padding: 2px 8px;
@@ -569,9 +563,9 @@
   }
 
   .dk-add-btn {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--action);
     background: none;
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -630,9 +624,9 @@
   .dk-text-btn {
     background: none;
     border: none;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--action);
     cursor: pointer;
     min-height: 32px;
     padding: 0 4px;
@@ -652,9 +646,9 @@
   .dk-add-link {
     background: none;
     border: none;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--action);
     cursor: pointer;
     padding: 4px 0;
     text-align: left;
@@ -812,7 +806,7 @@
   }
 
   .dk-mode-btn {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     padding: 7px 20px;
     min-height: 36px;
@@ -882,9 +876,9 @@
   }
 
   .dk-booking-tab-label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
-    color: var(--text-secondary);
+    color: var(--action);
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
@@ -940,7 +934,7 @@
   }
 
   .dk-reminder-due {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
     line-height: 1.2;
   }
@@ -970,7 +964,7 @@
   }
 
   .dk-divider-label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -995,7 +989,7 @@
   }
 
   .dk-packing-category {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
     text-transform: uppercase;
@@ -1038,11 +1032,11 @@
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 24px;
   }
 
   .dk-filter-sublabel {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
     white-space: nowrap;
@@ -1058,9 +1052,9 @@
   }
 
   .dk-filter-tab {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 400;
-    color: var(--text-secondary);
+    color: var(--action);
     background: #F5F5F5;
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -1104,8 +1098,8 @@
     background: #F5F5F5;
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 4px 28px 4px 12px;
-    min-height: 28px;
+    padding: 8px 32px 8px 14px;
+    min-height: 36px;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
@@ -1212,7 +1206,7 @@
   .dk-activity-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
   }
 
   .dk-activity-card {
@@ -1253,7 +1247,7 @@
   }
 
   .dk-activity-meta {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -1269,7 +1263,7 @@
   }
 
   .dk-cal-grid thead th {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
     text-align: center;
@@ -1282,7 +1276,7 @@
     text-align: center;
     padding: 0;
     height: 28px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--text-primary);
     vertical-align: middle;
@@ -1311,7 +1305,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 10px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -1332,27 +1326,71 @@
   }
 
   .dk-cities-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
     list-style: none;
     padding: 0;
     margin: 0;
   }
 
+  /* Each city: dot column (left) + name-then-photo column (right) */
   .dk-city-card {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 8px;
+    padding-bottom: 16px;
+    position: relative;
   }
 
+  /* Timeline dot */
+  .dk-city-card::before {
+    content: '';
+    grid-column: 1;
+    grid-row: 1;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #BBBBBB;
+    background: var(--surface);
+    align-self: center;
+    justify-self: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Dashed connector — centered in dot column, starts below dot */
+  .dk-city-card:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 24px;
+    bottom: 0;
+    border-left: 1px dashed #BBBBBB;
+    pointer-events: none;
+  }
+
+  /* Name row: grid col 2, row 1 */
+  .dk-city-info {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-self: center;
+  }
+
+  /* Photo row: grid col 2, row 2 — full width, taller */
   .dk-city-photo {
+    grid-column: 2;
+    grid-row: 2;
     width: 100%;
-    height: 60px;
+    height: 90px;
     background: var(--warm-gold-light);
     border-radius: 8px;
     overflow: hidden;
-    flex-shrink: 0;
   }
 
   .dk-city-photo img {
@@ -1364,14 +1402,8 @@
     border-radius: 8px;
   }
 
-  .dk-city-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-
   .dk-city-pinyin {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-primary);
   }
@@ -1382,7 +1414,7 @@
   }
 
   .dk-city-dates {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -1402,7 +1434,7 @@
 
   .dk-next-photo {
     width: 100%;
-    height: 80px;
+    height: 180px;
     background: var(--warm-gold-light);
     border-radius: 8px;
     flex-shrink: 0;
@@ -1436,7 +1468,7 @@
   }
 
   .dk-next-meta {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -1467,8 +1499,11 @@
   }
 
   /* ── Travel mode: explicit placement overrides ──────────── */
-  /* TODO: re-implement travel mode row swap with explicit grid areas
-     once travel mode content is defined. Skipped for planning prototype. */
+  /* Same structure as planning mode. Override here when travel layout diverges. */
+  .mode-travel .dk-cities    { grid-column: 1; grid-row: 3 / 5; }
+  .mode-travel .dk-itinerary { grid-column: 2; grid-row: 3 / 5; }
+  .mode-travel .dk-calendar  { grid-column: 3; grid-row: 3; }
+  .mode-travel .dk-next-up   { grid-column: 3; grid-row: 4; }
 
 }
 /* end @media desktop */
