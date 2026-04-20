@@ -56,29 +56,23 @@
         <section class="dk-card dk-bookings" aria-labelledby="dk-bookings-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-bookings-title">Bookings</h2>
-            <div class="dk-header-actions">
-              <span class="dk-header-tag">Pending only</span>
-              <button class="dk-icon-btn" aria-label="Add booking">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
-              </button>
-            </div>
+            <button class="dk-icon-btn" aria-label="Add booking">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
           </div>
-          <div class="dk-subcard-row">
-            <div class="dk-subcard">
-              <span class="dk-subcard-label">Hotels</span>
-              <div class="dk-subcard-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">5</span></div>
-              <span class="dk-subcard-pending">2 pending</span>
-            </div>
-            <div class="dk-subcard">
-              <span class="dk-subcard-label">Trains</span>
-              <div class="dk-subcard-count"><strong class="dk-count-booked">1</strong><span class="dk-count-slash">/</span><span class="dk-count-total">4</span></div>
-              <span class="dk-subcard-pending">3 pending</span>
-            </div>
-            <div class="dk-subcard">
-              <span class="dk-subcard-label">Tours</span>
-              <div class="dk-subcard-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">6</span></div>
-              <span class="dk-subcard-pending">3 pending</span>
-            </div>
+          <div class="dk-booking-tabs" role="group" aria-label="Filter bookings by type">
+            <button class="dk-booking-tab active" aria-pressed="true">
+              <span class="dk-booking-tab-label">Hotels</span>
+              <span class="dk-booking-tab-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">5</span></span>
+            </button>
+            <button class="dk-booking-tab active" aria-pressed="true">
+              <span class="dk-booking-tab-label">Trains</span>
+              <span class="dk-booking-tab-count"><strong class="dk-count-booked">1</strong><span class="dk-count-slash">/</span><span class="dk-count-total">4</span></span>
+            </button>
+            <button class="dk-booking-tab active" aria-pressed="true">
+              <span class="dk-booking-tab-label">Tours</span>
+              <span class="dk-booking-tab-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">6</span></span>
+            </button>
           </div>
           <ul class="dk-checklist" role="list" aria-label="Pending bookings checklist">
             <li class="dk-check-item">
@@ -114,7 +108,6 @@
         <section class="dk-card dk-reminders" aria-labelledby="dk-reminders-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-reminders-title">Reminders</h2>
-            <button class="dk-add-btn" aria-label="Add reminder">+ Add</button>
           </div>
           <ul class="dk-reminder-list" role="list" aria-label="Active reminders">
             <li class="dk-reminder-item">
@@ -151,6 +144,7 @@
               </div>
             </li>
           </ul>
+          <button class="dk-add-btn" aria-label="Add reminder" style="margin: 8px 0 4px;">+ Add</button>
           <div class="dk-reminder-divider" role="separator" aria-label="Completed reminders">
             <span class="dk-divider-label">Done</span>
           </div>
@@ -172,12 +166,9 @@
         <section class="dk-card dk-packing" aria-labelledby="dk-packing-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-packing-title">Packing list</h2>
-            <div class="dk-header-actions">
-              <span class="dk-header-badge">25 items</span>
-              <button class="dk-icon-btn" aria-label="Add packing item">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
-              </button>
-            </div>
+            <button class="dk-icon-btn" aria-label="Add packing item">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
           </div>
           <div class="dk-packing-list-wrapper">
             <ul class="dk-packing-list" role="list" aria-label="Packing list preview">
@@ -218,12 +209,15 @@
           <!-- City filter -->
           <div class="dk-filter-group" role="group" aria-label="Filter by city">
             <span class="dk-filter-sublabel" aria-hidden="true">City</span>
-            <div class="dk-filter-tabs" role="tablist" aria-label="City filter">
-              <button class="dk-filter-tab active" role="tab" aria-selected="true">Beijing</button>
-              <button class="dk-filter-tab" role="tab" aria-selected="false">Xi'an</button>
-              <button class="dk-filter-tab" role="tab" aria-selected="false">Chengdu</button>
-              <button class="dk-filter-tab dk-filter-add" aria-label="Add city to itinerary">+ city</button>
-              <button class="dk-filter-tab dk-filter-remove" aria-label="Remove selected city from itinerary">× city</button>
+            <div class="dk-filter-city-select">
+              <select class="dk-city-select" aria-label="Select city for itinerary">
+                <option value="beijing" selected>Beijing</option>
+                <option value="xian">Xi'an</option>
+                <option value="chengdu">Chengdu</option>
+                <option value="chongqing">Chongqing</option>
+                <option value="shanghai">Shanghai</option>
+              </select>
+              <button class="dk-add-city-link">+ Add new city</button>
             </div>
           </div>
           <!-- Date filter -->
@@ -289,7 +283,6 @@
           <section class="dk-card dk-calendar" aria-labelledby="dk-calendar-title">
             <div class="dk-card-header">
               <h2 class="dk-card-title" id="dk-calendar-title">Calendar</h2>
-              <span class="dk-header-label">City color bands · Jun–Jul</span>
             </div>
             <table class="dk-cal-grid" role="grid" aria-label="Trip calendar June–July 2026">
               <thead>
@@ -368,80 +361,61 @@
           <section class="dk-card dk-cities" aria-labelledby="dk-cities-title">
             <div class="dk-card-header">
               <h2 class="dk-card-title" id="dk-cities-title">Cities <span class="dk-cities-count">5 total</span></h2>
-              <button class="dk-add-btn" aria-label="Add city">+ City</button>
+              <div class="dk-header-actions">
+                <button class="dk-add-btn" aria-label="Add city">Add city</button>
+                <button class="dk-text-btn dk-action-link" aria-label="Edit cities list">Edit</button>
+              </div>
             </div>
-            <div class="dk-cities-strip-wrapper" tabindex="0" aria-label="Scroll to see all cities">
-              <ul class="dk-cities-strip" role="list" aria-label="Trip cities">
-                <li class="dk-city-card" role="listitem">
-                  <div class="dk-city-photo">
-                    <img src="assets/beijing-hero.jpg" alt="Aerial view of Beijing">
-                  </div>
-                  <div class="dk-city-info">
-                    <span class="dk-city-pinyin">Běijīng</span>
-                    <span class="dk-city-hanzi">北京</span>
-                    <span class="dk-city-dates">6–12 Jun</span>
-                  </div>
-                  <div class="dk-city-actions">
-                    <button class="dk-text-btn" aria-label="Edit Beijing">Edit</button>
-                    <button class="dk-remove-btn" aria-label="Remove Beijing">×</button>
-                  </div>
-                </li>
-                <li class="dk-city-card" role="listitem">
-                  <div class="dk-city-photo" role="img" aria-label="Photo placeholder for Xi'an"></div>
-                  <div class="dk-city-info">
-                    <span class="dk-city-pinyin">Xī'ān</span>
-                    <span class="dk-city-hanzi">西安</span>
-                    <span class="dk-city-dates">12–15 Jun</span>
-                  </div>
-                  <div class="dk-city-actions">
-                    <button class="dk-text-btn" aria-label="Edit Xi'an">Edit</button>
-                    <button class="dk-remove-btn" aria-label="Remove Xi'an">×</button>
-                  </div>
-                </li>
-                <li class="dk-city-card" role="listitem">
-                  <div class="dk-city-photo">
-                    <img src="assets/chengdu.jpg" alt="Chengdu cityscape">
-                  </div>
-                  <div class="dk-city-info">
-                    <span class="dk-city-pinyin">Chéngdū</span>
-                    <span class="dk-city-hanzi">成都</span>
-                    <span class="dk-city-dates">15–18 Jun</span>
-                  </div>
-                  <div class="dk-city-actions">
-                    <button class="dk-text-btn" aria-label="Edit Chengdu">Edit</button>
-                    <button class="dk-remove-btn" aria-label="Remove Chengdu">×</button>
-                  </div>
-                </li>
-                <li class="dk-city-card" role="listitem">
-                  <div class="dk-city-photo">
-                    <img src="assets/chongqing.jpg" alt="Chongqing skyline at night">
-                  </div>
-                  <div class="dk-city-info">
-                    <span class="dk-city-pinyin">Chóngqìng</span>
-                    <span class="dk-city-hanzi">重庆</span>
-                    <span class="dk-city-dates">18–22 Jun</span>
-                  </div>
-                  <div class="dk-city-actions">
-                    <button class="dk-text-btn" aria-label="Edit Chongqing">Edit</button>
-                    <button class="dk-remove-btn" aria-label="Remove Chongqing">×</button>
-                  </div>
-                </li>
-                <li class="dk-city-card" role="listitem">
-                  <div class="dk-city-photo">
-                    <img src="assets/shanghai-hero.jpg" alt="Shanghai skyline and Huangpu River">
-                  </div>
-                  <div class="dk-city-info">
-                    <span class="dk-city-pinyin">Shànghǎi</span>
-                    <span class="dk-city-hanzi">上海</span>
-                    <span class="dk-city-dates">22 Jun–5 Jul</span>
-                  </div>
-                  <div class="dk-city-actions">
-                    <button class="dk-text-btn" aria-label="Edit Shanghai">Edit</button>
-                    <button class="dk-remove-btn" aria-label="Remove Shanghai">×</button>
-                  </div>
-                </li>
-              </ul>
-            </div>
+            <ul class="dk-cities-grid" role="list" aria-label="Trip cities">
+              <li class="dk-city-card" role="listitem">
+                <div class="dk-city-photo">
+                  <img src="assets/beijing-hero.jpg" alt="Aerial view of Beijing">
+                </div>
+                <div class="dk-city-info">
+                  <span class="dk-city-pinyin">Běijīng</span>
+                  <span class="dk-city-hanzi">北京</span>
+                  <span class="dk-city-dates">6–12 Jun</span>
+                </div>
+              </li>
+              <li class="dk-city-card" role="listitem">
+                <div class="dk-city-photo" role="img" aria-label="Photo placeholder for Xi'an"></div>
+                <div class="dk-city-info">
+                  <span class="dk-city-pinyin">Xī'ān</span>
+                  <span class="dk-city-hanzi">西安</span>
+                  <span class="dk-city-dates">12–15 Jun</span>
+                </div>
+              </li>
+              <li class="dk-city-card" role="listitem">
+                <div class="dk-city-photo">
+                  <img src="assets/chengdu.jpg" alt="Chengdu cityscape">
+                </div>
+                <div class="dk-city-info">
+                  <span class="dk-city-pinyin">Chéngdū</span>
+                  <span class="dk-city-hanzi">成都</span>
+                  <span class="dk-city-dates">15–18 Jun</span>
+                </div>
+              </li>
+              <li class="dk-city-card" role="listitem">
+                <div class="dk-city-photo">
+                  <img src="assets/chongqing.jpg" alt="Chongqing skyline at night">
+                </div>
+                <div class="dk-city-info">
+                  <span class="dk-city-pinyin">Chóngqìng</span>
+                  <span class="dk-city-hanzi">重庆</span>
+                  <span class="dk-city-dates">18–19 Jun</span>
+                </div>
+              </li>
+              <li class="dk-city-card" role="listitem">
+                <div class="dk-city-photo">
+                  <img src="assets/shanghai-hero.jpg" alt="Shanghai skyline and Huangpu River">
+                </div>
+                <div class="dk-city-info">
+                  <span class="dk-city-pinyin">Shànghǎi</span>
+                  <span class="dk-city-hanzi">上海</span>
+                  <span class="dk-city-dates">20–25 Jun</span>
+                </div>
+              </li>
+            </ul>
           </section>
 
         </div>
@@ -450,7 +424,10 @@
         <section class="dk-card dk-next-up" aria-labelledby="dk-next-up-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-next-up-title">Next up</h2>
-            <button class="dk-add-btn" aria-label="Add activity to Next up">+ Add</button>
+            <div class="dk-header-actions">
+              <button class="dk-text-btn dk-action-link" aria-label="Edit next up">Edit</button>
+              <button class="dk-add-btn" aria-label="Add activity to Next up">+ Add</button>
+            </div>
           </div>
           <ul class="dk-next-list" role="list" aria-label="Upcoming activities">
             <li class="dk-next-item">
@@ -461,22 +438,6 @@
                 <span class="dk-next-title">Mutianyu Great Wall</span>
                 <span class="dk-next-meta">Jun 7 · 07:50 · 10h · GetYourGuide</span>
                 <a href="#" class="dk-next-booking-link">View booking ↗</a>
-                <div class="dk-next-actions">
-                  <button class="dk-text-btn" aria-label="Edit Mutianyu Great Wall">Edit</button>
-                  <button class="dk-remove-btn" aria-label="Remove Mutianyu Great Wall">×</button>
-                </div>
-              </div>
-            </li>
-            <li class="dk-next-item">
-              <div class="dk-next-photo" role="img" aria-label="Photo placeholder for Historic Walking Tour"></div>
-              <div class="dk-next-body">
-                <span class="dk-next-title">Historic Walking Tour</span>
-                <span class="dk-next-meta">Jun 8 · 10:00 · 3.5h · GuruWalk</span>
-                <a href="#" class="dk-next-booking-link">View booking ↗</a>
-                <div class="dk-next-actions">
-                  <button class="dk-text-btn" aria-label="Edit Historic Walking Tour">Edit</button>
-                  <button class="dk-remove-btn" aria-label="Remove Historic Walking Tour">×</button>
-                </div>
               </div>
             </li>
           </ul>
@@ -522,34 +483,7 @@
     Working offline — changes will sync when connected
   </div>
 
-  <!-- ── Floating bottom nav bar ─────────────────────────── -->
-  <nav class="bottom-nav" role="tablist" aria-label="Main navigation">
-
-    <button
-      class="nav-tab active"
-      id="nav-overview"
-      role="tab"
-      aria-selected="true"
-      aria-controls="tab-overview"
-      data-tab="overview"
-    >
-      <i data-lucide="map" class="nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Overview</span>
-    </button>
-
-    <button
-      class="nav-tab"
-      id="nav-reminders"
-      role="tab"
-      aria-selected="false"
-      aria-controls="tab-reminders"
-      data-tab="reminders"
-    >
-      <i data-lucide="bell" class="nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Reminders</span>
-    </button>
-
-  </nav>
+  <!-- Bottom nav removed for desktop mid-fidelity prototype -->
 
   <!-- SortableJS (global, used for drag-and-drop in city pages) -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

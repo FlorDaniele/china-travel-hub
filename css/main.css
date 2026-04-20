@@ -55,11 +55,16 @@
   --radius-lg:   24px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm:  0 1px 4px rgba(0, 0, 0, 0.06);
-  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.08);
-  --shadow-lg:  0 8px 32px rgba(0, 0, 0, 0.10);
-  --shadow-nav: 0 -2px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  /* Action color — Celadon Jade (Chinese celadon pottery, 青瓷) */
+  --action:       #2E5C54;   /* 7.45:1 on white — AAA */
+  --action-hover: #3D7268;   /* 5.38:1 on white — AA  */
+  --action-light: #EAF2F1;   /* tinted bg for hover fills, focus rings */
+
+  /* Shadows — warm cream-toned, no black */
+  --shadow-sm:  0 2px 8px rgba(69, 69, 50, 0.07);
+  --shadow-md:  0 4px 16px rgba(69, 69, 50, 0.09);
+  --shadow-lg:  0 8px 32px rgba(69, 69, 50, 0.12);
+  --shadow-nav: 0 -2px 20px rgba(69, 69, 50, 0.08), 0 2px 8px rgba(69, 69, 50, 0.04);
 
   /* Typography */
   --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
