@@ -453,27 +453,27 @@
 
   /* Row 3–4 explicit placement — 4-row grid:
      Row 1: Hero  Row 2: Bookings/Reminders/Packing
-     Row 3: Cities (span 2) | Calendar    | Itinerary (span 2)
-     Row 4:                  | Next Tours |                     */
+     Row 3: Cities (span 2) | Itinerary (span 2) | Calendar
+     Row 4:                  |                    | Next Tours */
 
   .dk-cities {
     grid-column: 1;
     grid-row: 3 / 5;
   }
 
-  .dk-calendar {
+  .dk-itinerary {
     grid-column: 2;
+    grid-row: 3 / 5;
+  }
+
+  .dk-calendar {
+    grid-column: 3;
     grid-row: 3;
   }
 
   .dk-next-up {
-    grid-column: 2;
-    grid-row: 4;
-  }
-
-  .dk-itinerary {
     grid-column: 3;
-    grid-row: 3 / 5;
+    grid-row: 4;
   }
 
   /* ── Card base ──────────────────────────────────────────── */
@@ -1032,7 +1032,7 @@
     display: flex;
     align-items: flex-start;
     gap: 10px;
-    margin-bottom: 8px;
+    margin-bottom: 24px;
   }
 
   .dk-filter-sublabel {
@@ -1098,8 +1098,8 @@
     background: #F5F5F5;
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 4px 28px 4px 12px;
-    min-height: 28px;
+    padding: 8px 32px 8px 14px;
+    min-height: 36px;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
@@ -1434,7 +1434,7 @@
 
   .dk-next-photo {
     width: 100%;
-    height: 104px;
+    height: 180px;
     background: var(--warm-gold-light);
     border-radius: 8px;
     flex-shrink: 0;
@@ -1501,9 +1501,9 @@
   /* ── Travel mode: explicit placement overrides ──────────── */
   /* Same structure as planning mode. Override here when travel layout diverges. */
   .mode-travel .dk-cities    { grid-column: 1; grid-row: 3 / 5; }
-  .mode-travel .dk-calendar  { grid-column: 2; grid-row: 3; }
-  .mode-travel .dk-next-up   { grid-column: 2; grid-row: 4; }
-  .mode-travel .dk-itinerary { grid-column: 3; grid-row: 3 / 5; }
+  .mode-travel .dk-itinerary { grid-column: 2; grid-row: 3 / 5; }
+  .mode-travel .dk-calendar  { grid-column: 3; grid-row: 3; }
+  .mode-travel .dk-next-up   { grid-column: 3; grid-row: 4; }
 
 }
 /* end @media desktop */
