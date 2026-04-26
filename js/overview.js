@@ -457,6 +457,26 @@ async function handleModeToggle(currentMode) {
   initOverview();
 }
 
+/* ── Desktop bookings: placeholder handlers ────────────────── */
+
+export function initDesktopBookings() {
+  const section = document.querySelector('.dk-bookings');
+  if (!section) return;
+
+  // Checkbox delegation — real Supabase update wired in Session 3
+  section.addEventListener('change', e => {
+    if (e.target.matches('.dk-booking-cb')) {
+      // TODO Session 3: update status to 'booked' in Supabase on check
+    }
+  });
+
+  // "View all →" — full list panel wired in Session 5
+  document.getElementById('dk-bookings-view-all')
+    ?.addEventListener('click', () => {
+      // TODO Session 5: open side panel / bottom sheet with full bookings list
+    });
+}
+
 /* ── Desktop mode toggle ───────────────────────────────────── */
 
 export function initDesktopToggle() {

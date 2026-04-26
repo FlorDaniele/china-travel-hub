@@ -496,10 +496,10 @@
   }
 
   .dk-card-title {
-    font-size: 18px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
     color: var(--text-primary);
-    line-height: 1.2;
+    line-height: 28px;
   }
 
   .dk-header-actions {
@@ -658,7 +658,7 @@
     margin-top: 6px;
   }
 
-  .dk-add-link:hover { color: var(--text-primary); }
+  .dk-add-link:hover { color: var(--terracotta); }
 
   .dk-add-link:focus-visible {
     outline: 2px solid var(--terracotta);
@@ -838,74 +838,212 @@
 
   /* ── Bookings card ──────────────────────────────────────── */
 
-  .dk-booking-tabs {
+  /* Static summary row — 3 equal columns, no interactivity */
+  .dk-booking-summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    margin-bottom: 24px;
   }
 
-  .dk-booking-tab {
+  .dk-booking-summary-col {
+    padding: 16px 24px;
+    text-align: center;
     display: flex;
     flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Right border on first two cols creates the dividers */
+  .dk-booking-summary-col:not(:last-child) {
+    border-right: 1px solid var(--border);
+  }
+
+  .dk-booking-summary-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .dk-booking-summary-count {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .dk-booking-count-num {
+    color: var(--terracotta);
+  }
+
+  /* Booking checklist */
+  .dk-booking-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-booking-check-item {
+    display: flex;
     align-items: center;
-    gap: 3px;
-    background: #F7F5F0;
-    border: none;
-    border-bottom: 2px solid transparent;
-    border-radius: 8px 8px 0 0;
-    padding: 9px 6px 8px;
+    gap: 2px;
+  }
+
+  /* Checkbox wrapper — comfortable mouse hit area, no need for 44px on desktop */
+  .dk-booking-cb-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    flex-shrink: 0;
     cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s ease, border-color 0.15s ease;
   }
 
-  .dk-booking-tab.active {
-    background: var(--action-light);
-    border-bottom-color: var(--action);
+  .dk-booking-cb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s ease, border-color 0.12s ease;
   }
 
-  .dk-booking-tab:hover:not(.active) {
-    background: #EEECEA;
+  .dk-booking-cb:checked {
+    background: var(--action);
+    border-color: var(--action);
   }
 
-  .dk-booking-tab:focus-visible {
+  .dk-booking-cb:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .dk-booking-cb:focus-visible {
     outline: 2px solid var(--action);
     outline-offset: 2px;
-    border-radius: 8px 8px 0 0;
   }
 
-  .dk-booking-tab-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--action);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .dk-booking-tab-count {
-    font-size: 18px;
-    font-weight: 500;
-    line-height: 1.25;
+  .dk-booking-item-label {
+    font-size: 16px;
+    font-weight: 400;
     color: var(--text-primary);
+    line-height: var(--line-height-normal);
+    flex: 1;
   }
 
-  .dk-count-booked {
+  .dk-booking-item-type {
+    color: var(--text-secondary);
+  }
+
+  /* "View all →" link */
+  .dk-view-all {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--action);
+    cursor: pointer;
+    padding: 0;
+    margin-top: 16px;
+    display: block;
+    text-align: left;
+    transition: color 0.15s ease;
+  }
+
+  .dk-view-all:hover {
     color: var(--terracotta);
-    font-weight: 600;
   }
 
-  .dk-count-slash {
-    color: var(--text-secondary);
-    font-size: 14px;
-    margin: 0 1px;
-    font-weight: 400;
+  .dk-view-all:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 
-  .dk-count-total {
-    color: var(--text-secondary);
+  /* Loading state — outlined shape with no content */
+  .dk-booking-summary--loading {
+    min-height: 72px;
+  }
+
+  /* Skeleton rows for checklist during load */
+  .dk-booking-skeleton-row {
+    height: 20px;
+    width: 70%;
+    background: var(--border);
+    border-radius: 4px;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    background: linear-gradient(
+      90deg,
+      #F0F0EE 25%,
+      #E8E8E5 50%,
+      #F0F0EE 75%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Empty state */
+  .dk-bookings-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 8px 0;
+  }
+
+  .dk-bookings-empty-text {
     font-size: 14px;
-    font-weight: 400;
+    color: var(--text-secondary);
+  }
+
+  /* Error state */
+  .dk-bookings-error {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 0;
+  }
+
+  .dk-bookings-error-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .dk-bookings-retry {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--action);
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s ease;
+  }
+
+  .dk-bookings-retry:hover {
+    color: var(--text-primary);
   }
 
   /* ── Reminders card ─────────────────────────────────────── */
@@ -1015,7 +1153,7 @@
   .dk-see-all {
     margin-top: 4px;
     font-size: 12px;
-    color: var(--text-secondary);
+    color: var(--action);
     min-height: 44px;
     display: flex;
     align-items: center;
@@ -1475,7 +1613,7 @@
   .dk-next-booking-link {
     font-size: 12px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--action);
     text-decoration: none;
     display: inline-block;
     margin-top: 2px;

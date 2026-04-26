@@ -56,52 +56,60 @@
         <section class="dk-card dk-bookings" aria-labelledby="dk-bookings-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-bookings-title">Bookings</h2>
-            <button class="dk-icon-btn" aria-label="Add booking">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
-            </button>
+            <button class="dk-add-link" id="dk-bookings-add" aria-label="Add booking">+ Add item</button>
           </div>
-          <div class="dk-booking-tabs" role="group" aria-label="Filter bookings by type">
-            <button class="dk-booking-tab active" aria-pressed="true">
-              <span class="dk-booking-tab-label">Hotels</span>
-              <span class="dk-booking-tab-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">5</span></span>
-            </button>
-            <button class="dk-booking-tab active" aria-pressed="true">
-              <span class="dk-booking-tab-label">Trains</span>
-              <span class="dk-booking-tab-count"><strong class="dk-count-booked">1</strong><span class="dk-count-slash">/</span><span class="dk-count-total">4</span></span>
-            </button>
-            <button class="dk-booking-tab active" aria-pressed="true">
-              <span class="dk-booking-tab-label">Tours</span>
-              <span class="dk-booking-tab-count"><strong class="dk-count-booked">3</strong><span class="dk-count-slash">/</span><span class="dk-count-total">6</span></span>
-            </button>
+
+          <!-- Static summary row — counts will be wired to Supabase in Session 3 -->
+          <div class="dk-booking-summary" aria-label="Booking totals by type">
+            <div class="dk-booking-summary-col">
+              <span class="dk-booking-summary-label">Hotels</span>
+              <span class="dk-booking-summary-count"><span class="dk-booking-count-num">3</span>/5</span>
+            </div>
+            <div class="dk-booking-summary-col">
+              <span class="dk-booking-summary-label">Trains</span>
+              <span class="dk-booking-summary-count"><span class="dk-booking-count-num">1</span>/4</span>
+            </div>
+            <div class="dk-booking-summary-col">
+              <span class="dk-booking-summary-label">Tours</span>
+              <span class="dk-booking-summary-count"><span class="dk-booking-count-num">3</span>/6</span>
+            </div>
           </div>
-          <ul class="dk-checklist" role="list" aria-label="Pending bookings checklist">
-            <li class="dk-check-item">
-              <input type="checkbox" id="bk-1" class="dk-checkbox">
-              <label for="bk-1">Chongqing hotel — TBD</label>
-              <button class="dk-remove-btn" aria-label="Remove Chongqing hotel">×</button>
+
+          <!-- Pending bookings checklist — static placeholder, Supabase in Session 3 -->
+          <ul class="dk-booking-checklist" role="list" aria-label="Pending bookings">
+            <li class="dk-booking-check-item">
+              <label class="dk-booking-cb-wrap" for="bk-1" aria-label="Mark Hotel Chongqing as booked">
+                <input type="checkbox" id="bk-1" class="dk-booking-cb">
+              </label>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Hotel]</span> Chongqing — 2 nights</span>
             </li>
-            <li class="dk-check-item">
-              <input type="checkbox" id="bk-2" class="dk-checkbox">
-              <label for="bk-2">Shanghai hotel — TBD</label>
-              <button class="dk-remove-btn" aria-label="Remove Shanghai hotel">×</button>
+            <li class="dk-booking-check-item">
+              <label class="dk-booking-cb-wrap" for="bk-2" aria-label="Mark Hotel Shanghai as booked">
+                <input type="checkbox" id="bk-2" class="dk-booking-cb">
+              </label>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Hotel]</span> Shanghai — 5 nights</span>
             </li>
-            <li class="dk-check-item">
-              <input type="checkbox" id="bk-3" class="dk-checkbox">
-              <label for="bk-3">Xi'an → Chengdu train</label>
-              <button class="dk-remove-btn" aria-label="Remove Xi'an to Chengdu train">×</button>
+            <li class="dk-booking-check-item">
+              <label class="dk-booking-cb-wrap" for="bk-3" aria-label="Mark Xi'an to Chengdu train as booked">
+                <input type="checkbox" id="bk-3" class="dk-booking-cb">
+              </label>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Train]</span> Xi'an → Chengdu</span>
             </li>
-            <li class="dk-check-item">
-              <input type="checkbox" id="bk-4" class="dk-checkbox">
-              <label for="bk-4">Chengdu → Chongqing train</label>
-              <button class="dk-remove-btn" aria-label="Remove Chengdu to Chongqing train">×</button>
+            <li class="dk-booking-check-item">
+              <label class="dk-booking-cb-wrap" for="bk-4" aria-label="Mark Chengdu to Chongqing train as booked">
+                <input type="checkbox" id="bk-4" class="dk-booking-cb">
+              </label>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Train]</span> Chengdu → Chongqing</span>
             </li>
-            <li class="dk-check-item">
-              <input type="checkbox" id="bk-5" class="dk-checkbox">
-              <label for="bk-5">Chongqing → Shanghai train</label>
-              <button class="dk-remove-btn" aria-label="Remove Chongqing to Shanghai train">×</button>
+            <li class="dk-booking-check-item">
+              <label class="dk-booking-cb-wrap" for="bk-5" aria-label="Mark Chongqing to Shanghai train as booked">
+                <input type="checkbox" id="bk-5" class="dk-booking-cb">
+              </label>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Train]</span> Chongqing → Shanghai</span>
             </li>
           </ul>
-          <button class="dk-add-link">+ Add item</button>
+
+          <button class="dk-view-all" id="dk-bookings-view-all">View all →</button>
         </section>
 
         <!-- Row 2, Col B: Reminders -->
