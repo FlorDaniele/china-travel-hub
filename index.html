@@ -176,39 +176,49 @@
         <section class="dk-card dk-packing" aria-labelledby="dk-packing-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-packing-title">Packing list</h2>
-            <button class="dk-icon-btn" aria-label="Add packing item">
+            <button class="dk-icon-btn dk-icon-btn--action" aria-label="Add packing item">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
             </button>
           </div>
           <div class="dk-packing-list-wrapper">
             <ul class="dk-packing-list" role="list" aria-label="Packing list preview">
               <li class="dk-packing-category" role="presentation">Documents</li>
-              <li class="dk-check-item">
-                <input type="checkbox" id="pk-1" class="dk-checkbox">
-                <label for="pk-1">Passport</label>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-1" aria-label="Mark Passport as packed">
+                  <input type="checkbox" id="pk-1" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Passport</span>
               </li>
-              <li class="dk-check-item">
-                <input type="checkbox" id="pk-2" class="dk-checkbox">
-                <label for="pk-2">Visa printout</label>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-2" aria-label="Mark Visa printout as packed">
+                  <input type="checkbox" id="pk-2" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Visa printout</span>
               </li>
               <li class="dk-packing-category" role="presentation">Tech</li>
-              <li class="dk-check-item">
-                <input type="checkbox" id="pk-3" class="dk-checkbox">
-                <label for="pk-3">Camera &amp; GoPro</label>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-3" aria-label="Mark Camera and GoPro as packed">
+                  <input type="checkbox" id="pk-3" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Camera &amp; GoPro</span>
               </li>
-              <li class="dk-check-item">
-                <input type="checkbox" id="pk-4" class="dk-checkbox">
-                <label for="pk-4">Laptop &amp; Charger</label>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-4" aria-label="Mark Laptop and Charger as packed">
+                  <input type="checkbox" id="pk-4" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Laptop &amp; Charger</span>
               </li>
               <li class="dk-packing-category" role="presentation">Health</li>
-              <li class="dk-check-item">
-                <input type="checkbox" id="pk-5" class="dk-checkbox">
-                <label for="pk-5">Medical Aid</label>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-5" aria-label="Mark Medical Aid as packed">
+                  <input type="checkbox" id="pk-5" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Medical Aid</span>
               </li>
             </ul>
             <div class="dk-packing-fade" aria-hidden="true"></div>
           </div>
-          <button class="dk-add-link dk-see-all">See all 25 items →</button>
+          <button class="dk-view-all" id="dk-packing-see-all">See all 25 items →</button>
         </section>
 
         <!-- Row 3, Col A: Itinerary -->
