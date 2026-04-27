@@ -974,7 +974,8 @@
     color: var(--action);
     cursor: pointer;
     padding: 0;
-    margin-top: 20px;
+    margin-top: auto;
+    padding-top: 20px;
     display: block;
     text-align: left;
     transition: color 0.15s ease;
@@ -1138,6 +1139,8 @@
     gap: 8px;
   }
 
+  .dk-bookings,
+  .dk-reminders,
   .dk-packing {
     display: flex;
     flex-direction: column;
