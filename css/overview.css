@@ -1132,6 +1132,12 @@
 
   /* ── Packing list card ──────────────────────────────────── */
 
+  .dk-packing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .dk-packing-list-wrapper {
     position: relative;
     max-height: 200px;
