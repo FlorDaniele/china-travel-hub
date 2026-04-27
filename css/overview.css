@@ -1059,12 +1059,12 @@
   .dk-reminder-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
   }
 
   .dk-reminder-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 2px;
   }
 
