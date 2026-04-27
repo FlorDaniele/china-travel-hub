@@ -845,7 +845,7 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     background: transparent;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .dk-booking-summary-col {
@@ -870,7 +870,7 @@
   }
 
   .dk-booking-summary-count {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text-primary);
     line-height: 1.2;
@@ -884,7 +884,7 @@
   .dk-booking-checklist {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -966,7 +966,7 @@
     color: var(--action);
     cursor: pointer;
     padding: 0;
-    margin-top: 16px;
+    margin-top: 20px;
     display: block;
     text-align: left;
     transition: color 0.15s ease;
