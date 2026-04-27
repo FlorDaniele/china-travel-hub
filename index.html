@@ -118,58 +118,67 @@
         <section class="dk-card dk-reminders" aria-labelledby="dk-reminders-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-reminders-title">Reminders</h2>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-reminders-add" aria-label="Add reminder">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
           </div>
           <ul class="dk-reminder-list" role="list" aria-label="Active reminders">
             <li class="dk-reminder-item">
-              <input type="checkbox" id="rm-1" class="dk-checkbox" aria-describedby="rm-1-due">
+              <label class="dk-booking-cb-wrap" for="rm-1" aria-label="Mark Book Xi'an to Chengdu as done">
+                <input type="checkbox" id="rm-1" class="dk-booking-cb" aria-describedby="rm-1-due">
+              </label>
               <div class="dk-reminder-body">
                 <span class="dk-reminder-title">Book Xi'an → Chengdu</span>
                 <span class="dk-reminder-due dk-due-overdue" id="rm-1-due">Apr 15 · Overdue</span>
               </div>
-              <div class="dk-reminder-actions">
-                <button class="dk-text-btn" aria-label="Edit Book Xi'an to Chengdu">Edit</button>
-                <button class="dk-remove-btn" aria-label="Delete Book Xi'an to Chengdu">×</button>
-              </div>
             </li>
             <li class="dk-reminder-item">
-              <input type="checkbox" id="rm-2" class="dk-checkbox" aria-describedby="rm-2-due">
+              <label class="dk-booking-cb-wrap" for="rm-2" aria-label="Mark Book Chengdu to Chongqing as done">
+                <input type="checkbox" id="rm-2" class="dk-booking-cb" aria-describedby="rm-2-due">
+              </label>
               <div class="dk-reminder-body">
                 <span class="dk-reminder-title">Book Chengdu → Chongqing</span>
                 <span class="dk-reminder-due dk-due-today" id="rm-2-due">Apr 18 · Due today</span>
               </div>
-              <div class="dk-reminder-actions">
-                <button class="dk-text-btn" aria-label="Edit Book Chengdu to Chongqing">Edit</button>
-                <button class="dk-remove-btn" aria-label="Delete Book Chengdu to Chongqing">×</button>
-              </div>
             </li>
             <li class="dk-reminder-item">
-              <input type="checkbox" id="rm-3" class="dk-checkbox" aria-describedby="rm-3-due">
+              <label class="dk-booking-cb-wrap" for="rm-3" aria-label="Mark Book Chongqing to Shanghai as done">
+                <input type="checkbox" id="rm-3" class="dk-booking-cb" aria-describedby="rm-3-due">
+              </label>
               <div class="dk-reminder-body">
                 <span class="dk-reminder-title">Book Chongqing → Shanghai</span>
                 <span class="dk-reminder-due dk-due-future" id="rm-3-due">Apr 20 · 2 days</span>
               </div>
-              <div class="dk-reminder-actions">
-                <button class="dk-text-btn" aria-label="Edit Book Chongqing to Shanghai">Edit</button>
-                <button class="dk-remove-btn" aria-label="Delete Book Chongqing to Shanghai">×</button>
-              </div>
             </li>
-          </ul>
-          <button class="dk-add-btn" aria-label="Add reminder" style="margin: 8px 0 4px;">+ Add</button>
-          <div class="dk-reminder-divider" role="separator" aria-label="Completed reminders">
-            <span class="dk-divider-label">Done</span>
-          </div>
-          <ul class="dk-reminder-list" role="list" aria-label="Completed reminders">
-            <li class="dk-reminder-item dk-reminder-item--done">
-              <input type="checkbox" id="rm-done-1" class="dk-checkbox" checked>
+            <li class="dk-reminder-item">
+              <label class="dk-booking-cb-wrap" for="rm-4" aria-label="Mark Get Chinese SIM card as done">
+                <input type="checkbox" id="rm-4" class="dk-booking-cb" aria-describedby="rm-4-due">
+              </label>
               <div class="dk-reminder-body">
-                <span class="dk-reminder-title">Get travel insurance</span>
+                <span class="dk-reminder-title">Get Chinese SIM card</span>
+                <span class="dk-reminder-due dk-due-future" id="rm-4-due">May 1 · 5 days</span>
               </div>
-              <div class="dk-reminder-actions">
-                <button class="dk-text-btn" aria-label="Edit Get travel insurance">Edit</button>
-                <button class="dk-remove-btn" aria-label="Delete Get travel insurance">×</button>
+            </li>
+            <li class="dk-reminder-item">
+              <label class="dk-booking-cb-wrap" for="rm-5" aria-label="Mark Print visa confirmation as done">
+                <input type="checkbox" id="rm-5" class="dk-booking-cb" aria-describedby="rm-5-due">
+              </label>
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Print visa confirmation</span>
+                <span class="dk-reminder-due dk-due-future" id="rm-5-due">May 15 · 19 days</span>
+              </div>
+            </li>
+            <li class="dk-reminder-item">
+              <label class="dk-booking-cb-wrap" for="rm-6" aria-label="Mark Book Great Wall tour as done">
+                <input type="checkbox" id="rm-6" class="dk-booking-cb" aria-describedby="rm-6-due">
+              </label>
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Book Great Wall tour</span>
+                <span class="dk-reminder-due dk-due-future" id="rm-6-due">May 20 · 24 days</span>
               </div>
             </li>
           </ul>
+          <button class="dk-view-all" id="dk-reminders-view-all">View all →</button>
         </section>
 
         <!-- Row 2, Col C: Packing list -->
