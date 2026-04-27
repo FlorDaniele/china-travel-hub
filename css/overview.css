@@ -1138,9 +1138,15 @@
     gap: 8px;
   }
 
+  .dk-packing {
+    display: flex;
+    flex-direction: column;
+  }
+
   .dk-packing-list-wrapper {
     position: relative;
-    max-height: 200px;
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
   }
 
@@ -1150,7 +1156,7 @@
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    padding: 10px 0 4px;
+    padding: 8px 0 4px;
     display: block;
   }
 
