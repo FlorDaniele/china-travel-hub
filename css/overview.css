@@ -1170,7 +1170,26 @@
     position: relative;
     flex: 1;
     min-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #E8E8E8 transparent;
+  }
+
+  .dk-packing-list-wrapper::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .dk-packing-list-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .dk-packing-list-wrapper::-webkit-scrollbar-thumb {
+    background: #E8E8E8;
+    border-radius: 4px;
+  }
+
+  .dk-packing-list-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #6B6B80;
   }
 
   .dk-packing-category {

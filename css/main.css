@@ -514,6 +514,11 @@ a {
   display: none;
 }
 
+/* When hide-packed is active, collapse checked packing items */
+.sidebar-content[data-hide-packed="true"] .sb-booking-item:has(.sb-booking-cb:checked) {
+  display: none;
+}
+
 /* ── Sidebar bookings: section headers ─────────────────────── */
 
 .sb-section-header {
@@ -537,9 +542,9 @@ a {
 }
 
 .sb-section-count {
-  font-size: 16px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 .sb-section-count--all-done {

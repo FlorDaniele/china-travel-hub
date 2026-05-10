@@ -519,6 +519,91 @@ function renderBookingsSidebarContent(bookings) {
   `;
 }
 
+/* ── Static packing list fallback ─────────────────────────────── */
+
+const STATIC_PACKING_LIST = [
+  { category: 'Documents', items: [
+    { id: 'pk-s1', label: 'Passport',               packed: false },
+    { id: 'pk-s2', label: 'Visa printout',           packed: false },
+    { id: 'pk-s3', label: 'Travel insurance docs',   packed: false },
+    { id: 'pk-s4', label: 'Flight confirmations',    packed: false },
+  ]},
+  { category: 'Tech', items: [
+    { id: 'pk-s5', label: 'Camera & GoPro',          packed: false },
+    { id: 'pk-s6', label: 'Laptop & Charger',        packed: false },
+    { id: 'pk-s7', label: 'Power bank',              packed: false },
+    { id: 'pk-s8', label: 'Universal adapter',       packed: false },
+  ]},
+  { category: 'Clothes', items: [
+    { id: 'pk-s9',  label: 'T-shirts (5)',            packed: false },
+    { id: 'pk-s10', label: 'Lightweight jacket',      packed: false },
+    { id: 'pk-s11', label: 'Walking shoes',           packed: false },
+    { id: 'pk-s12', label: 'Rain poncho',             packed: false },
+  ]},
+  { category: 'Health', items: [
+    { id: 'pk-s13', label: 'Medical aid',             packed: false },
+    { id: 'pk-s14', label: 'Sunscreen',               packed: false },
+    { id: 'pk-s15', label: 'Insect repellent',        packed: false },
+  ]},
+  { category: 'Money', items: [
+    { id: 'pk-s16', label: 'Cash (RMB)',              packed: false },
+    { id: 'pk-s17', label: 'Travel card',             packed: false },
+    { id: 'pk-s18', label: 'Backup card',             packed: false },
+  ]},
+  { category: 'Other', items: [
+    { id: 'pk-s19', label: 'Reusable bag',            packed: false },
+    { id: 'pk-s20', label: 'Padlock for lockers',     packed: false },
+    { id: 'pk-s21', label: 'Notebook & pen',          packed: false },
+    { id: 'pk-s22', label: 'Snacks for trains',       packed: false },
+  ]},
+];
+
+/* ── Render: packing list sidebar content ──────────────────────── */
+
+function renderPackingSidebarContent(categories) {
+  const sectionsHTML = categories.map((cat, idx) => {
+    const packed  = cat.items.filter(i => i.packed).length;
+    const total   = cat.items.length;
+    const allDone = total > 0 && packed === total;
+    const countClass = allDone ? ' sb-section-count--all-done' : '';
+
+    const divider = idx > 0
+      ? '<div class="sb-section-divider" aria-hidden="true"></div>'
+      : '';
+
+    const itemsHTML = cat.items.map(item => `
+      <div class="sb-booking-item">
+        <input
+          type="checkbox"
+          class="sb-booking-cb"
+          ${item.packed ? 'checked' : ''}
+          aria-label="${esc(item.label)}"
+          data-packing-id="${esc(item.id)}"
+        >
+        <span class="sb-booking-label">${esc(item.label)}</span>
+      </div>
+    `).join('');
+
+    return `
+      ${divider}
+      <div class="sb-section-header">
+        <span class="sb-section-label">${esc(cat.category)}</span>
+        <span class="sb-section-count${countClass}">${packed}/${total}</span>
+      </div>
+      ${itemsHTML}
+      <button class="sb-add-link" type="button">Add item +</button>
+    `;
+  }).join('');
+
+  return `
+    <div class="sb-hide-toggle">
+      <input type="checkbox" id="sb-hide-packed" class="sb-booking-cb" aria-label="Hide packed items">
+      <label for="sb-hide-packed" class="sb-hide-label">Hide packed</label>
+    </div>
+    ${sectionsHTML}
+  `;
+}
+
 /* ── Static fallback for sidebar when Supabase not yet wired ── */
 
 const STATIC_BOOKINGS_FALLBACK = [
@@ -557,6 +642,15 @@ export function initDesktopBookings() {
     ?.addEventListener('click', () => {
       const bookings = loadFromStorage('bookings') ?? STATIC_BOOKINGS_FALLBACK;
       openSidebar('Bookings', renderBookingsSidebarContent(bookings));
+    });
+}
+
+/* ── Desktop packing list handler ─────────────────────────── */
+
+export function initDesktopPacking() {
+  document.getElementById('dk-packing-see-all')
+    ?.addEventListener('click', () => {
+      openSidebar('Packing list', renderPackingSidebarContent(STATIC_PACKING_LIST));
     });
 }
 
