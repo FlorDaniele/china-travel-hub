@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { initOverview, initDesktopToggle, initDesktopNextUp, initDesktopBookings } from './overview.js';
+import { initSidebar } from './sidebar.js';
 
 /* ── Tab switching ─────────────────────────────────────────── */
 
@@ -30,6 +31,7 @@ navTabs.forEach(tab => {
 
 async function init() {
   activateTab('overview');
+  initSidebar();
   initDesktopToggle();
   initDesktopBookings();
   await Promise.all([initOverview(), initDesktopNextUp()]);

@@ -129,21 +129,42 @@
   letter-spacing: 0.07em;
 }
 
+.booking-card-count-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .booking-card-count {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  color: var(--text-primary);
   line-height: var(--line-height-tight);
 }
 
-.booking-card-count .count-booked {
-  color: var(--color-success);
+.booking-card-count .count-confirmed {
+  color: var(--text-primary);
 }
 
 .booking-card-count .count-total {
-  color: var(--color-text-secondary);
+  color: var(--text-primary);
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-base);
+}
+
+/* All-confirmed state — both numbers turn success green */
+.booking-card-count-wrap.all-done .count-confirmed,
+.booking-card-count-wrap.all-done .count-total {
+  color: var(--status-success);
+}
+
+.booking-card-sublabel {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.booking-card-count-wrap.all-done .booking-card-sublabel {
+  color: var(--status-success);
 }
 
 /* Thin divider before checklist */
@@ -885,7 +906,23 @@
   }
 
   .dk-booking-count-num {
-    color: var(--terracotta);
+    color: var(--text-primary);
+  }
+
+  /* All-confirmed state — both numbers and sublabel turn success green */
+  .dk-booking-summary-col--all-done .dk-booking-count-num,
+  .dk-booking-summary-col--all-done .dk-booking-summary-count {
+    color: var(--status-success);
+  }
+
+  .dk-booking-summary-sublabel {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+
+  .dk-booking-summary-col--all-done .dk-booking-summary-sublabel {
+    color: var(--status-success);
   }
 
   /* Booking checklist */

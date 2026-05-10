@@ -8,6 +8,7 @@
 
 import { supabase } from './supabase.js';
 import { saveToStorage, loadFromStorage } from './storage.js';
+import { openSidebar } from './sidebar.js';
 
 const DEPARTURE_DATE = '2026-06-06';
 
@@ -174,9 +175,14 @@ export async function initDesktopNextUp() {
 /* ── Render: single booking type card ──────────────────────── */
 
 function renderBookingCard(type, items) {
-  const label   = type === 'hotel' ? 'Hotels' : type === 'train' ? 'Trains' : 'Tours';
-  const booked  = items.filter(b => b.status === 'booked').length;
-  const pending = items.filter(b => b.status !== 'booked');
+  const label     = type === 'hotel' ? 'Hotels' : type === 'train' ? 'Trains' : 'Tours';
+  const confirmed = items.filter(b => b.status === 'booked' || b.status === 'done').length;
+  const pending   = items.filter(b => b.status !== 'booked' && b.status !== 'done');
+  const allDone   = items.length > 0 && confirmed === items.length;
+
+  const sublabel  = allDone
+    ? 'All confirmed ✓'
+    : `${confirmed} confirmed · ${items.length} total`;
 
   const checklistHTML = pending.length > 0
     ? `<div class="booking-card-divider" aria-hidden="true"></div>
@@ -198,8 +204,11 @@ function renderBookingCard(type, items) {
   return `
     <div class="booking-card" data-type="${esc(type)}">
       <div class="booking-card-type">${esc(label)}</div>
-      <div class="booking-card-count">
-        <span class="count-booked">${booked}</span><span class="count-total">/${items.length}</span>
+      <div class="booking-card-count-wrap${allDone ? ' all-done' : ''}">
+        <div class="booking-card-count">
+          <span class="count-confirmed">${confirmed}</span><span class="count-total">/${items.length}</span>
+        </div>
+        <div class="booking-card-sublabel">${sublabel}</div>
       </div>
       ${items.length > 0 ? checklistHTML : ''}
     </div>
@@ -457,7 +466,83 @@ async function handleModeToggle(currentMode) {
   initOverview();
 }
 
-/* ── Desktop bookings: placeholder handlers ────────────────── */
+/* ── Render: bookings sidebar content ──────────────────────── */
+
+function renderBookingsSidebarContent(bookings) {
+  const types = [
+    { key: 'hotel', label: 'Hotels' },
+    { key: 'train', label: 'Trains' },
+    { key: 'tour',  label: 'Tours'  },
+  ];
+
+  return types.map((t, idx) => {
+    const items     = bookings.filter(b => b.type === t.key);
+    const confirmed = items.filter(b => b.status === 'booked' || b.status === 'done').length;
+    const allDone   = items.length > 0 && confirmed === items.length;
+
+    const countClass = allDone ? ' sb-section-count--all-done' : '';
+    const countText  = allDone
+      ? `${confirmed}/${items.length}`
+      : `${confirmed}/${items.length}`;
+
+    const itemsHTML = items.length > 0
+      ? items.map(b => {
+          const isConfirmed = b.status === 'booked' || b.status === 'done';
+          return `
+            <div class="sb-booking-item">
+              <input
+                type="checkbox"
+                class="sb-booking-cb"
+                ${isConfirmed ? 'checked' : ''}
+                aria-label="${esc(b.title)}"
+                data-booking-id="${esc(String(b.id))}"
+              >
+              <div class="sb-booking-label-wrap">
+                <span class="sb-booking-label">${esc(b.title)}</span>
+                ${b.date_start ? `<span class="sb-booking-meta">${esc(formatDate(b.date_start))}</span>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')
+      : `<p class="sb-booking-empty">No ${esc(t.label.toLowerCase())} yet</p>`;
+
+    const divider = idx > 0
+      ? '<div class="sb-section-divider" aria-hidden="true"></div>'
+      : '';
+
+    return `
+      ${divider}
+      <div class="sb-section-header">
+        <span class="sb-section-label">${esc(t.label)}</span>
+        <span class="sb-section-count${countClass}">${countText}</span>
+      </div>
+      ${itemsHTML}
+      <button class="sb-add-link" type="button">+ Add item</button>
+    `;
+  }).join('');
+}
+
+/* ── Static fallback for sidebar when Supabase not yet wired ── */
+
+const STATIC_BOOKINGS_FALLBACK = [
+  { id: 'f1', type: 'hotel', title: 'Beijing — 6 nights',         status: 'booked', date_start: '2026-06-06' },
+  { id: 'f2', type: 'hotel', title: "Xi'an — 3 nights",           status: 'booked', date_start: '2026-06-13' },
+  { id: 'f3', type: 'hotel', title: 'Chengdu — 4 nights',         status: 'booked', date_start: '2026-06-17' },
+  { id: 'f4', type: 'hotel', title: 'Chongqing — 2 nights',       status: 'pending', date_start: '2026-06-22' },
+  { id: 'f5', type: 'hotel', title: 'Shanghai — 5 nights',        status: 'pending', date_start: '2026-06-26' },
+  { id: 'f6', type: 'train', title: "Beijing → Xi'an",            status: 'booked', date_start: '2026-06-13' },
+  { id: 'f7', type: 'train', title: "Xi'an → Chengdu",            status: 'pending', date_start: '2026-06-17' },
+  { id: 'f8', type: 'train', title: 'Chengdu → Chongqing',        status: 'pending', date_start: '2026-06-22' },
+  { id: 'f9', type: 'train', title: 'Chongqing → Shanghai',       status: 'pending', date_start: '2026-06-26' },
+  { id: 'fa', type: 'tour',  title: 'Great Wall — Mutianyu',      status: 'booked', date_start: '2026-06-08' },
+  { id: 'fb', type: 'tour',  title: 'Terracotta Warriors',        status: 'booked', date_start: '2026-06-14' },
+  { id: 'fc', type: 'tour',  title: 'Giant Panda Base',           status: 'booked', date_start: '2026-06-18' },
+  { id: 'fd', type: 'tour',  title: 'Yangtze River Cruise',       status: 'pending', date_start: '2026-06-23' },
+  { id: 'fe', type: 'tour',  title: 'Shanghai Old Town walk',     status: 'pending', date_start: '2026-06-27' },
+  { id: 'ff', type: 'tour',  title: 'Yu Garden + Bund evening',   status: 'pending', date_start: '2026-06-28' },
+];
+
+/* ── Desktop bookings handlers ─────────────────────────────── */
 
 export function initDesktopBookings() {
   const section = document.querySelector('.dk-bookings');
@@ -470,10 +555,11 @@ export function initDesktopBookings() {
     }
   });
 
-  // "View all →" — full list panel wired in Session 5
+  // "View all →" — opens the sidebar with grouped bookings
   document.getElementById('dk-bookings-view-all')
     ?.addEventListener('click', () => {
-      // TODO Session 5: open side panel / bottom sheet with full bookings list
+      const bookings = loadFromStorage('bookings') ?? STATIC_BOOKINGS_FALLBACK;
+      openSidebar('Bookings', renderBookingsSidebarContent(bookings));
     });
 }
 
