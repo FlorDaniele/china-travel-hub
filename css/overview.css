@@ -1172,7 +1172,7 @@
     min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #E8E8E8 transparent;
+    scrollbar-color: #BEBEBE transparent;
   }
 
   .dk-packing-list-wrapper::-webkit-scrollbar {
@@ -1180,11 +1180,12 @@
   }
 
   .dk-packing-list-wrapper::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
   }
 
   .dk-packing-list-wrapper::-webkit-scrollbar-thumb {
-    background: #E8E8E8;
+    background: #BEBEBE;
     border-radius: 4px;
   }
 
