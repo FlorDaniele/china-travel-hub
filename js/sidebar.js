@@ -26,6 +26,7 @@ export function openSidebar(title, contentHTML) {
 
   titleEl.textContent  = title;
   contentEl.innerHTML  = contentHTML;
+  contentEl.dataset.hideBooked = '';
   panel.setAttribute('aria-label', title);
 
   // Remove hidden so the element is in the layout, then animate on next tick
@@ -107,4 +108,11 @@ function _trapFocus(e) {
 export function initSidebar() {
   _overlay()?.addEventListener('click', closeSidebar);
   _closeBtn()?.addEventListener('click', closeSidebar);
+
+  // "Hide booked" toggle — event delegation on the content area
+  _contentEl()?.addEventListener('change', e => {
+    if (e.target.id === 'sb-hide-booked') {
+      _contentEl().dataset.hideBooked = e.target.checked ? 'true' : '';
+    }
+  });
 }

@@ -180,10 +180,6 @@ function renderBookingCard(type, items) {
   const pending   = items.filter(b => b.status !== 'booked' && b.status !== 'done');
   const allDone   = items.length > 0 && confirmed === items.length;
 
-  const sublabel  = allDone
-    ? 'All confirmed ✓'
-    : `${confirmed} confirmed · ${items.length} total`;
-
   const checklistHTML = pending.length > 0
     ? `<div class="booking-card-divider" aria-hidden="true"></div>
        <div class="booking-checklist">
@@ -208,7 +204,6 @@ function renderBookingCard(type, items) {
         <div class="booking-card-count">
           <span class="count-confirmed">${confirmed}</span><span class="count-total">/${items.length}</span>
         </div>
-        <div class="booking-card-sublabel">${sublabel}</div>
       </div>
       ${items.length > 0 ? checklistHTML : ''}
     </div>
@@ -475,15 +470,12 @@ function renderBookingsSidebarContent(bookings) {
     { key: 'tour',  label: 'Tours'  },
   ];
 
-  return types.map((t, idx) => {
+  const sectionsHTML = types.map((t, idx) => {
     const items     = bookings.filter(b => b.type === t.key);
     const confirmed = items.filter(b => b.status === 'booked' || b.status === 'done').length;
     const allDone   = items.length > 0 && confirmed === items.length;
 
     const countClass = allDone ? ' sb-section-count--all-done' : '';
-    const countText  = allDone
-      ? `${confirmed}/${items.length}`
-      : `${confirmed}/${items.length}`;
 
     const itemsHTML = items.length > 0
       ? items.map(b => {
@@ -497,10 +489,7 @@ function renderBookingsSidebarContent(bookings) {
                 aria-label="${esc(b.title)}"
                 data-booking-id="${esc(String(b.id))}"
               >
-              <div class="sb-booking-label-wrap">
-                <span class="sb-booking-label">${esc(b.title)}</span>
-                ${b.date_start ? `<span class="sb-booking-meta">${esc(formatDate(b.date_start))}</span>` : ''}
-              </div>
+              <span class="sb-booking-label">${esc(b.title)}</span>
             </div>
           `;
         }).join('')
@@ -514,12 +503,20 @@ function renderBookingsSidebarContent(bookings) {
       ${divider}
       <div class="sb-section-header">
         <span class="sb-section-label">${esc(t.label)}</span>
-        <span class="sb-section-count${countClass}">${countText}</span>
+        <span class="sb-section-count${countClass}">${confirmed}/${items.length}</span>
       </div>
       ${itemsHTML}
-      <button class="sb-add-link" type="button">+ Add item</button>
+      <button class="sb-add-link" type="button">Add item +</button>
     `;
   }).join('');
+
+  return `
+    <div class="sb-hide-toggle">
+      <input type="checkbox" id="sb-hide-booked" class="sb-booking-cb" aria-label="Hide booked items">
+      <label for="sb-hide-booked" class="sb-hide-label">Hide booked</label>
+    </div>
+    ${sectionsHTML}
+  `;
 }
 
 /* ── Static fallback for sidebar when Supabase not yet wired ── */

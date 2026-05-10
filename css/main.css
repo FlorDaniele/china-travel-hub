@@ -449,28 +449,27 @@ a {
   justify-content: center;
   min-width: 44px;
   min-height: 44px;
-  border-radius: 50%;
   background: none;
   border: none;
   cursor: pointer;
   color: var(--text-secondary);
   font-size: 22px;
   line-height: 1;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: color 0.15s ease;
   font-family: inherit;
   margin-right: -10px;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .sidebar-close:hover {
-  background: var(--border);
   color: var(--text-primary);
 }
 
 .sidebar-close:focus-visible {
   outline: 2px solid var(--action);
   outline-offset: 2px;
-  border-radius: 50%;
+  border-radius: 4px;
 }
 
 /* ── Sidebar divider ────────────────────────────────────────── */
@@ -490,6 +489,31 @@ a {
   -webkit-overflow-scrolling: touch;
 }
 
+/* ── Sidebar: hide-booked toggle ───────────────────────────── */
+
+.sb-hide-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sb-hide-toggle .sb-booking-cb {
+  margin-top: 0;
+}
+
+.sb-hide-label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* When hide-booked is active, collapse checked items */
+.sidebar-content[data-hide-booked="true"] .sb-booking-item:has(.sb-booking-cb:checked) {
+  display: none;
+}
+
 /* ── Sidebar bookings: section headers ─────────────────────── */
 
 .sb-section-header {
@@ -505,7 +529,7 @@ a {
 }
 
 .sb-section-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -513,7 +537,8 @@ a {
 }
 
 .sb-section-count {
-  font-size: 11px;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
@@ -582,10 +607,10 @@ a {
 .sb-booking-cb:checked::after {
   content: '';
   position: absolute;
-  left: 4px;
-  top: 1px;
+  left: 5px;
+  top: 2px;
   width: 5px;
-  height: 9px;
+  height: 8px;
   border: 2px solid #fff;
   border-top: none;
   border-left: none;
@@ -595,6 +620,12 @@ a {
 .sb-booking-cb:focus-visible {
   outline: 2px solid var(--action);
   outline-offset: 2px;
+}
+
+/* Checked item: strikethrough + muted label */
+.sb-booking-item:has(.sb-booking-cb:checked) .sb-booking-label {
+  text-decoration: line-through;
+  color: var(--text-secondary);
 }
 
 /* ── Sidebar bookings: empty state ──────────────────────────── */
@@ -609,21 +640,21 @@ a {
 
 .sb-add-link {
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--terracotta);
+  color: var(--action);
   background: none;
   border: none;
   padding: 6px 0;
   cursor: pointer;
   text-align: left;
   font-family: inherit;
-  transition: opacity 0.15s ease;
+  transition: color 0.15s ease;
   margin-top: 4px;
 }
 
 .sb-add-link:hover {
-  opacity: 0.75;
+  color: var(--terracotta);
 }
 
 .sb-add-link:focus-visible {
