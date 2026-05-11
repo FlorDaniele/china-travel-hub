@@ -1046,13 +1046,40 @@ function renderCityList(cities, selectedCityId, activeDates) {
           </div>
           ${selected ? renderCalendarStrip(city, activeDate) : ''}
           <div class="dk-itin-city-names">
-            <span class="dk-itin-name-en">${esc(city.city)}</span>
-            <span class="dk-itin-name-pinyin">${esc(city.city_pinyin ?? '')}</span>
+            <span class="dk-itin-name-en">${esc(city.city_pinyin ?? city.city)}</span>
+            <span class="dk-itin-name-pinyin">${esc(city.city_zh ?? '')}</span>
           </div>
         </div>
       </li>
     `;
   }).join('');
+}
+
+/* ── Time-slot grouping helpers ────────────────────────────── */
+
+const PERIOD_ORDER = ['Morning', 'Afternoon', 'Evening', 'Night'];
+
+function getPeriod(timeStr) {
+  if (!timeStr) return null;
+  const h = parseInt(timeStr.split(':')[0], 10);
+  if (h >= 5 && h < 12) return 'Morning';
+  if (h >= 12 && h < 18) return 'Afternoon';
+  if (h >= 18 && h < 21) return 'Evening';
+  return 'Night';
+}
+
+function regroupByTime(groups) {
+  const flat = groups.flatMap(g => g.items);
+  flat.sort((a, b) => (a.time ?? '').localeCompare(b.time ?? ''));
+  const buckets = {};
+  for (const item of flat) {
+    const p = getPeriod(item.time) ?? 'Other';
+    if (!buckets[p]) buckets[p] = [];
+    buckets[p].push(item);
+  }
+  const result = PERIOD_ORDER.filter(p => buckets[p]).map(p => ({ period: p, items: buckets[p] }));
+  if (buckets['Other']) result.push({ period: '', items: buckets['Other'] });
+  return result;
 }
 
 /* ── Render: activity timeline ─────────────────────────────── */
@@ -1064,7 +1091,9 @@ function renderActivityTimeline(cityKey, dateStr) {
     return `<li class="dk-itin-empty"><span class="dk-itin-empty-text">No activities planned for this day yet.</span></li>`;
   }
 
-  return acts.map(group => `
+  const groups = regroupByTime(acts);
+
+  const groupsHtml = groups.map(group => `
     <li class="dk-timeline-group">
       <div class="dk-timeline-marker" aria-hidden="true"></div>
       <div class="dk-timeline-content">
@@ -1079,15 +1108,27 @@ function renderActivityTimeline(cityKey, dateStr) {
               </svg>
               <div class="dk-activity-body">
                 <span class="dk-activity-title">${esc(item.title)}</span>
-                <span class="dk-activity-meta">${esc(item.time)} · ${esc(item.source)}</span>
+                <span class="dk-activity-meta">${esc(item.time)}</span>
               </div>
             </li>
           `).join('')}
         </ul>
-        <button class="dk-add-link" type="button">+ Add activity</button>
       </div>
     </li>
   `).join('');
+
+  const addBtn = `
+    <li class="dk-add-activity-row">
+      <button class="dk-add-activity-btn" type="button" aria-label="Add activity">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+          <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </li>
+  `;
+
+  return groupsHtml + addBtn;
 }
 
 /* ── Fade transition helper ────────────────────────────────── */
