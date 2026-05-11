@@ -744,3 +744,478 @@ export async function initOverview() {
       }
     });
 }
+
+/* ============================================================
+   UNIFIED ITINERARY COMPONENT
+   ============================================================ */
+
+/* ── Static activity data ──────────────────────────────────── */
+
+const STATIC_ACTIVITIES = {
+  beijing: {
+    '2026-06-06': [
+      { period: 'Afternoon', items: [
+        { title: 'Arrive Beijing Capital Airport', time: '10:00', source: 'Self-organised' },
+        { title: 'Check in · The Peninsula Beijing', time: '14:00', source: 'Self-organised' },
+      ]},
+      { period: 'Evening', items: [
+        { title: 'Wangfujing Night Market', time: '18:30', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-07': [
+      { period: 'Morning', items: [
+        { title: 'Mutianyu Great Wall', time: '07:50', source: 'GetYourGuide' },
+        { title: 'Forbidden City', time: '13:00', source: 'Self-organised' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'Temple of Heaven', time: '15:30', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-08': [
+      { period: 'Morning', items: [
+        { title: 'Summer Palace', time: '09:00', source: 'Self-organised' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: '798 Art District', time: '14:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-09': [
+      { period: 'Morning', items: [
+        { title: 'Temple of Confucius', time: '09:30', source: 'Self-organised' },
+        { title: 'Hutong bicycle tour', time: '11:00', source: 'GetYourGuide' },
+      ]},
+    ],
+    '2026-06-10': [
+      { period: 'Morning', items: [
+        { title: 'National Museum of China', time: '10:00', source: 'Self-organised' },
+      ]},
+      { period: 'Evening', items: [
+        { title: 'Peking Duck dinner · Da Dong', time: '19:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-11': [
+      { period: 'Morning', items: [
+        { title: 'Lama Temple', time: '09:00', source: 'Self-organised' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'Beihai Park', time: '13:30', source: 'Self-organised' },
+      ]},
+    ],
+  },
+  xian: {
+    '2026-06-13': [
+      { period: 'Morning', items: [
+        { title: 'Train Beijing → Xi\'an (G87)', time: '09:00', source: 'Self-organised' },
+        { title: 'Arrive Xi\'an North', time: '13:30', source: 'Self-organised' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'City Wall cycling', time: '15:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-14': [
+      { period: 'Morning', items: [
+        { title: 'Terracotta Warriors', time: '08:00', source: 'GetYourGuide' },
+        { title: 'Huaqing Hot Springs', time: '13:00', source: 'Self-organised' },
+      ]},
+      { period: 'Evening', items: [
+        { title: 'Muslim Quarter Night Market', time: '18:30', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-15': [
+      { period: 'Morning', items: [
+        { title: 'Big Wild Goose Pagoda', time: '09:00', source: 'Self-organised' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'Shaanxi History Museum', time: '13:00', source: 'Self-organised' },
+      ]},
+    ],
+  },
+  chengdu: {
+    '2026-06-17': [
+      { period: 'Morning', items: [
+        { title: 'Train Xi\'an → Chengdu (G309)', time: '08:30', source: 'Self-organised' },
+        { title: 'Arrive Chengdu East', time: '12:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-18': [
+      { period: 'Morning', items: [
+        { title: 'Giant Panda Breeding Base', time: '08:00', source: 'GetYourGuide' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'Jinli Ancient Street', time: '14:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-19': [
+      { period: 'All day', items: [
+        { title: 'Day trip to Leshan Giant Buddha', time: '07:30', source: 'GetYourGuide' },
+      ]},
+    ],
+    '2026-06-20': [
+      { period: 'Morning', items: [
+        { title: 'Wenshu Monastery', time: '09:00', source: 'Self-organised' },
+        { title: 'Kuanzhai Xiangzi lanes', time: '11:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-21': [
+      { period: 'Morning', items: [
+        { title: 'People\'s Park tea ceremony', time: '09:30', source: 'Self-organised' },
+      ]},
+    ],
+  },
+  chongqing: {
+    '2026-06-22': [
+      { period: 'Morning', items: [
+        { title: 'Train Chengdu → Chongqing (G8632)', time: '10:00', source: 'Self-organised' },
+        { title: 'Arrive Chongqing North', time: '11:15', source: 'Self-organised' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'Hongya Cave & Jialing River view', time: '14:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-23': [
+      { period: 'Morning', items: [
+        { title: 'Yangtze River cruise', time: '09:00', source: 'GetYourGuide' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'Ciqikou Ancient Town', time: '15:00', source: 'Self-organised' },
+      ]},
+    ],
+  },
+  shanghai: {
+    '2026-06-26': [
+      { period: 'Morning', items: [
+        { title: 'Train Chongqing → Shanghai (G570)', time: '08:00', source: 'Self-organised' },
+        { title: 'Arrive Shanghai Hongqiao', time: '14:30', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-27': [
+      { period: 'Morning', items: [
+        { title: 'The Bund morning walk', time: '08:00', source: 'Self-organised' },
+        { title: 'Yu Garden + Old Town', time: '10:30', source: 'Self-organised' },
+      ]},
+      { period: 'Evening', items: [
+        { title: 'Bund evening walk', time: '19:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-28': [
+      { period: 'Morning', items: [
+        { title: 'Shanghai Museum', time: '09:00', source: 'Self-organised' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'Xintiandi', time: '13:30', source: 'Self-organised' },
+        { title: 'Former French Concession walk', time: '15:00', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-06-29': [
+      { period: 'Morning', items: [
+        { title: 'Zhujiajiao Water Town day trip', time: '08:30', source: 'GetYourGuide' },
+      ]},
+    ],
+    '2026-07-04': [
+      { period: 'Evening', items: [
+        { title: 'Last night dinner · Lost Heaven', time: '19:30', source: 'Self-organised' },
+      ]},
+    ],
+    '2026-07-05': [
+      { period: 'Morning', items: [
+        { title: 'Transfer to Pudong Airport', time: '06:00', source: 'Self-organised' },
+        { title: 'Flight to Tokyo', time: '09:30', source: 'Self-organised' },
+      ]},
+    ],
+  },
+};
+
+/* ── City images ───────────────────────────────────────────── */
+
+const CITY_IMAGES = {
+  beijing:   { src: 'assets/beijing-hero.jpg',  alt: 'Aerial view of Beijing city centre' },
+  xian:      { src: 'https://images.unsplash.com/photo-1690422014252-d53f932e9608?q=80&w=800&auto=format&fit=crop', alt: "Xi'an ancient city wall at dusk" },
+  chengdu:   { src: 'assets/chengdu.jpg',        alt: 'Chengdu cityscape' },
+  chongqing: { src: 'assets/chongqing.jpg',      alt: 'Chongqing skyline at night' },
+  shanghai:  { src: 'assets/shanghai-hero.jpg',  alt: 'Shanghai skyline and Huangpu River' },
+};
+
+/* ── Itinerary: date helpers ───────────────────────────────── */
+
+function itinFormatDate(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
+function itinFormatDateLabel(dateStr, cityName) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dayStr = new Date(y, m - 1, d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return `${dayStr} · ${cityName}`;
+}
+
+function addDays(dateStr, n) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const dt = new Date(y, m - 1, d + n);
+  return dt.toISOString().split('T')[0];
+}
+
+function weekdayAbbr(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', { weekday: 'short' }).slice(0, 2);
+}
+
+function dayNum(dateStr) {
+  return parseInt(dateStr.split('-')[2], 10);
+}
+
+/* ── City key from name ────────────────────────────────────── */
+
+function cityKey(cityName) {
+  return cityName.toLowerCase().replace(/[^a-z]/g, '');
+}
+
+/* ── Render: calendar strip cells ─────────────────────────── */
+
+function renderCalendarStrip(city, activeDate) {
+  const key    = cityKey(city.city);
+  const acts   = STATIC_ACTIVITIES[key] ?? {};
+  const cells  = [];
+
+  for (let i = 0; i < 7; i++) {
+    const date      = addDays(city.date_start, i);
+    const isInRange = date >= city.date_start && date <= city.date_end;
+    const isActive  = date === activeDate;
+    const hasActs   = Boolean(acts[date]?.length);
+
+    const classes = [
+      'dk-itin-cal-cell',
+      !isInRange ? 'is-out-range' : '',
+      hasActs    ? 'has-activities' : '',
+    ].filter(Boolean).join(' ');
+
+    cells.push(`
+      <div
+        class="${classes}"
+        role="gridcell"
+        tabindex="${isInRange ? (isActive ? '0' : '-1') : '-1'}"
+        ${isActive ? 'aria-current="date"' : ''}
+        data-date="${esc(date)}"
+        aria-label="${weekdayAbbr(date)} ${dayNum(date)}${!isInRange ? ' (outside stay)' : ''}"
+        aria-disabled="${!isInRange}"
+      >
+        <span class="dk-itin-cal-weekday">${esc(weekdayAbbr(date))}</span>
+        <span class="dk-itin-cal-day-num">${dayNum(date)}</span>
+        <span class="dk-itin-cal-dot" aria-hidden="true"></span>
+      </div>
+    `);
+  }
+
+  return `
+    <div class="dk-itin-cal-strip" role="grid" aria-label="Days in ${esc(city.city)}">
+      <div class="dk-itin-cal-grid">${cells.join('')}</div>
+    </div>
+  `;
+}
+
+/* ── Render: city list ─────────────────────────────────────── */
+
+function renderCityList(cities, selectedCityId, activeDates) {
+  return cities.map((city, index) => {
+    const key      = cityKey(city.city);
+    const img      = CITY_IMAGES[key] ?? { src: '', alt: city.city };
+    const selected = key === selectedCityId;
+    const dateRange = [city.date_start, city.date_end]
+      .filter(Boolean)
+      .map(itinFormatDate)
+      .join('–');
+    const activeDate = activeDates[key] ?? city.date_start;
+
+    return `
+      <li
+        class="dk-itin-city-item"
+        role="option"
+        aria-selected="${selected}"
+        tabindex="${selected ? '0' : '-1'}"
+        data-city-key="${esc(key)}"
+        data-city-index="${index}"
+      >
+        <div class="dk-itin-city-dot-col" aria-hidden="true">
+          <span class="dk-itin-city-dot"></span>
+        </div>
+        <div class="dk-itin-city-card">
+          <div class="dk-itin-city-photo">
+            <img src="${esc(img.src)}" alt="${esc(img.alt)}" loading="${index === 0 ? 'eager' : 'lazy'}">
+            <span class="dk-itin-date-pill" aria-hidden="true">${esc(dateRange)}</span>
+          </div>
+          ${selected ? renderCalendarStrip(city, activeDate) : ''}
+          <div class="dk-itin-city-names">
+            <span class="dk-itin-name-en">${esc(city.city)}</span>
+            <span class="dk-itin-name-pinyin">${esc(city.city_pinyin ?? '')}</span>
+          </div>
+        </div>
+      </li>
+    `;
+  }).join('');
+}
+
+/* ── Render: activity timeline ─────────────────────────────── */
+
+function renderActivityTimeline(cityKey, dateStr) {
+  const acts = (STATIC_ACTIVITIES[cityKey] ?? {})[dateStr] ?? [];
+
+  if (acts.length === 0) {
+    return `<li class="dk-itin-empty"><span class="dk-itin-empty-text">No activities planned for this day yet.</span></li>`;
+  }
+
+  return acts.map(group => `
+    <li class="dk-timeline-group">
+      <div class="dk-timeline-marker" aria-hidden="true"></div>
+      <div class="dk-timeline-content">
+        <span class="dk-timeline-period">${esc(group.period)}</span>
+        <ul class="dk-activity-list" role="list">
+          ${group.items.map(item => `
+            <li class="dk-activity-card">
+              <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden="true" focusable="false">
+                <circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/>
+                <circle cx="3" cy="7" r="1.4"/><circle cx="7" cy="7" r="1.4"/>
+                <circle cx="3" cy="11" r="1.4"/><circle cx="7" cy="11" r="1.4"/>
+              </svg>
+              <div class="dk-activity-body">
+                <span class="dk-activity-title">${esc(item.title)}</span>
+                <span class="dk-activity-meta">${esc(item.time)} · ${esc(item.source)}</span>
+              </div>
+            </li>
+          `).join('')}
+        </ul>
+        <button class="dk-add-link" type="button">+ Add activity</button>
+      </div>
+    </li>
+  `).join('');
+}
+
+/* ── Fade transition helper ────────────────────────────────── */
+
+function fadePanel(panelEl, renderFn) {
+  panelEl.classList.add('is-fading');
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      renderFn();
+      panelEl.classList.remove('is-fading');
+    }, 150);
+  });
+}
+
+/* ── Main itinerary init ───────────────────────────────────── */
+
+export function initItinerary() {
+  const listEl    = document.getElementById('dk-itin-city-list');
+  const panelEl   = document.getElementById('dk-itin-panel');
+  const labelEl   = document.getElementById('dk-itin-panel-label');
+  const timelineEl = document.getElementById('dk-itin-timeline');
+
+  if (!listEl || !panelEl) return;
+
+  const cities = STATIC_CITIES;
+
+  /* Track selected city and the active day per city */
+  let selectedCityKey  = cityKey(cities[0].city);  /* Beijing on load */
+  const activeDates    = {};
+  cities.forEach(c => { activeDates[cityKey(c.city)] = c.date_start; });
+
+  function updatePanel(key, dateStr) {
+    const city = cities.find(c => cityKey(c.city) === key);
+    if (!city) return;
+    fadePanel(panelEl, () => {
+      labelEl.textContent  = itinFormatDateLabel(dateStr, city.city);
+      timelineEl.innerHTML = renderActivityTimeline(key, dateStr);
+    });
+  }
+
+  function selectCity(key) {
+    if (selectedCityKey === key) return;
+    selectedCityKey = key;
+    listEl.innerHTML = renderCityList(cities, selectedCityKey, activeDates);
+    bindCityListEvents();
+    updatePanel(key, activeDates[key]);
+  }
+
+  function selectDay(key, dateStr) {
+    activeDates[key] = dateStr;
+    /* Re-render just the strip of the selected card */
+    const city    = cities.find(c => cityKey(c.city) === key);
+    const stripEl = listEl.querySelector(`[data-city-key="${CSS.escape(key)}"] .dk-itin-cal-strip`);
+    if (stripEl && city) {
+      const newStrip = document.createElement('div');
+      newStrip.innerHTML = renderCalendarStrip(city, dateStr);
+      stripEl.replaceWith(newStrip.firstElementChild);
+      bindStripEvents(listEl.querySelector(`[data-city-key="${CSS.escape(key)}"]`));
+    }
+    updatePanel(key, dateStr);
+  }
+
+  function bindStripEvents(itemEl) {
+    if (!itemEl) return;
+    const key = itemEl.dataset.cityKey;
+    itemEl.querySelectorAll('.dk-itin-cal-cell:not(.is-out-range)').forEach(cell => {
+      cell.addEventListener('click', e => {
+        e.stopPropagation();
+        selectDay(key, cell.dataset.date);
+      });
+      cell.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.stopPropagation();
+          selectDay(key, cell.dataset.date);
+        }
+        /* Arrow key navigation within strip */
+        const cells = [...itemEl.querySelectorAll('.dk-itin-cal-cell:not(.is-out-range)')];
+        const idx   = cells.indexOf(cell);
+        if (e.key === 'ArrowRight' && idx < cells.length - 1) cells[idx + 1].focus();
+        if (e.key === 'ArrowLeft'  && idx > 0)                 cells[idx - 1].focus();
+      });
+    });
+  }
+
+  function bindCityListEvents() {
+    listEl.querySelectorAll('.dk-itin-city-item').forEach(itemEl => {
+      const key = itemEl.dataset.cityKey;
+
+      itemEl.addEventListener('click', () => selectCity(key));
+
+      itemEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectCity(key);
+        }
+        /* Arrow key navigation between city cards */
+        const items = [...listEl.querySelectorAll('.dk-itin-city-item')];
+        const idx   = items.indexOf(itemEl);
+        if (e.key === 'ArrowDown' && idx < items.length - 1) {
+          e.preventDefault();
+          items[idx + 1].focus();
+          items[idx + 1].setAttribute('tabindex', '0');
+          itemEl.setAttribute('tabindex', '-1');
+        }
+        if (e.key === 'ArrowUp' && idx > 0) {
+          e.preventDefault();
+          items[idx - 1].focus();
+          items[idx - 1].setAttribute('tabindex', '0');
+          itemEl.setAttribute('tabindex', '-1');
+        }
+        /* Tab moves focus into the strip */
+        if (e.key === 'Tab' && !e.shiftKey) {
+          const firstCell = itemEl.querySelector('.dk-itin-cal-cell[aria-current="date"]');
+          if (firstCell) { e.preventDefault(); firstCell.focus(); }
+        }
+      });
+
+      bindStripEvents(itemEl);
+    });
+  }
+
+  /* Initial render — Beijing selected, day 1 activities shown */
+  listEl.innerHTML = renderCityList(cities, selectedCityKey, activeDates);
+  bindCityListEvents();
+
+  const firstCity = cities[0];
+  const firstDate = activeDates[selectedCityKey];
+  labelEl.textContent  = itinFormatDateLabel(firstDate, firstCity.city);
+  timelineEl.innerHTML = renderActivityTimeline(selectedCityKey, firstDate);
+}

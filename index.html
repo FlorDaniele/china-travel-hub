@@ -221,80 +221,27 @@
           <button class="dk-view-all" id="dk-packing-see-all">View all →</button>
         </section>
 
-        <!-- Row 3, Col A: Itinerary -->
+        <!-- Row 3, Cols 1-2: Unified Itinerary -->
         <section class="dk-card dk-itinerary" aria-labelledby="dk-itinerary-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-itinerary-title">Itinerary</h2>
           </div>
-          <!-- City filter -->
-          <div class="dk-filter-group" role="group" aria-label="Filter by city">
-            <span class="dk-filter-sublabel" aria-hidden="true">City</span>
-            <div class="dk-filter-city-select">
-              <select class="dk-city-select" aria-label="Select city for itinerary">
-                <option value="beijing" selected>Beijing</option>
-                <option value="xian">Xi'an</option>
-                <option value="chengdu">Chengdu</option>
-                <option value="chongqing">Chongqing</option>
-                <option value="shanghai">Shanghai</option>
-              </select>
-              <button class="dk-add-city-link">+ Add new city</button>
+          <div class="dk-itin-layout">
+            <!-- Left: city list (240px) -->
+            <div class="dk-itin-cities-col">
+              <ul
+                class="dk-itin-city-list"
+                role="listbox"
+                aria-label="Trip cities"
+                id="dk-itin-city-list"
+              ></ul>
+            </div>
+            <!-- Right: activity panel -->
+            <div class="dk-itin-panel" id="dk-itin-panel" aria-live="polite" aria-atomic="true">
+              <p class="dk-itin-panel-label" id="dk-itin-panel-label" aria-live="polite"></p>
+              <ol class="dk-timeline" role="list" id="dk-itin-timeline" aria-label="Daily itinerary"></ol>
             </div>
           </div>
-          <!-- Date filter -->
-          <div class="dk-filter-group" role="group" aria-label="Filter by date">
-            <span class="dk-filter-sublabel" aria-hidden="true">Date</span>
-            <div class="dk-filter-tabs" role="tablist" aria-label="Date filter">
-              <button class="dk-filter-tab active" role="tab" aria-selected="true">7 Jun</button>
-              <button class="dk-filter-tab" role="tab" aria-selected="false">8 Jun</button>
-              <button class="dk-filter-tab" role="tab" aria-selected="false">9 Jun</button>
-              <button class="dk-filter-tab" role="tab" aria-selected="false">10 Jun</button>
-            </div>
-          </div>
-          <!-- Timeline -->
-          <ol class="dk-timeline" role="list" aria-label="Daily itinerary for 7 Jun, Beijing">
-            <li class="dk-timeline-group">
-              <div class="dk-timeline-marker" aria-hidden="true"></div>
-              <div class="dk-timeline-content">
-                <span class="dk-timeline-period">Morning</span>
-                <ul class="dk-activity-list" role="list">
-                  <li class="dk-activity-card">
-                    <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/><circle cx="3" cy="7" r="1.4"/><circle cx="7" cy="7" r="1.4"/><circle cx="3" cy="11" r="1.4"/><circle cx="7" cy="11" r="1.4"/></svg>
-                    <div class="dk-activity-body">
-                      <span class="dk-activity-title">Mutianyu Great Wall</span>
-                      <span class="dk-activity-meta">07:50 · GetYourGuide</span>
-                    </div>
-                    <button class="dk-remove-btn" aria-label="Remove Mutianyu Great Wall from itinerary">×</button>
-                  </li>
-                  <li class="dk-activity-card">
-                    <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/><circle cx="3" cy="7" r="1.4"/><circle cx="7" cy="7" r="1.4"/><circle cx="3" cy="11" r="1.4"/><circle cx="7" cy="11" r="1.4"/></svg>
-                    <div class="dk-activity-body">
-                      <span class="dk-activity-title">Forbidden City</span>
-                      <span class="dk-activity-meta">13:00 · Self-organised</span>
-                    </div>
-                    <button class="dk-remove-btn" aria-label="Remove Forbidden City from itinerary">×</button>
-                  </li>
-                </ul>
-                <button class="dk-add-link">+ Add activity</button>
-              </div>
-            </li>
-            <li class="dk-timeline-group">
-              <div class="dk-timeline-marker" aria-hidden="true"></div>
-              <div class="dk-timeline-content">
-                <span class="dk-timeline-period">Afternoon</span>
-                <ul class="dk-activity-list" role="list">
-                  <li class="dk-activity-card">
-                    <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/><circle cx="3" cy="7" r="1.4"/><circle cx="7" cy="7" r="1.4"/><circle cx="3" cy="11" r="1.4"/><circle cx="7" cy="11" r="1.4"/></svg>
-                    <div class="dk-activity-body">
-                      <span class="dk-activity-title">Temple of Heaven</span>
-                      <span class="dk-activity-meta">15:30 · Self-organised</span>
-                    </div>
-                    <button class="dk-remove-btn" aria-label="Remove Temple of Heaven from itinerary">×</button>
-                  </li>
-                </ul>
-                <button class="dk-add-link">+ Add activity</button>
-              </div>
-            </li>
-          </ol>
         </section>
 
         <!-- Row 3, Col B top: Calendar -->
@@ -374,68 +321,6 @@
               <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#f4c89e" aria-hidden="true"></span>Chongqing</span>
               <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#f4b8c0" aria-hidden="true"></span>Shanghai</span>
             </div>
-          </section>
-
-          <section class="dk-card dk-cities" aria-labelledby="dk-cities-title">
-            <div class="dk-card-header">
-              <h2 class="dk-card-title" id="dk-cities-title">Cities <span class="dk-cities-count">5 total</span></h2>
-              <div class="dk-header-actions">
-                <button class="dk-add-btn" aria-label="Add city">Add city</button>
-                <button class="dk-text-btn dk-action-link" aria-label="Edit cities list">Edit</button>
-              </div>
-            </div>
-            <ul class="dk-cities-grid" role="list" aria-label="Trip cities">
-              <li class="dk-city-card" role="listitem">
-                <div class="dk-city-photo">
-                  <img src="assets/beijing-hero.jpg" alt="Aerial view of Beijing">
-                </div>
-                <div class="dk-city-info">
-                  <span class="dk-city-pinyin">Běijīng</span>
-                  <span class="dk-city-hanzi">北京</span>
-                  <span class="dk-city-dates">6–12 Jun</span>
-                </div>
-              </li>
-              <li class="dk-city-card" role="listitem">
-                <div class="dk-city-photo">
-                  <img src="https://images.unsplash.com/photo-1690422014252-d53f932e9608?q=80&w=800&auto=format&fit=crop" alt="Xi'an ancient city wall at dusk">
-                </div>
-                <div class="dk-city-info">
-                  <span class="dk-city-pinyin">Xī'ān</span>
-                  <span class="dk-city-hanzi">西安</span>
-                  <span class="dk-city-dates">12–15 Jun</span>
-                </div>
-              </li>
-              <li class="dk-city-card" role="listitem">
-                <div class="dk-city-photo">
-                  <img src="assets/chengdu.jpg" alt="Chengdu cityscape">
-                </div>
-                <div class="dk-city-info">
-                  <span class="dk-city-pinyin">Chéngdū</span>
-                  <span class="dk-city-hanzi">成都</span>
-                  <span class="dk-city-dates">15–18 Jun</span>
-                </div>
-              </li>
-              <li class="dk-city-card" role="listitem">
-                <div class="dk-city-photo">
-                  <img src="assets/chongqing.jpg" alt="Chongqing skyline at night">
-                </div>
-                <div class="dk-city-info">
-                  <span class="dk-city-pinyin">Chóngqìng</span>
-                  <span class="dk-city-hanzi">重庆</span>
-                  <span class="dk-city-dates">18–19 Jun</span>
-                </div>
-              </li>
-              <li class="dk-city-card" role="listitem">
-                <div class="dk-city-photo">
-                  <img src="assets/shanghai-hero.jpg" alt="Shanghai skyline and Huangpu River">
-                </div>
-                <div class="dk-city-info">
-                  <span class="dk-city-pinyin">Shànghǎi</span>
-                  <span class="dk-city-hanzi">上海</span>
-                  <span class="dk-city-dates">20–25 Jun</span>
-                </div>
-              </li>
-            </ul>
           </section>
 
         <!-- Row 3, Col C: Next Up — spans rows 3 and 4 via CSS -->
