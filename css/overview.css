@@ -1678,18 +1678,18 @@
   }
 
   .dk-next-title {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
   }
 
   .dk-next-meta {
-    font-size: 12px;
+    font-size: 16px;
     color: var(--text-secondary);
   }
 
   .dk-next-booking-link {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--action);
     text-decoration: none;

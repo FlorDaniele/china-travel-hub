@@ -174,13 +174,13 @@ function renderNextTourItem(activity) {
 
   return `
     <li class="dk-next-item">
-      <div class="dk-next-photo">
-        <img src="assets/mutianyu-wall.jpg" alt="${esc(activity.title)}">
-      </div>
       <div class="dk-next-body">
         <span class="dk-next-title">${esc(activity.title)}</span>
         <span class="dk-next-meta">${esc(meta)}</span>
         <a href="#" class="dk-next-booking-link">View booking ↗</a>
+      </div>
+      <div class="dk-next-photo">
+        <img src="assets/mutianyu-wall.jpg" alt="${esc(activity.title)}">
       </div>
     </li>
   `;
