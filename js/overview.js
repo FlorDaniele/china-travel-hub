@@ -128,48 +128,77 @@ async function loadReminders() {
   return data;
 }
 
-async function loadNextUpBookings() {
-  const { data, error } = await supabase
-    .from('bookings')
-    .select('*')
-    .gte('date_start', todayStr())
-    .order('date_start', { ascending: true })
-    .limit(2);
-  if (error) throw error;
-  saveToStorage('next_up_bookings', data);
-  return data;
+function formatTourDate(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-function renderDesktopNextUpItems(bookings) {
-  if (!bookings || bookings.length === 0) {
-    return `<li class="dk-next-item"><span class="dk-next-meta">No upcoming bookings</span></li>`;
+async function loadNextTour() {
+  const today = todayStr();
+
+  // Prefer upcoming tours; fall back to most recent past tour
+  const { data: upcoming, error: upErr } = await supabase
+    .from('activities')
+    .select('*')
+    .eq('type', 'tour')
+    .gte('date', today)
+    .order('date', { ascending: true })
+    .order('time', { ascending: true })
+    .limit(1);
+  if (upErr) throw upErr;
+  if (upcoming && upcoming.length > 0) return upcoming[0];
+
+  const { data: past, error: pastErr } = await supabase
+    .from('activities')
+    .select('*')
+    .eq('type', 'tour')
+    .lt('date', today)
+    .order('date', { ascending: false })
+    .order('time', { ascending: false })
+    .limit(1);
+  if (pastErr) throw pastErr;
+  return (past && past.length > 0) ? past[0] : null;
+}
+
+function renderNextTourItem(activity) {
+  if (!activity) {
+    return `<li class="dk-next-item"><span class="dk-next-meta" style="color:var(--text-secondary)">No upcoming tours</span></li>`;
   }
-  return bookings.map(b => `
+
+  const meta = [
+    formatTourDate(activity.date),
+    activity.time ?? null,
+    activity.source ?? null,
+  ].filter(Boolean).join(' · ');
+
+  return `
     <li class="dk-next-item">
       <div class="dk-next-photo">
-        <img src="assets/placeholder-tour.jpg" alt="${esc(b.title)}">
+        <img src="assets/mutianyu-wall.jpg" alt="${esc(activity.title)}">
       </div>
       <div class="dk-next-body">
-        <span class="dk-next-title">${esc(b.title)}</span>
-        <span class="dk-next-meta">${formatDate(b.date_start)}${b.type ? ' · ' + esc(b.type) : ''}</span>
+        <span class="dk-next-title">${esc(activity.title)}</span>
+        <span class="dk-next-meta">${esc(meta)}</span>
+        <a href="#" class="dk-next-booking-link">View booking ↗</a>
       </div>
     </li>
-  `).join('');
+  `;
 }
 
 export async function initDesktopNextUp() {
   const listEl = document.querySelector('.dk-next-up .dk-next-list');
   if (!listEl) return;
 
-  let bookings = [];
-  try {
-    bookings = await loadNextUpBookings();
-  } catch (err) {
-    console.warn('[overview] next-up load failed:', err);
-    bookings = loadFromStorage('next_up_bookings') ?? [];
-  }
+  listEl.innerHTML = `<li class="dk-next-item"><span class="dk-next-meta" style="color:var(--text-secondary)">Loading…</span></li>`;
 
-  listEl.innerHTML = renderDesktopNextUpItems(bookings);
+  try {
+    const activity = await loadNextTour();
+    listEl.innerHTML = renderNextTourItem(activity);
+  } catch (err) {
+    console.warn('[overview] next-tour load failed:', err);
+    listEl.innerHTML = `<li class="dk-next-item"><span class="dk-next-meta" style="color:var(--text-secondary)">No upcoming tours</span></li>`;
+  }
 }
 
 /* ── Render: single booking type card ──────────────────────── */
@@ -754,172 +783,189 @@ export async function initOverview() {
 const STATIC_ACTIVITIES = {
   beijing: {
     '2026-06-06': [
-      { period: 'Afternoon', items: [
-        { title: 'Arrive Beijing Capital Airport', time: '10:00', source: 'Self-organised' },
-        { title: 'Check in · The Peninsula Beijing', time: '14:00', source: 'Self-organised' },
+      { period: 'Morning', items: [
+        { title: 'Arrive Beijing Capital Airport', time: '10:00', source: 'Self-organised', type: 'transport' },
       ]},
-      { period: 'Evening', items: [
-        { title: 'Wangfujing Night Market', time: '18:30', source: 'Self-organised' },
+      { period: 'Afternoon', items: [
+        { title: 'Check-in Yitel Hotel', time: '14:00', source: 'Self-organised', type: 'accommodation' },
       ]},
     ],
     '2026-06-07': [
       { period: 'Morning', items: [
-        { title: 'Mutianyu Great Wall', time: '07:50', source: 'GetYourGuide' },
-        { title: 'Forbidden City', time: '13:00', source: 'Self-organised' },
+        { title: 'Mutianyu Great Wall', time: '07:50', source: 'GetYourGuide', type: 'tour' },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'Temple of Heaven', time: '15:30', source: 'Self-organised' },
+        { title: 'Forbidden City', time: '13:00', source: 'Self-organised', type: 'sightseeing' },
       ]},
     ],
     '2026-06-08': [
       { period: 'Morning', items: [
-        { title: 'Summer Palace', time: '09:00', source: 'Self-organised' },
+        { title: 'Walking Tour', time: '10:00', source: 'GetYourGuide', type: 'tour' },
       ]},
       { period: 'Afternoon', items: [
-        { title: '798 Art District', time: '14:00', source: 'Self-organised' },
+        { title: 'Qianmen Street', time: '14:00', source: 'Self-organised', type: 'street' },
+        { title: 'Wangfujing', time: '15:30', source: 'Self-organised', type: 'street' },
+        { title: 'Nanluogu Xiang', time: '17:00', source: 'Self-organised', type: 'street' },
+        { title: 'Shichahai Scenic Area', time: '18:30', source: 'Self-organised', type: 'sightseeing' },
       ]},
     ],
     '2026-06-09': [
       { period: 'Morning', items: [
-        { title: 'Temple of Confucius', time: '09:30', source: 'Self-organised' },
-        { title: 'Hutong bicycle tour', time: '11:00', source: 'GetYourGuide' },
+        { title: 'Drum Tower', time: '09:00', source: 'Self-organised', type: 'cultural' },
+        { title: 'Jingshan Park', time: '10:30', source: 'Self-organised', type: 'park' },
+      ]},
+      { period: 'Afternoon', items: [
+        { title: 'National Museum of China', time: '13:00', source: 'Self-organised', type: 'cultural' },
+        { title: 'Beihai Park', time: '15:30', source: 'Self-organised', type: 'park' },
       ]},
     ],
     '2026-06-10': [
       { period: 'Morning', items: [
-        { title: 'National Museum of China', time: '10:00', source: 'Self-organised' },
+        { title: 'Temple of Heaven', time: '09:00', source: 'Self-organised', type: 'temple' },
+        { title: 'Hongqiao Pearl Market', time: '11:30', source: 'Self-organised', type: 'market' },
       ]},
-      { period: 'Evening', items: [
-        { title: 'Peking Duck dinner · Da Dong', time: '19:00', source: 'Self-organised' },
+      { period: 'Afternoon', items: [
+        { title: 'Eight Great Hutongs', time: '14:00', source: 'Self-organised', type: 'street' },
+        { title: 'Jiuwan Hutong', time: '15:30', source: 'Self-organised', type: 'street' },
+        { title: "Prince Kung's Palace Museum", time: '16:30', source: 'Self-organised', type: 'cultural' },
+        { title: 'Sanlitun', time: '19:00', source: 'Self-organised', type: 'street' },
       ]},
     ],
     '2026-06-11': [
       { period: 'Morning', items: [
-        { title: 'Lama Temple', time: '09:00', source: 'Self-organised' },
+        { title: 'Summer Palace', time: '09:00', source: 'Self-organised', type: 'sightseeing' },
+        { title: 'Yuanmingyuan Park', time: '12:00', source: 'Self-organised', type: 'park' },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'Beihai Park', time: '13:30', source: 'Self-organised' },
+        { title: 'Xiushui Street', time: '14:30', source: 'Self-organised', type: 'street' },
+        { title: 'Lama Temple', time: '16:30', source: 'Self-organised', type: 'temple' },
+      ]},
+    ],
+    '2026-06-12': [
+      { period: 'Morning', items: [
+        { title: 'Check-out Yitel Hotel', time: '10:00', source: 'Self-organised', type: 'accommodation' },
+        { title: "Train Beijing to Xi'an", time: '13:00', source: 'Self-organised', type: 'transport' },
       ]},
     ],
   },
   xian: {
     '2026-06-13': [
       { period: 'Morning', items: [
-        { title: 'Train Beijing → Xi\'an (G87)', time: '09:00', source: 'Self-organised' },
-        { title: 'Arrive Xi\'an North', time: '13:30', source: 'Self-organised' },
+        { title: 'Train Beijing → Xi\'an (G87)', time: '09:00', source: 'Self-organised', type: null },
+        { title: 'Arrive Xi\'an North', time: '13:30', source: 'Self-organised', type: null },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'City Wall cycling', time: '15:00', source: 'Self-organised' },
+        { title: 'City Wall cycling', time: '15:00', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-14': [
       { period: 'Morning', items: [
-        { title: 'Terracotta Warriors', time: '08:00', source: 'GetYourGuide' },
-        { title: 'Huaqing Hot Springs', time: '13:00', source: 'Self-organised' },
+        { title: 'Terracotta Warriors', time: '08:00', source: 'GetYourGuide', type: null },
+        { title: 'Huaqing Hot Springs', time: '13:00', source: 'Self-organised', type: null },
       ]},
       { period: 'Evening', items: [
-        { title: 'Muslim Quarter Night Market', time: '18:30', source: 'Self-organised' },
+        { title: 'Muslim Quarter Night Market', time: '18:30', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-15': [
       { period: 'Morning', items: [
-        { title: 'Big Wild Goose Pagoda', time: '09:00', source: 'Self-organised' },
+        { title: 'Big Wild Goose Pagoda', time: '09:00', source: 'Self-organised', type: null },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'Shaanxi History Museum', time: '13:00', source: 'Self-organised' },
+        { title: 'Shaanxi History Museum', time: '13:00', source: 'Self-organised', type: null },
       ]},
     ],
   },
   chengdu: {
     '2026-06-17': [
       { period: 'Morning', items: [
-        { title: 'Train Xi\'an → Chengdu (G309)', time: '08:30', source: 'Self-organised' },
-        { title: 'Arrive Chengdu East', time: '12:00', source: 'Self-organised' },
+        { title: 'Train Xi\'an → Chengdu (G309)', time: '08:30', source: 'Self-organised', type: null },
+        { title: 'Arrive Chengdu East', time: '12:00', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-18': [
       { period: 'Morning', items: [
-        { title: 'Giant Panda Breeding Base', time: '08:00', source: 'GetYourGuide' },
+        { title: 'Giant Panda Breeding Base', time: '08:00', source: 'GetYourGuide', type: null },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'Jinli Ancient Street', time: '14:00', source: 'Self-organised' },
+        { title: 'Jinli Ancient Street', time: '14:00', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-19': [
       { period: 'All day', items: [
-        { title: 'Day trip to Leshan Giant Buddha', time: '07:30', source: 'GetYourGuide' },
+        { title: 'Day trip to Leshan Giant Buddha', time: '07:30', source: 'GetYourGuide', type: null },
       ]},
     ],
     '2026-06-20': [
       { period: 'Morning', items: [
-        { title: 'Wenshu Monastery', time: '09:00', source: 'Self-organised' },
-        { title: 'Kuanzhai Xiangzi lanes', time: '11:00', source: 'Self-organised' },
+        { title: 'Wenshu Monastery', time: '09:00', source: 'Self-organised', type: null },
+        { title: 'Kuanzhai Xiangzi lanes', time: '11:00', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-21': [
       { period: 'Morning', items: [
-        { title: 'People\'s Park tea ceremony', time: '09:30', source: 'Self-organised' },
+        { title: 'People\'s Park tea ceremony', time: '09:30', source: 'Self-organised', type: null },
       ]},
     ],
   },
   chongqing: {
     '2026-06-22': [
       { period: 'Morning', items: [
-        { title: 'Train Chengdu → Chongqing (G8632)', time: '10:00', source: 'Self-organised' },
-        { title: 'Arrive Chongqing North', time: '11:15', source: 'Self-organised' },
+        { title: 'Train Chengdu → Chongqing (G8632)', time: '10:00', source: 'Self-organised', type: null },
+        { title: 'Arrive Chongqing North', time: '11:15', source: 'Self-organised', type: null },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'Hongya Cave & Jialing River view', time: '14:00', source: 'Self-organised' },
+        { title: 'Hongya Cave & Jialing River view', time: '14:00', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-23': [
       { period: 'Morning', items: [
-        { title: 'Yangtze River cruise', time: '09:00', source: 'GetYourGuide' },
+        { title: 'Yangtze River cruise', time: '09:00', source: 'GetYourGuide', type: null },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'Ciqikou Ancient Town', time: '15:00', source: 'Self-organised' },
+        { title: 'Ciqikou Ancient Town', time: '15:00', source: 'Self-organised', type: null },
       ]},
     ],
   },
   shanghai: {
     '2026-06-26': [
       { period: 'Morning', items: [
-        { title: 'Train Chongqing → Shanghai (G570)', time: '08:00', source: 'Self-organised' },
-        { title: 'Arrive Shanghai Hongqiao', time: '14:30', source: 'Self-organised' },
+        { title: 'Train Chongqing → Shanghai (G570)', time: '08:00', source: 'Self-organised', type: null },
+        { title: 'Arrive Shanghai Hongqiao', time: '14:30', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-27': [
       { period: 'Morning', items: [
-        { title: 'The Bund morning walk', time: '08:00', source: 'Self-organised' },
-        { title: 'Yu Garden + Old Town', time: '10:30', source: 'Self-organised' },
+        { title: 'The Bund morning walk', time: '08:00', source: 'Self-organised', type: null },
+        { title: 'Yu Garden + Old Town', time: '10:30', source: 'Self-organised', type: null },
       ]},
       { period: 'Evening', items: [
-        { title: 'Bund evening walk', time: '19:00', source: 'Self-organised' },
+        { title: 'Bund evening walk', time: '19:00', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-28': [
       { period: 'Morning', items: [
-        { title: 'Shanghai Museum', time: '09:00', source: 'Self-organised' },
+        { title: 'Shanghai Museum', time: '09:00', source: 'Self-organised', type: null },
       ]},
       { period: 'Afternoon', items: [
-        { title: 'Xintiandi', time: '13:30', source: 'Self-organised' },
-        { title: 'Former French Concession walk', time: '15:00', source: 'Self-organised' },
+        { title: 'Xintiandi', time: '13:30', source: 'Self-organised', type: null },
+        { title: 'Former French Concession walk', time: '15:00', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-06-29': [
       { period: 'Morning', items: [
-        { title: 'Zhujiajiao Water Town day trip', time: '08:30', source: 'GetYourGuide' },
+        { title: 'Zhujiajiao Water Town day trip', time: '08:30', source: 'GetYourGuide', type: null },
       ]},
     ],
     '2026-07-04': [
       { period: 'Evening', items: [
-        { title: 'Last night dinner · Lost Heaven', time: '19:30', source: 'Self-organised' },
+        { title: 'Last night dinner · Lost Heaven', time: '19:30', source: 'Self-organised', type: null },
       ]},
     ],
     '2026-07-05': [
       { period: 'Morning', items: [
-        { title: 'Transfer to Pudong Airport', time: '06:00', source: 'Self-organised' },
-        { title: 'Flight to Tokyo', time: '09:30', source: 'Self-organised' },
+        { title: 'Transfer to Pudong Airport', time: '06:00', source: 'Self-organised', type: null },
+        { title: 'Flight to Tokyo', time: '09:30', source: 'Self-organised', type: null },
       ]},
     ],
   },
