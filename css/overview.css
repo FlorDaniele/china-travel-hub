@@ -482,6 +482,8 @@
   .dk-next-up {
     grid-column: 3;
     grid-row: 4;
+    display: flex;
+    flex-direction: column;
   }
 
   /* ── Card base ──────────────────────────────────────────── */
@@ -1636,20 +1638,22 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+    flex: 1;
   }
 
   .dk-next-item {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    flex: 1;
   }
 
   .dk-next-photo {
     width: 100%;
-    height: 180px;
+    flex: 1;
+    min-height: 180px;
     background: var(--warm-gold-light);
     border-radius: 8px;
-    flex-shrink: 0;
     overflow: hidden;
   }
 
@@ -1951,7 +1955,7 @@
   .dk-itin-cal-strip {
     background: var(--background);
     border-top: 0.5px solid var(--border);
-    padding: 6px 8px;
+    padding: 8px;
     display: none; /* hidden by default */
   }
 
