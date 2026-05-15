@@ -1147,15 +1147,15 @@ function renderActivityTimeline(cityKey, dateStr) {
         <ul class="dk-activity-list" role="list">
           ${group.items.map(item => `
             <li class="dk-activity-card">
+              <div class="dk-activity-body">
+                <span class="dk-activity-title">${esc(item.title)}</span>
+                <span class="dk-activity-meta">${esc(item.time)}</span>
+              </div>
               <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden="true" focusable="false">
                 <circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/>
                 <circle cx="3" cy="7" r="1.4"/><circle cx="7" cy="7" r="1.4"/>
                 <circle cx="3" cy="11" r="1.4"/><circle cx="7" cy="11" r="1.4"/>
               </svg>
-              <div class="dk-activity-body">
-                <span class="dk-activity-title">${esc(item.title)}</span>
-                <span class="dk-activity-meta">${esc(item.time)}</span>
-              </div>
             </li>
           `).join('')}
         </ul>
@@ -1166,9 +1166,9 @@ function renderActivityTimeline(cityKey, dateStr) {
   const addBtn = `
     <li class="dk-add-activity-row">
       <button class="dk-add-activity-btn" type="button" aria-label="Add activity">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
-          <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+          <line x1="7" y1="1" x2="7" y2="13"/>
+          <line x1="1" y1="7" x2="13" y2="7"/>
         </svg>
       </button>
     </li>

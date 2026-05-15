@@ -27,6 +27,14 @@ navTabs.forEach(tab => {
   tab.addEventListener('click', () => activateTab(tab.dataset.tab));
 });
 
+/* ── Calendar: bold today's date ───────────────────────────── */
+
+function initCalendar() {
+  const today = new Date().toISOString().split('T')[0];
+  const timeEl = document.querySelector(`.dk-cal-grid time[datetime="${today}"]`);
+  if (timeEl) timeEl.style.fontWeight = '700';
+}
+
 /* ── Init ──────────────────────────────────────────────────── */
 
 async function init() {
@@ -36,6 +44,7 @@ async function init() {
   initDesktopBookings();
   initDesktopPacking();
   initItinerary();
+  initCalendar();
   await Promise.all([initOverview(), initDesktopNextUp()]);
 }
 
