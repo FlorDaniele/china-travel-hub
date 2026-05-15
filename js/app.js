@@ -3,7 +3,7 @@
    Tab switching, app initialisation.
    ============================================================ */
 
-import { initOverview, initDesktopToggle, initDesktopNextUp, initDesktopBookings, initDesktopPacking, initItinerary } from './overview.js';
+import { initOverview, initDesktopToggle, initDesktopNextUp, initDesktopBookings, initDesktopPacking, initItinerary, initDesktopCountdown, initDesktopReminders } from './overview.js';
 import { initSidebar } from './sidebar.js';
 
 /* ── Tab switching ─────────────────────────────────────────── */
@@ -45,7 +45,8 @@ async function init() {
   initDesktopPacking();
   initItinerary();
   initCalendar();
-  await Promise.all([initOverview(), initDesktopNextUp()]);
+  initDesktopReminders();
+  await Promise.all([initOverview(), initDesktopNextUp(), initDesktopCountdown()]);
 }
 
 init();

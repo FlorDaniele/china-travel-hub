@@ -43,8 +43,8 @@
           <img src="assets/beijing-hero.jpg" alt="Aerial view of Beijing city centre during daytime" class="dk-hero-img">
           <div class="dk-hero-gradient" aria-hidden="true"></div>
           <div class="dk-hero-content">
-            <span class="dk-countdown-number">48</span>
-            <span class="dk-countdown-label">days to Beijing</span>
+            <span class="dk-countdown-number" id="dk-countdown-number">–</span>
+            <span class="dk-countdown-label" id="dk-countdown-label">days to Beijing</span>
           </div>
           <div class="dk-mode-toggle" role="group" aria-label="Switch app mode">
             <button class="dk-mode-btn active" aria-pressed="true">Planning</button>
@@ -166,6 +166,33 @@
               <div class="dk-reminder-body">
                 <span class="dk-reminder-title">Print visa confirmation</span>
                 <span class="dk-reminder-due dk-due-future" id="rm-5-due">May 15 · 19 days</span>
+              </div>
+            </li>
+            <li class="dk-reminder-item">
+              <label class="dk-booking-cb-wrap" for="rm-6" aria-label="Mark Book Mutianyu Great Wall tickets as done">
+                <input type="checkbox" id="rm-6" class="dk-booking-cb" aria-describedby="rm-6-due">
+              </label>
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Book Mutianyu Great Wall tickets</span>
+                <span class="dk-reminder-due dk-due-future" id="rm-6-due">May 25 · 10 days</span>
+              </div>
+            </li>
+            <li class="dk-reminder-item">
+              <label class="dk-booking-cb-wrap" for="rm-7" aria-label="Mark Download offline maps for Beijing as done">
+                <input type="checkbox" id="rm-7" class="dk-booking-cb" aria-describedby="rm-7-due">
+              </label>
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Download offline maps for Beijing</span>
+                <span class="dk-reminder-due dk-due-future" id="rm-7-due">May 30 · 15 days</span>
+              </div>
+            </li>
+            <li class="dk-reminder-item">
+              <label class="dk-booking-cb-wrap" for="rm-8" aria-label="Mark Pack and weigh luggage as done">
+                <input type="checkbox" id="rm-8" class="dk-booking-cb" aria-describedby="rm-8-due">
+              </label>
+              <div class="dk-reminder-body">
+                <span class="dk-reminder-title">Pack and weigh luggage</span>
+                <span class="dk-reminder-due dk-due-future" id="rm-8-due">Jun 3 · 19 days</span>
               </div>
             </li>
           </ul>

@@ -519,6 +519,11 @@ a {
   display: none;
 }
 
+/* When hide-done is active, collapse checked reminder items */
+.sidebar-content[data-hide-done="true"] .sb-reminder-item:has(.sb-booking-cb:checked) {
+  display: none;
+}
+
 /* ── Sidebar bookings: section headers ─────────────────────── */
 
 .sb-section-header {

@@ -1186,7 +1186,7 @@
     min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: #BEBEBE transparent;
+    scrollbar-color: var(--border) transparent;
   }
 
   .dk-packing-list-wrapper::-webkit-scrollbar {
@@ -1194,17 +1194,16 @@
   }
 
   .dk-packing-list-wrapper::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: 4px;
+    background: transparent;
   }
 
   .dk-packing-list-wrapper::-webkit-scrollbar-thumb {
-    background: #BEBEBE;
+    background: var(--border);
     border-radius: 4px;
   }
 
   .dk-packing-list-wrapper::-webkit-scrollbar-thumb:hover {
-    background: #6B6B80;
+    background: var(--text-secondary);
   }
 
   .dk-packing-category {
@@ -1519,7 +1518,7 @@
   .dk-cal-legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 10px;
+    gap: 6px 14px;
     margin-top: 6px;
   }
 
@@ -1750,7 +1749,6 @@
     min-width: 0;
     overflow-y: auto;
     padding-right: 16px;
-    border-right: 1px solid var(--border);
     scrollbar-width: thin;
     scrollbar-color: #BEBEBE transparent;
   }

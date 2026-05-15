@@ -28,6 +28,7 @@ export function openSidebar(title, contentHTML) {
   contentEl.innerHTML  = contentHTML;
   contentEl.dataset.hideBooked = '';
   contentEl.dataset.hidePacked = '';
+  contentEl.dataset.hideDone   = '';
   panel.setAttribute('aria-label', title);
 
   // Remove hidden so the element is in the layout, then animate on next tick
@@ -117,6 +118,9 @@ export function initSidebar() {
     }
     if (e.target.id === 'sb-hide-packed') {
       _contentEl().dataset.hidePacked = e.target.checked ? 'true' : '';
+    }
+    if (e.target.id === 'sb-hide-done') {
+      _contentEl().dataset.hideDone = e.target.checked ? 'true' : '';
     }
   });
 }

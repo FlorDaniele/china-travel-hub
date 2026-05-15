@@ -12,6 +12,52 @@ import { openSidebar } from './sidebar.js';
 
 const DEPARTURE_DATE = '2026-06-06';
 
+/* ── Trip config loader ────────────────────────────────────── */
+
+async function loadTripConfig() {
+  const { data, error } = await supabase.from('trip_config').select('*');
+  if (error) throw error;
+  return data;
+}
+
+function computeCountdown(configRows) {
+  const get = key => configRows.find(r => r.key === key)?.value ?? null;
+  const departureDate  = get('flight_departure_date');
+  const demoMode       = get('demo_mode');
+  const demoRef        = get('demo_reference_date');
+  if (!departureDate) return null;
+  const refStr = (demoMode === 'true' && demoRef) ? demoRef : todayStr();
+  const [ry, rm, rd] = refStr.split('-').map(Number);
+  const [dy, dm, dd] = departureDate.split('-').map(Number);
+  const ref = new Date(ry, rm - 1, rd);
+  const dep = new Date(dy, dm - 1, dd);
+  return Math.ceil((dep - ref) / 86400000);
+}
+
+export async function initDesktopCountdown() {
+  const numEl   = document.getElementById('dk-countdown-number');
+  const labelEl = document.getElementById('dk-countdown-label');
+  if (!numEl) return;
+  try {
+    const configRows = await loadTripConfig();
+    const days = computeCountdown(configRows);
+    if (days === null) return;
+    const demoMode = configRows.find(r => r.key === 'demo_mode')?.value;
+    if (days > 0) {
+      numEl.textContent = days;
+    } else if (days === 0) {
+      numEl.textContent = 'Today';
+      if (labelEl) labelEl.textContent = 'Departure day';
+    } else if (demoMode !== 'true') {
+      numEl.textContent = '';
+      if (labelEl) labelEl.textContent = 'Trip in progress';
+    }
+  } catch (err) {
+    console.warn('[overview] trip_config load failed:', err);
+    if (numEl.textContent === '–') numEl.textContent = '21';
+  }
+}
+
 /* ── Static city data (fallback until Supabase itinerary is populated) ─ */
 
 const STATIC_CITIES = [
@@ -681,6 +727,119 @@ export function initDesktopPacking() {
     ?.addEventListener('click', () => {
       openSidebar('Packing list', renderPackingSidebarContent(STATIC_PACKING_LIST));
     });
+}
+
+/* ── Static reminders data ─────────────────────────────────── */
+
+const STATIC_REMINDERS = [
+  { id: 'rm-1', title: "Book Xi'an → Chengdu train",        due_date: '2026-04-15', status: 'done'    },
+  { id: 'rm-2', title: 'Book Chengdu → Chongqing train',    due_date: '2026-04-18', status: 'done'    },
+  { id: 'rm-3', title: 'Book Chongqing → Shanghai train',   due_date: '2026-04-20', status: 'pending' },
+  { id: 'rm-4', title: 'Get Chinese SIM card',              due_date: '2026-05-01', status: 'pending' },
+  { id: 'rm-5', title: 'Print visa confirmation',           due_date: '2026-05-15', status: 'pending' },
+  { id: 'rm-6', title: 'Book Mutianyu Great Wall tickets',  due_date: '2026-05-25', status: 'pending' },
+  { id: 'rm-7', title: 'Download offline maps for Beijing', due_date: '2026-05-30', status: 'pending' },
+  { id: 'rm-8', title: 'Pack and weigh luggage',            due_date: '2026-06-03', status: 'pending' },
+];
+
+/* ── Reminder due label for sidebar ────────────────────────── */
+
+function remSidebarDueLabel(dueDateStr) {
+  if (!dueDateStr) return '';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const [y, m, d] = dueDateStr.split('-').map(Number);
+  const due = new Date(y, m - 1, d);
+  const diff = Math.ceil((due - today) / 86400000);
+  const dateLabel = due.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+  if (diff < 0)  return `${dateLabel}`;
+  if (diff === 0) return `${dateLabel} · Due today`;
+  return `${dateLabel} · ${diff} days to go`;
+}
+
+/* ── Render: reminders sidebar content ─────────────────────── */
+
+function renderRemindersSidebarContent(reminders) {
+  const pending = reminders.filter(r => r.status !== 'done');
+  const done    = reminders.filter(r => r.status === 'done');
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  function reminderItemHTML(r) {
+    const isDone   = r.status === 'done';
+    const [y, m, d] = (r.due_date ?? '').split('-').map(Number);
+    const due      = r.due_date ? new Date(y, m - 1, d) : null;
+    const overdue  = due && due < today && !isDone;
+    const dueLabel = remSidebarDueLabel(r.due_date);
+    const dueClass = overdue ? 'style="color:var(--terracotta)"' : '';
+
+    return `
+      <div class="sb-reminder-item sb-booking-item${isDone ? ' sb-reminder-done' : ''}">
+        <input
+          type="checkbox"
+          class="sb-booking-cb"
+          ${isDone ? 'checked' : ''}
+          aria-label="${esc(r.title)}"
+          data-reminder-id="${esc(r.id)}"
+        >
+        <div class="sb-booking-label-wrap">
+          <span class="sb-booking-label">${esc(r.title)}</span>
+          ${r.due_date ? `<span class="sb-booking-meta" ${dueClass}>${overdue ? 'Overdue' : esc(dueLabel)}</span>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  const pendingHTML = pending.length > 0
+    ? pending.map(reminderItemHTML).join('')
+    : `<p class="sb-booking-empty">No pending reminders</p>`;
+
+  const doneHTML = done.length > 0
+    ? done.map(reminderItemHTML).join('')
+    : '';
+
+  return `
+    <div class="sb-hide-toggle">
+      <input type="checkbox" id="sb-hide-done" class="sb-booking-cb" aria-label="Hide done reminders">
+      <label for="sb-hide-done" class="sb-hide-label">Hide done</label>
+    </div>
+    <div role="group" aria-label="Pending reminders">
+      <div class="sb-section-header">
+        <span class="sb-section-label">Pending</span>
+      </div>
+      ${pendingHTML}
+    </div>
+    ${done.length > 0 ? `
+    <div class="sb-section-divider" aria-hidden="true"></div>
+    <div role="group" aria-label="Done reminders">
+      <div class="sb-section-header">
+        <span class="sb-section-label">Done</span>
+      </div>
+      ${doneHTML}
+    </div>` : ''}
+    <button class="sb-add-link" type="button">+ Add reminder</button>
+  `;
+}
+
+/* ── Desktop reminders handler ─────────────────────────────── */
+
+export function initDesktopReminders() {
+  const section    = document.querySelector('.dk-reminders');
+  if (!section) return;
+
+  const viewAllBtn = document.getElementById('dk-reminders-view-all');
+  const list       = section.querySelector('.dk-reminder-list');
+  const count      = list?.querySelectorAll('.dk-reminder-item').length ?? 0;
+
+  if (viewAllBtn) {
+    viewAllBtn.style.display = count > 5 ? '' : 'none';
+    viewAllBtn.addEventListener('click', () => {
+      const reminders = loadFromStorage('reminders') ?? STATIC_REMINDERS;
+      const source = Array.isArray(reminders) && reminders.length > 0 ? reminders : STATIC_REMINDERS;
+      openSidebar('Reminders', renderRemindersSidebarContent(source));
+    });
+  }
 }
 
 /* ── Desktop mode toggle ───────────────────────────────────── */
