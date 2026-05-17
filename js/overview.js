@@ -1135,7 +1135,7 @@ const STATIC_ACTIVITIES = {
 const CITY_IMAGES = {
   beijing:   { src: 'assets/beijing-hero.jpg',  alt: 'Aerial view of Beijing city centre' },
   xian:      { src: 'https://images.unsplash.com/photo-1690422014252-d53f932e9608?q=80&w=800&auto=format&fit=crop', alt: "Xi'an ancient city wall at dusk" },
-  chengdu:   { src: 'assets/chengdu.jpg',        alt: 'Chengdu cityscape' },
+  chengdu:   { src: 'assets/chengdu.jpg',        alt: 'Two giant pandas at Chengdu Research Base' },
   chongqing: { src: 'assets/chongqing.jpg',      alt: 'Chongqing skyline at night' },
   shanghai:  { src: 'assets/shanghai-hero.jpg',  alt: 'Shanghai skyline and Huangpu River' },
 };

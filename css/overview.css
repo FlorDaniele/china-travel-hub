@@ -794,7 +794,7 @@
       to bottom,
       transparent 15%,
       rgba(0, 0, 0, 0.18) 50%,
-      rgba(0, 0, 0, 0.75) 100%
+      rgba(0, 0, 0, 0.52) 100%
     );
     pointer-events: none;
   }
@@ -902,6 +902,9 @@
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .dk-booking-summary-count {
@@ -996,6 +999,9 @@
 
   .dk-booking-item-type {
     color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
   }
 
   /* "View all →" link */
@@ -1095,6 +1101,10 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+  }
+
+  .dk-reminder-list .dk-reminder-item:nth-child(n+6) {
+    display: none;
   }
 
   .dk-reminder-item {
@@ -1459,7 +1469,7 @@
   }
 
   .dk-activity-title {
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 500;
     color: var(--text-primary);
     white-space: nowrap;
@@ -1468,7 +1478,7 @@
   }
 
   .dk-activity-meta {
-    font-size: 12px;
+    font-size: 16px;
     color: var(--text-secondary);
   }
 
@@ -1691,7 +1701,7 @@
   }
 
   .dk-next-meta {
-    font-size: 12px;
+    font-size: 16px;
     color: var(--text-secondary);
   }
 
@@ -1906,6 +1916,10 @@
     object-fit: cover;
     object-position: center;
     display: block;
+  }
+
+  .dk-itin-city-item[data-city-key="chengdu"] .dk-itin-city-photo img {
+    object-position: center 30%;
   }
 
   /* Date pill overlaid bottom-left of photo */

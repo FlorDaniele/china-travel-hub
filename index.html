@@ -63,16 +63,22 @@
 
           <!-- Static summary row — counts will be wired to Supabase in Session 3 -->
           <div class="dk-booking-summary" aria-label="Booking totals by type">
-            <div class="dk-booking-summary-col">
-              <span class="dk-booking-summary-label">Hotels</span>
+            <div class="dk-booking-summary-col" aria-label="Hotels">
+              <span class="dk-booking-summary-label">
+                <i data-lucide="bed-double" width="16" height="16" aria-hidden="true"></i>
+              </span>
               <span class="dk-booking-summary-count"><span class="dk-booking-count-num">3</span>/5</span>
             </div>
-            <div class="dk-booking-summary-col">
-              <span class="dk-booking-summary-label">Trains</span>
+            <div class="dk-booking-summary-col" aria-label="Trains">
+              <span class="dk-booking-summary-label">
+                <i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i>
+              </span>
               <span class="dk-booking-summary-count"><span class="dk-booking-count-num">1</span>/4</span>
             </div>
-            <div class="dk-booking-summary-col">
-              <span class="dk-booking-summary-label">Tours</span>
+            <div class="dk-booking-summary-col" aria-label="Tours">
+              <span class="dk-booking-summary-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+              </span>
               <span class="dk-booking-summary-count"><span class="dk-booking-count-num">3</span>/6</span>
             </div>
           </div>
@@ -83,31 +89,31 @@
               <label class="dk-booking-cb-wrap" for="bk-1" aria-label="Mark Hotel Chongqing as booked">
                 <input type="checkbox" id="bk-1" class="dk-booking-cb">
               </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Hotel]</span> Chongqing — 2 nights</span>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Hotel"><i data-lucide="bed-double" width="16" height="16" aria-hidden="true"></i></span> Chongqing — 2 nights</span>
             </li>
             <li class="dk-booking-check-item">
               <label class="dk-booking-cb-wrap" for="bk-2" aria-label="Mark Hotel Shanghai as booked">
                 <input type="checkbox" id="bk-2" class="dk-booking-cb">
               </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Hotel]</span> Shanghai — 5 nights</span>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Hotel"><i data-lucide="bed-double" width="16" height="16" aria-hidden="true"></i></span> Shanghai — 5 nights</span>
             </li>
             <li class="dk-booking-check-item">
               <label class="dk-booking-cb-wrap" for="bk-3" aria-label="Mark Xi'an to Chengdu train as booked">
                 <input type="checkbox" id="bk-3" class="dk-booking-cb">
               </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Train]</span> Xi'an → Chengdu</span>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Train"><i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i></span> Xi'an → Chengdu</span>
             </li>
             <li class="dk-booking-check-item">
               <label class="dk-booking-cb-wrap" for="bk-4" aria-label="Mark Chengdu to Chongqing train as booked">
                 <input type="checkbox" id="bk-4" class="dk-booking-cb">
               </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Train]</span> Chengdu → Chongqing</span>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Train"><i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i></span> Chengdu → Chongqing</span>
             </li>
             <li class="dk-booking-check-item">
               <label class="dk-booking-cb-wrap" for="bk-5" aria-label="Mark Chongqing to Shanghai train as booked">
                 <input type="checkbox" id="bk-5" class="dk-booking-cb">
               </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type">[Train]</span> Chongqing → Shanghai</span>
+              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Train"><i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i></span> Chongqing → Shanghai</span>
             </li>
           </ul>
 
