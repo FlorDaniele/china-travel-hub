@@ -901,11 +901,184 @@ export function initDesktopReminders() {
   });
 }
 
+/* ── Hero carousel ─────────────────────────────────────────── */
+
+const CAROUSEL_CITIES = [
+  {
+    key: 'beijing',   name: 'Beijing',   date: '2026-06-05',
+    img: { src: 'assets/beijing-hero.jpg',   alt: 'Aerial view of Beijing city centre' },
+  },
+  {
+    key: 'xian',      name: "Xi'an",     date: '2026-06-13',
+    img: { src: 'https://images.unsplash.com/photo-1690422014252-d53f932e9608?q=80&w=800&auto=format&fit=crop', alt: "Xi'an ancient city wall at dusk" },
+  },
+  {
+    key: 'chengdu',   name: 'Chengdu',   date: '2026-06-17',
+    img: { src: 'assets/chengdu.jpg',        alt: 'Giant pandas at Chengdu Research Base' },
+  },
+  {
+    key: 'chongqing', name: 'Chongqing', date: '2026-06-22',
+    img: { src: 'assets/chongqing.jpg',      alt: 'Chongqing skyline at night' },
+  },
+  {
+    key: 'shanghai',  name: 'Shanghai',  date: '2026-06-26',
+    img: { src: 'assets/shanghai-hero.jpg',  alt: 'Shanghai skyline and Huangpu River' },
+  },
+];
+
+export async function initCarousel() {
+  const hero = document.querySelector('.dk-hero');
+  if (!hero) return;
+
+  // Load trip_config for demo mode and departure date override
+  let refStr = todayStr();
+  let beDate = '2026-06-05';
+  try {
+    const configRows = await loadTripConfig();
+    const get = key => configRows.find(r => r.key === key)?.value ?? null;
+    const demoMode = get('demo_mode');
+    const demoRef  = get('demo_reference_date');
+    const depDate  = get('flight_departure_date');
+    if (demoMode === 'true' && demoRef) refStr = demoRef;
+    if (depDate) beDate = depDate;
+  } catch (e) {
+    console.warn('[carousel] trip_config load failed:', e);
+  }
+
+  // Beijing date comes from trip_config
+  const cities = CAROUSEL_CITIES.map((c, i) => ({
+    ...c,
+    date: i === 0 ? beDate : c.date,
+  }));
+
+  // Compute days remaining per city
+  const [ry, rm, rd] = refStr.split('-').map(Number);
+  const refDate = new Date(ry, rm - 1, rd);
+
+  const cityData = cities.map(city => {
+    const [cy, cm, cd] = city.date.split('-').map(Number);
+    const daysLeft = Math.ceil((new Date(cy, cm - 1, cd) - refDate) / 86400000);
+    return { ...city, daysLeft };
+  });
+
+  // Initial slide: first city still in the future; fallback to Beijing
+  const upcoming = cityData.filter(c => c.daysLeft > 0);
+  let currentIndex = upcoming.length > 0 ? cityData.indexOf(upcoming[0]) : 0;
+
+  // Build carousel container
+  const carouselEl = document.createElement('div');
+  carouselEl.className = 'dk-carousel';
+
+  const dotsEl = document.createElement('div');
+  dotsEl.className = 'dk-carousel-dots';
+  dotsEl.setAttribute('role', 'toolbar');
+  dotsEl.setAttribute('aria-label', 'Carousel navigation');
+
+  cityData.forEach((city, i) => {
+    // Slide
+    const slide = document.createElement('div');
+    slide.className = 'dk-carousel-slide' + (i === currentIndex ? ' is-active' : '');
+    slide.dataset.city = city.key;
+    slide.setAttribute('aria-hidden', i !== currentIndex ? 'true' : 'false');
+
+    const img = document.createElement('img');
+    img.src = city.img.src;
+    img.alt = city.img.alt;
+    img.className = 'dk-hero-img';
+    img.loading = i === currentIndex ? 'eager' : 'lazy';
+
+    const gradient = document.createElement('div');
+    gradient.className = 'dk-slide-gradient';
+    gradient.setAttribute('aria-hidden', 'true');
+
+    const content = document.createElement('div');
+    content.className = 'dk-slide-content';
+
+    if (city.daysLeft > 0) {
+      const numEl = document.createElement('span');
+      numEl.className = 'dk-countdown-number';
+      numEl.textContent = city.daysLeft;
+
+      const labelEl = document.createElement('span');
+      labelEl.className = 'dk-countdown-label';
+      labelEl.textContent = `days to ${city.name}`;
+
+      content.appendChild(numEl);
+      content.appendChild(labelEl);
+    } else {
+      const nameEl = document.createElement('span');
+      nameEl.className = 'dk-countdown-number';
+      nameEl.style.fontWeight = '500';
+      nameEl.textContent = city.name;
+      content.appendChild(nameEl);
+    }
+
+    slide.appendChild(img);
+    slide.appendChild(gradient);
+    slide.appendChild(content);
+    carouselEl.appendChild(slide);
+
+    // Dot
+    const dot = document.createElement('button');
+    dot.className = 'dk-carousel-dot' + (i === currentIndex ? ' is-active' : '');
+    dot.setAttribute('type', 'button');
+    dot.setAttribute('role', 'button');
+    dot.setAttribute('aria-label', `Go to ${city.name} slide`);
+    dotsEl.appendChild(dot);
+  });
+
+  // Insert carousel and dots before the mode toggle
+  const modeToggle = hero.querySelector('.dk-mode-toggle');
+  hero.insertBefore(carouselEl, modeToggle);
+  hero.insertBefore(dotsEl, modeToggle);
+
+  const slides = carouselEl.querySelectorAll('.dk-carousel-slide');
+  const dots   = dotsEl.querySelectorAll('.dk-carousel-dot');
+
+  function goTo(index) {
+    slides[currentIndex].classList.remove('is-active');
+    slides[currentIndex].setAttribute('aria-hidden', 'true');
+    dots[currentIndex].classList.remove('is-active');
+
+    currentIndex = index;
+
+    slides[currentIndex].classList.add('is-active');
+    slides[currentIndex].setAttribute('aria-hidden', 'false');
+    dots[currentIndex].classList.add('is-active');
+  }
+
+  let timer = null;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resetTimer() {
+    clearInterval(timer);
+    if (!prefersReducedMotion) {
+      timer = setInterval(() => goTo((currentIndex + 1) % slides.length), 10000);
+    }
+  }
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => { goTo(i); resetTimer(); });
+  });
+
+  resetTimer();
+}
+
 /* ── Desktop mode toggle ───────────────────────────────────── */
 
 export function initDesktopToggle() {
   const layout = document.querySelector('.desktop-layout');
   if (!layout) return;
+
+  // Restore saved mode; default to planning
+  const savedMode = localStorage.getItem('dashboardMode') ?? 'planning';
+  const savedIsTravel = savedMode === 'travel';
+  layout.classList.toggle('mode-travel', savedIsTravel);
+  layout.querySelectorAll('.dk-mode-btn').forEach(btn => {
+    const btnIsTravel = btn.textContent.trim() === 'Travel';
+    btn.classList.toggle('active', btnIsTravel === savedIsTravel);
+    btn.setAttribute('aria-pressed', String(btnIsTravel === savedIsTravel));
+  });
 
   layout.querySelectorAll('.dk-mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -918,6 +1091,7 @@ export function initDesktopToggle() {
 
       const isTravel = btn.textContent.trim() === 'Travel';
       layout.classList.toggle('mode-travel', isTravel);
+      localStorage.setItem('dashboardMode', isTravel ? 'travel' : 'planning');
     });
   });
 }

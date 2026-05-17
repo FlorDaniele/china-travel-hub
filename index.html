@@ -38,14 +38,9 @@
       <!-- ── Desktop overview grid — visible at ≥ 1024px ── -->
       <div class="desktop-layout">
 
-        <!-- Row 1: Hero (full width) -->
-        <div class="dk-hero">
-          <img src="assets/beijing-hero.jpg" alt="Aerial view of Beijing city centre during daytime" class="dk-hero-img">
-          <div class="dk-hero-gradient" aria-hidden="true"></div>
-          <div class="dk-hero-content">
-            <span class="dk-countdown-number" id="dk-countdown-number">–</span>
-            <span class="dk-countdown-label" id="dk-countdown-label">days to Beijing</span>
-          </div>
+        <!-- Row 1: Hero carousel (full width) -->
+        <div class="dk-hero" role="region" aria-label="City highlights">
+          <!-- Slides and dots injected by initCarousel() -->
           <div class="dk-mode-toggle" role="group" aria-label="Switch app mode">
             <button class="dk-mode-btn active" aria-pressed="true">Planning</button>
             <button class="dk-mode-btn" aria-pressed="false">Travel</button>
