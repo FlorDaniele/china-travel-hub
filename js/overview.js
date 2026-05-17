@@ -732,14 +732,16 @@ export function initDesktopPacking() {
 /* ── Static reminders data ─────────────────────────────────── */
 
 const STATIC_REMINDERS = [
-  { id: 'rm-1', title: "Book Xi'an → Chengdu train",        due_date: '2026-04-15', status: 'done'    },
-  { id: 'rm-2', title: 'Book Chengdu → Chongqing train',    due_date: '2026-04-18', status: 'done'    },
-  { id: 'rm-3', title: 'Book Chongqing → Shanghai train',   due_date: '2026-04-20', status: 'pending' },
-  { id: 'rm-4', title: 'Get Chinese SIM card',              due_date: '2026-05-01', status: 'pending' },
-  { id: 'rm-5', title: 'Print visa confirmation',           due_date: '2026-05-15', status: 'pending' },
-  { id: 'rm-6', title: 'Book Mutianyu Great Wall tickets',  due_date: '2026-05-25', status: 'pending' },
-  { id: 'rm-7', title: 'Download offline maps for Beijing', due_date: '2026-05-30', status: 'pending' },
-  { id: 'rm-8', title: 'Pack and weigh luggage',            due_date: '2026-06-03', status: 'pending' },
+  { id: 'rm-1',  title: 'Book Mutianyu Great Wall tickets',                    due_date: '2026-05-25', status: 'pending', notes: 'GetYourGuide booking required before departure' },
+  { id: 'rm-2',  title: 'Set up VPN before arriving in China',                 due_date: '2026-05-27', status: 'pending', notes: null },
+  { id: 'rm-3',  title: 'Exchange euros to yuan or set up Wise',               due_date: '2026-05-28', status: 'pending', notes: 'Have cash ready for arrival' },
+  { id: 'rm-4',  title: 'Buy travel adapter (Type A/I for China)',             due_date: '2026-05-28', status: 'pending', notes: null },
+  { id: 'rm-5',  title: 'Notify bank of travel dates',                         due_date: '2026-05-30', status: 'pending', notes: null },
+  { id: 'rm-6',  title: 'Confirm hotel check-in times for all cities',         due_date: '2026-06-01', status: 'pending', notes: null },
+  { id: 'rm-7',  title: 'Pack and weigh luggage',                              due_date: '2026-06-03', status: 'pending', notes: 'Must be under 23kg for Air France' },
+  { id: 'rm-8',  title: "Download offline maps for Beijing, Xi'an, Chengdu",  due_date: '2026-06-04', status: 'pending', notes: 'Maps.me or Google Maps offline' },
+  { id: 'rm-9',  title: 'Print visa confirmation and flight itinerary',        due_date: '2026-06-04', status: 'pending', notes: null },
+  { id: 'rm-10', title: 'Check in online for AF0202',                          due_date: '2026-06-05', status: 'pending', notes: 'Opens 30 hours before departure at 22:45' },
 ];
 
 /* ── Reminder due label for sidebar ────────────────────────── */
