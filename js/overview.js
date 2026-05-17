@@ -822,24 +822,81 @@ function renderRemindersSidebarContent(reminders) {
   `;
 }
 
+/* ── Render: desktop reminders card (max 5, dynamic) ──────── */
+
+function renderDesktopReminders(reminders) {
+  const list       = document.querySelector('.dk-reminders .dk-reminder-list');
+  const viewAllBtn = document.getElementById('dk-reminders-view-all');
+  if (!list) return;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Pending items first (soonest due), then done
+  const pending = reminders.filter(r => r.status !== 'done')
+    .sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''));
+  const done    = reminders.filter(r => r.status === 'done');
+  const sorted  = [...pending, ...done];
+
+  const visible = sorted.slice(0, 5);
+  const total   = reminders.length;
+
+  list.innerHTML = visible.map(r => {
+    const isDone = r.status === 'done';
+
+    const dueClass = (() => {
+      if (!r.due_date || isDone) return 'dk-due-future';
+      const [y, m, d] = r.due_date.split('-').map(Number);
+      const diff = Math.ceil((new Date(y, m - 1, d) - today) / 86400000);
+      if (diff < 0)   return 'dk-due-overdue';
+      if (diff === 0) return 'dk-due-today';
+      return 'dk-due-future';
+    })();
+
+    const dueText = (() => {
+      if (!r.due_date) return '';
+      const [y, m, d] = r.due_date.split('-').map(Number);
+      const due  = new Date(y, m - 1, d);
+      const diff = Math.ceil((due - today) / 86400000);
+      const date = due.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+      if (diff < 0)   return `${date} · Overdue`;
+      if (diff === 0) return `${date} · Due today`;
+      return `${date} · ${diff} days`;
+    })();
+
+    return `
+      <li class="dk-reminder-item${isDone ? ' dk-reminder-item--done' : ''}">
+        <label class="dk-booking-cb-wrap" for="dk-rm-${esc(r.id)}" aria-label="Mark ${esc(r.title)} as done">
+          <input type="checkbox" id="dk-rm-${esc(r.id)}" class="dk-checkbox" ${isDone ? 'checked' : ''} data-reminder-id="${esc(r.id)}">
+        </label>
+        <div class="dk-reminder-body">
+          <span class="dk-reminder-title">${esc(r.title)}</span>
+          ${dueText ? `<span class="dk-reminder-due ${dueClass}">${esc(dueText)}</span>` : ''}
+        </div>
+      </li>
+    `;
+  }).join('') || `<li class="dk-reminder-item"><span class="dk-reminder-title" style="color:var(--text-secondary)">No reminders yet</span></li>`;
+
+  // Show "View all →" only when there are more than 5 reminders
+  if (viewAllBtn) {
+    viewAllBtn.style.display = total > 5 ? '' : 'none';
+  }
+}
+
 /* ── Desktop reminders handler ─────────────────────────────── */
 
 export function initDesktopReminders() {
-  const section    = document.querySelector('.dk-reminders');
-  if (!section) return;
-
   const viewAllBtn = document.getElementById('dk-reminders-view-all');
-  const list       = section.querySelector('.dk-reminder-list');
-  const count      = list?.querySelectorAll('.dk-reminder-item').length ?? 0;
+  if (!viewAllBtn) return;
 
-  if (viewAllBtn) {
-    viewAllBtn.style.display = count > 5 ? '' : 'none';
-    viewAllBtn.addEventListener('click', () => {
-      const reminders = loadFromStorage('reminders') ?? STATIC_REMINDERS;
-      const source = Array.isArray(reminders) && reminders.length > 0 ? reminders : STATIC_REMINDERS;
-      openSidebar('Reminders', renderRemindersSidebarContent(source));
-    });
-  }
+  // Hidden until data loads — renderDesktopReminders sets final visibility
+  viewAllBtn.style.display = 'none';
+
+  viewAllBtn.addEventListener('click', () => {
+    const reminders = loadFromStorage('reminders') ?? STATIC_REMINDERS;
+    const source = Array.isArray(reminders) && reminders.length > 0 ? reminders : STATIC_REMINDERS;
+    openSidebar('Reminders', renderRemindersSidebarContent(source));
+  });
 }
 
 /* ── Desktop mode toggle ───────────────────────────────────── */
@@ -918,6 +975,12 @@ export async function initOverview() {
 
   headerEl.innerHTML = renderModeToggle(mode) + headerContent;
   gridEl.innerHTML   = renderCityCards(itinerary);
+
+  // Render desktop reminders card with real data (max 5, dynamic count)
+  const remindersSource = Array.isArray(reminders) && reminders.length > 0
+    ? reminders
+    : STATIC_REMINDERS;
+  renderDesktopReminders(remindersSource);
 
   // Wire up mode toggle
   document.getElementById('mode-toggle-btn')

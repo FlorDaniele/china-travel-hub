@@ -1103,10 +1103,6 @@
     gap: 12px;
   }
 
-  .dk-reminder-list .dk-reminder-item:nth-child(n+6) {
-    display: none;
-  }
-
   .dk-reminder-item {
     display: flex;
     align-items: flex-start;
