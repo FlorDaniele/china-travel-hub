@@ -68,10 +68,10 @@
 
   /* Typography */
   --font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-size-xs:   11px;
-  --font-size-sm:   13px;
-  --font-size-base: 15px;
-  --font-size-md:   17px;
+  --font-size-xs:   12px;
+  --font-size-sm:   16px;
+  --font-size-base: 16px;
+  --font-size-md:   20px;
   --font-size-lg:   20px;
   --font-size-xl:   24px;
   --font-size-2xl:  32px;
@@ -437,7 +437,7 @@ a {
 }
 
 .sidebar-title {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 500;
   color: var(--text-primary);
   line-height: var(--line-height-tight);
@@ -453,7 +453,7 @@ a {
   border: none;
   cursor: pointer;
   color: var(--text-secondary);
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1;
   transition: color 0.15s ease;
   font-family: inherit;
@@ -503,7 +503,7 @@ a {
 }
 
 .sb-hide-label {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 400;
   color: var(--text-secondary);
   cursor: pointer;
@@ -581,7 +581,7 @@ a {
 }
 
 .sb-booking-label {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-primary);
   line-height: var(--line-height-normal);
 }
@@ -641,7 +641,7 @@ a {
 /* ── Sidebar bookings: empty state ──────────────────────────── */
 
 .sb-booking-empty {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--text-secondary);
   padding: 6px 0;
 }
@@ -650,7 +650,7 @@ a {
 
 .sb-add-link {
   display: block;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--action);
   background: none;

@@ -755,8 +755,8 @@ function remSidebarDueLabel(dueDateStr) {
   const diff = Math.ceil((due - today) / 86400000);
   const dateLabel = due.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
   if (diff < 0)  return `${dateLabel}`;
-  if (diff === 0) return `${dateLabel} · Due today`;
-  return `${dateLabel} · ${diff} days to go`;
+  if (diff === 0) return `${dateLabel} · Today`;
+  return `${dateLabel} · In ${diff} days`;
 }
 
 /* ── Render: reminders sidebar content ─────────────────────── */
@@ -862,8 +862,8 @@ function renderDesktopReminders(reminders) {
       const diff = Math.ceil((due - today) / 86400000);
       const date = due.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
       if (diff < 0)   return `${date} · Overdue`;
-      if (diff === 0) return `${date} · Due today`;
-      return `${date} · ${diff} days`;
+      if (diff === 0) return `${date} · Today`;
+      return `${date} · In ${diff} days`;
     })();
 
     return `
@@ -910,7 +910,7 @@ const CAROUSEL_CITIES = [
   },
   {
     key: 'xian',      name: "Xi'an",     date: '2026-06-13',
-    img: { src: 'https://images.unsplash.com/photo-1690422014252-d53f932e9608?q=80&w=800&auto=format&fit=crop', alt: "Xi'an ancient city wall at dusk" },
+    img: { src: 'assets/xian.jpg', alt: "Xi'an ancient city wall at dusk" },
   },
   {
     key: 'chengdu',   name: 'Chengdu',   date: '2026-06-17',
@@ -1373,7 +1373,7 @@ const STATIC_ACTIVITIES = {
 
 const CITY_IMAGES = {
   beijing:   { src: 'assets/beijing-hero.jpg',  alt: 'Aerial view of Beijing city centre' },
-  xian:      { src: 'https://images.unsplash.com/photo-1690422014252-d53f932e9608?q=80&w=800&auto=format&fit=crop', alt: "Xi'an ancient city wall at dusk" },
+  xian:      { src: 'assets/xian.jpg', alt: "Xi'an ancient city wall at dusk" },
   chengdu:   { src: 'assets/chengdu.jpg',        alt: 'Two giant pandas at Chengdu Research Base' },
   chongqing: { src: 'assets/chongqing.jpg',      alt: 'Chongqing skyline at night' },
   shanghai:  { src: 'assets/shanghai-hero.jpg',  alt: 'Shanghai skyline and Huangpu River' },
@@ -1542,14 +1542,14 @@ function renderActivityTimeline(cityKey, dateStr) {
       <div class="dk-timeline-marker" aria-hidden="true"></div>
       <div class="dk-timeline-content">
         <span class="dk-timeline-period">${esc(group.period)}</span>
-        <ul class="dk-activity-list" role="list">
+        <ul class="dk-activity-list" role="list" data-period="${esc(group.period)}">
           ${group.items.map(item => `
-            <li class="dk-activity-card">
+            <li class="dk-activity-card" data-title="${esc(item.title)}">
               <div class="dk-activity-body">
                 <span class="dk-activity-title">${esc(item.title)}</span>
                 <span class="dk-activity-meta">${esc(item.time)}</span>
               </div>
-              <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-hidden="true" focusable="false">
+              <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-label="Drag to reorder" focusable="false">
                 <circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/>
                 <circle cx="3" cy="7" r="1.4"/><circle cx="7" cy="7" r="1.4"/>
                 <circle cx="3" cy="11" r="1.4"/><circle cx="7" cy="11" r="1.4"/>
@@ -1573,6 +1573,43 @@ function renderActivityTimeline(cityKey, dateStr) {
   `;
 
   return groupsHtml + addBtn;
+}
+
+/* ── Drag and drop: persist sort order ────────────────────── */
+
+async function persistSortOrder(listEl, cityKeyStr, dateStr) {
+  const period = listEl.dataset.period ?? '';
+  const items  = [...listEl.querySelectorAll('.dk-activity-card')];
+  try {
+    for (let idx = 0; idx < items.length; idx++) {
+      const title = items[idx].dataset.title ?? '';
+      if (!title) continue;
+      await supabase
+        .from('activities')
+        .update({ sort_order: idx })
+        .eq('city', cityKeyStr)
+        .eq('date', dateStr)
+        .eq('title', title);
+    }
+  } catch (err) {
+    console.warn('[itinerary] sort_order update failed:', err);
+  }
+}
+
+function initTimelineSortable(containerEl, cityKeyStr, dateStr) {
+  if (typeof Sortable === 'undefined') return;
+  containerEl.querySelectorAll('.dk-activity-list').forEach(listEl => {
+    Sortable.create(listEl, {
+      handle:    '.dk-drag-handle',
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      dragClass:  'sortable-drag',
+      onEnd: ({ oldIndex, newIndex }) => {
+        if (oldIndex === newIndex) return;
+        persistSortOrder(listEl, cityKeyStr, dateStr);
+      },
+    });
+  });
 }
 
 /* ── Fade transition helper ────────────────────────────────── */
@@ -1610,6 +1647,7 @@ export function initItinerary() {
     fadePanel(panelEl, () => {
       labelEl.textContent  = itinFormatDateLabel(dateStr, city.city);
       timelineEl.innerHTML = renderActivityTimeline(key, dateStr);
+      initTimelineSortable(timelineEl, key, dateStr);
     });
   }
 
@@ -1703,4 +1741,5 @@ export function initItinerary() {
   const firstDate = activeDates[selectedCityKey];
   labelEl.textContent  = itinFormatDateLabel(firstDate, firstCity.city);
   timelineEl.innerHTML = renderActivityTimeline(selectedCityKey, firstDate);
+  initTimelineSortable(timelineEl, selectedCityKey, firstDate);
 }
