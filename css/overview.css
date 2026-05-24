@@ -122,7 +122,7 @@
 }
 
 .booking-card-type {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
@@ -918,7 +918,7 @@
   }
 
   .dk-booking-category-name {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--text-secondary);
   }
@@ -1204,28 +1204,6 @@
 
   .dk-packing-list-wrapper {
     position: relative;
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
-  .dk-packing-list-wrapper::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  .dk-packing-list-wrapper::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .dk-packing-list-wrapper::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-  }
-
-  .dk-packing-list-wrapper::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
   }
 
   .dk-packing-category {
@@ -1240,16 +1218,6 @@
 
   .dk-packing-list > li.dk-packing-category:first-child {
     padding-top: 0;
-  }
-
-  .dk-packing-fade {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 52px;
-    background: linear-gradient(to bottom, transparent, var(--surface));
-    pointer-events: none;
   }
 
   .dk-see-all {
@@ -2099,11 +2067,11 @@
   }
 
   .dk-carousel-slide[data-city="chengdu"] img {
-    object-position: center 30%;
+    object-position: center calc(50% - 120px);
   }
 
   .dk-carousel-slide[data-city="shanghai"] img {
-    object-position: center calc(50% + 80px);
+    object-position: center calc(50% - 120px);
   }
 
   .dk-slide-gradient {
