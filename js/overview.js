@@ -9,7 +9,7 @@
 import { supabase } from './supabase.js';
 import { saveToStorage, loadFromStorage } from './storage.js';
 import { openSidebar } from './sidebar.js';
-import { openModal, closeModal } from './modal.js';
+import { openModal, closeModal, showToast } from './modal.js';
 
 const DEPARTURE_DATE = '2026-06-06';
 
@@ -948,6 +948,7 @@ async function handleBookingModalSave() {
     const cached = loadFromStorage('bookings') ?? [];
     const saved  = data?.length ? data : [{ ...newEntry, id: `temp-${Date.now()}` }];
     saveToStorage('bookings', [...cached, ...saved]);
+    showToast('Booking added');
   } catch (err) {
     console.warn('[modal] booking insert failed:', err);
     const cached = loadFromStorage('bookings') ?? [];
@@ -1028,6 +1029,7 @@ async function handleReminderModalSave() {
     if (error) throw error;
     const cached = loadFromStorage('reminders') ?? [];
     saveToStorage('reminders', [...cached, ...(data ?? [newEntry])]);
+    showToast('Reminder added');
   } catch (err) {
     console.warn('[modal] reminder insert failed:', err);
     const cached = loadFromStorage('reminders') ?? [];
@@ -1119,6 +1121,7 @@ async function handlePackingModalSave() {
     const cached  = loadFromStorage('packing_list') ?? [];
     const saved   = data?.length ? data : [{ item: label, category, packed: false, id: `temp-${Date.now()}` }];
     saveToStorage('packing_list', [...cached, ...saved]);
+    showToast('Item added');
   } catch (err) {
     console.warn('[modal] packing_list insert failed:', err);
     const cached = loadFromStorage('packing_list') ?? [];
@@ -2160,8 +2163,35 @@ function regroupByTime(groups) {
 function renderActivityTimeline(cityKey, dateStr) {
   const acts = (STATIC_ACTIVITIES[cityKey] ?? {})[dateStr] ?? [];
 
+  const addBtn = `
+    <li class="dk-add-activity-row">
+      <button class="dk-add-activity-btn" type="button" aria-label="Add activity">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+          <line x1="7" y1="1" x2="7" y2="13"/>
+          <line x1="1" y1="7" x2="13" y2="7"/>
+        </svg>
+      </button>
+    </li>
+  `;
+
   if (acts.length === 0) {
-    return `<li class="dk-itin-empty"><span class="dk-itin-empty-text">No activities planned for this day yet.</span></li>`;
+    return `
+      <li class="dk-itin-empty">
+        <div class="dk-itin-empty-state">
+          <svg class="dk-itin-empty-icon" width="32" height="32" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="M8 2v4"/><path d="M16 2v4"/>
+            <rect width="18" height="18" x="3" y="4" rx="2"/>
+            <path d="M3 10h18"/>
+            <path d="m14 14 4 4"/><path d="m18 14-4 4"/>
+          </svg>
+          <p class="dk-itin-empty-primary">No activities for this day</p>
+          <p class="dk-itin-empty-secondary">Use the + button to add one</p>
+        </div>
+      </li>
+      ${addBtn}
+    `;
   }
 
   const groups = regroupByTime(acts);
@@ -2189,17 +2219,6 @@ function renderActivityTimeline(cityKey, dateStr) {
       </div>
     </li>
   `).join('');
-
-  const addBtn = `
-    <li class="dk-add-activity-row">
-      <button class="dk-add-activity-btn" type="button" aria-label="Add activity">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
-          <line x1="7" y1="1" x2="7" y2="13"/>
-          <line x1="1" y1="7" x2="13" y2="7"/>
-        </svg>
-      </button>
-    </li>
-  `;
 
   return groupsHtml + addBtn;
 }
@@ -2274,19 +2293,33 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
       <input type="time" id="act-modal-end" class="modal-input">
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-type">Tipo</label>
-      <select id="act-modal-type" class="modal-select">
-        <option value="" selected>— Sin tipo —</option>
-        <option value="tour">Tour</option>
-        <option value="transport">Transport</option>
-        <option value="accommodation">Accommodation</option>
-        <option value="sightseeing">Sightseeing</option>
-        <option value="cultural">Cultural</option>
-        <option value="temple">Temple</option>
-        <option value="park">Park</option>
-        <option value="street">Street</option>
-        <option value="market">Market</option>
-      </select>
+      <label class="modal-label" id="act-modal-type-lbl">Tipo</label>
+      <div class="modal-custom-select" aria-expanded="false">
+        <button class="modal-custom-select-trigger is-placeholder" type="button"
+                id="act-modal-type-btn"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="act-modal-type-list"
+                aria-labelledby="act-modal-type-lbl">
+          <span class="modal-custom-select-value">— Sin tipo —</span>
+          <svg class="modal-custom-select-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="modal-custom-select-list" role="listbox" id="act-modal-type-list" aria-labelledby="act-modal-type-lbl">
+          <li class="modal-custom-select-option" role="option" aria-selected="true"  data-value="" data-placeholder tabindex="-1">— Sin tipo —</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="tour"          tabindex="-1">Tour</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="transport"     tabindex="-1">Transport</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="accommodation" tabindex="-1">Accommodation</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="sightseeing"   tabindex="-1">Sightseeing</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="cultural"      tabindex="-1">Cultural</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="temple"        tabindex="-1">Temple</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="park"          tabindex="-1">Park</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="street"        tabindex="-1">Street</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="market"        tabindex="-1">Market</li>
+        </ul>
+        <input type="hidden" id="act-modal-type" value="">
+      </div>
     </div>
   `;
 
@@ -2305,6 +2338,67 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
       input.classList.remove('has-error');
       document.getElementById('act-modal-name-err').textContent = '';
     }
+  });
+
+  /* ── Custom select: Tipo ─────────────────────────────────── */
+  const csWrap    = document.querySelector('.modal-custom-select');
+  const csTrigger = document.getElementById('act-modal-type-btn');
+  const csList    = document.getElementById('act-modal-type-list');
+  const csValue   = csTrigger?.querySelector('.modal-custom-select-value');
+  const csHidden  = document.getElementById('act-modal-type');
+  const csOptions = [...(csList?.querySelectorAll('.modal-custom-select-option') ?? [])];
+
+  function csOutside(e) {
+    if (!csWrap.contains(e.target)) csClose();
+  }
+
+  function csOpen() {
+    csWrap.setAttribute('aria-expanded', 'true');
+    csTrigger.setAttribute('aria-expanded', 'true');
+    csList.classList.add('is-open');
+    const sel = csOptions.find(o => o.getAttribute('aria-selected') === 'true') ?? csOptions[0];
+    sel?.focus();
+    setTimeout(() => document.addEventListener('click', csOutside, { capture: true }), 0);
+  }
+
+  function csClose() {
+    csWrap.setAttribute('aria-expanded', 'false');
+    csTrigger.setAttribute('aria-expanded', 'false');
+    csList.classList.remove('is-open');
+    document.removeEventListener('click', csOutside, { capture: true });
+  }
+
+  function csSelect(opt) {
+    csOptions.forEach(o => o.setAttribute('aria-selected', 'false'));
+    opt.setAttribute('aria-selected', 'true');
+    csHidden.value      = opt.dataset.value ?? '';
+    csValue.textContent = opt.textContent;
+    if (opt.dataset.value) {
+      csTrigger.classList.remove('is-placeholder');
+    } else {
+      csTrigger.classList.add('is-placeholder');
+    }
+    csClose();
+    csTrigger.focus();
+  }
+
+  csTrigger?.addEventListener('click', () => {
+    csList.classList.contains('is-open') ? csClose() : csOpen();
+  });
+
+  csTrigger?.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); csOpen(); }
+    if (e.key === 'Escape') csClose();
+  });
+
+  csOptions.forEach((opt, idx) => {
+    opt.addEventListener('click', () => csSelect(opt));
+    opt.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ')  { e.preventDefault(); csSelect(opt); }
+      if (e.key === 'Escape')                  { csClose(); csTrigger.focus(); }
+      if (e.key === 'ArrowDown')               { e.preventDefault(); csOptions[Math.min(idx + 1, csOptions.length - 1)]?.focus(); }
+      if (e.key === 'ArrowUp')                 { e.preventDefault(); csOptions[Math.max(idx - 1, 0)]?.focus(); }
+    });
   });
 }
 
@@ -2353,6 +2447,7 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
   try {
     const { error } = await supabase.from('activities').insert([newEntry]);
     if (error) throw error;
+    showToast('Activity added');
   } catch (err) {
     console.warn('[modal] activity insert failed:', err);
   }

@@ -141,3 +141,36 @@ export function closeModal() {
   _trigger = null;
   setTimeout(() => el?.focus(), 210);
 }
+
+/* ── Toast / Snackbar ───────────────────────────────────────── */
+
+let _toastEl    = null;
+let _toastTimer = null;
+
+export function showToast(message) {
+  if (_toastEl) {
+    clearTimeout(_toastTimer);
+    _toastEl.remove();
+    _toastEl = null;
+  }
+
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = message;
+  el.setAttribute('role', 'status');
+  el.setAttribute('aria-live', 'polite');
+  document.body.appendChild(el);
+  _toastEl = el;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => el.classList.add('toast--visible'));
+  });
+
+  _toastTimer = setTimeout(() => {
+    el.classList.remove('toast--visible');
+    el.addEventListener('transitionend', () => {
+      el.remove();
+      if (_toastEl === el) _toastEl = null;
+    }, { once: true });
+  }, 2500);
+}
