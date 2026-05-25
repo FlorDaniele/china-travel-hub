@@ -586,8 +586,10 @@ function renderBookingsSidebarContent(bookings) {
       </div>
       ${itemsHTML}
       <button class="sb-add-link" type="button" data-booking-type="${esc(t.key)}">
-        <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
         Add booking
+        <span class="sb-add-icon-circle">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+        </span>
       </button>
     `;
   }).join('');
@@ -674,8 +676,10 @@ function renderPackingSidebarContent(categories) {
       </div>
       ${itemsHTML}
       <button class="sb-add-link" type="button" data-packing-add="true">
-        <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
         Add item
+        <span class="sb-add-icon-circle">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+        </span>
       </button>
     `;
   }).join('');
@@ -1341,8 +1345,10 @@ function renderRemindersSidebarContent(reminders) {
       ${doneHTML}
     </div>` : ''}
     <button class="sb-add-link" type="button" data-reminder-add="true">
-      <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
       Add reminder
+      <span class="sb-add-icon-circle">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+      </span>
     </button>
   `;
 }

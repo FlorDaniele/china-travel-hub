@@ -664,7 +664,7 @@ a {
 .sb-add-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: #F0F0F0;
@@ -687,6 +687,19 @@ a {
   outline: 2px solid var(--terracotta);
   outline-offset: 2px;
   border-radius: 999px;
+}
+
+.sb-add-icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #F0F0F0;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  flex-shrink: 0;
 }
 
 /* ── Reminder inline edit input ────────────────────────────── */
