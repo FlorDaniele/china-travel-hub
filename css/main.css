@@ -489,6 +489,12 @@ a {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Bookings sidebar — 8px wider on each side */
+.sidebar-content:has([data-sidebar="bookings"]) {
+  padding-left: 28px;
+  padding-right: 28px;
+}
+
 /* ── Sidebar: hide-booked toggle ───────────────────────────── */
 
 .sb-hide-toggle {
@@ -544,6 +550,13 @@ a {
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.sb-section-label-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
 }
 
 .sb-section-count {
@@ -617,10 +630,10 @@ a {
 .sb-booking-cb:checked::after {
   content: '';
   position: absolute;
-  left: 5px;
-  top: 2px;
+  left: 4px;
+  top: 1px;
   width: 5px;
-  height: 8px;
+  height: 9px;
   border: 2px solid #fff;
   border-top: none;
   border-left: none;
@@ -671,6 +684,21 @@ a {
   outline: 2px solid var(--action);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+/* ── Reminder inline edit input ────────────────────────────── */
+
+.reminder-inline-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  padding: 0;
+  outline: 2px solid rgba(238, 97, 70, 0.4);
+  outline-offset: 2px;
+  border-radius: 2px;
+  line-height: inherit;
 }
 
 /* ── Ghost button ──────────────────────────────────────────── */

@@ -578,16 +578,19 @@ function renderBookingsSidebarContent(bookings) {
     return `
       ${divider}
       <div class="sb-section-header">
-        <span class="sb-section-label">${esc(t.label)}</span>
+        <div class="sb-section-label-with-icon">
+          ${_BOOKING_ICONS[t.key] ?? ''}
+          <span class="sb-section-label">${esc(t.label)}</span>
+        </div>
         <span class="sb-section-count${countClass}">${confirmed}/${items.length}</span>
       </div>
       ${itemsHTML}
-      <button class="sb-add-link" type="button">Add item +</button>
+      <button class="sb-add-link" type="button" data-booking-type="${esc(t.key)}">Add item +</button>
     `;
   }).join('');
 
   return `
-    <div class="sb-hide-toggle">
+    <div class="sb-hide-toggle" data-sidebar="bookings">
       <input type="checkbox" id="sb-hide-booked" class="sb-booking-cb" aria-label="Hide booked items">
       <label for="sb-hide-booked" class="sb-hide-label">Hide booked</label>
     </div>
@@ -729,19 +732,43 @@ const _BOOKING_ICONS = {
 };
 
 function renderDesktopBookingChecklist(bookings) {
-  const listEl = document.querySelector('.dk-booking-checklist');
+  const listEl     = document.querySelector('.dk-booking-checklist');
+  const viewAllBtn = document.getElementById('dk-bookings-view-all');
   if (!listEl) return;
 
   const pending = bookings.filter(b => b.status !== 'booked' && b.status !== 'done');
+  const total   = pending.length;
 
-  if (pending.length === 0) {
+  if (viewAllBtn) viewAllBtn.style.display = total > 6 ? '' : 'none';
+
+  if (total === 0) {
     listEl.innerHTML = `<li class="dk-booking-check-item">
       <span class="dk-booking-item-label" style="color:var(--text-secondary)">All bookings confirmed ✓</span>
     </li>`;
     return;
   }
 
-  listEl.innerHTML = pending.map(b => {
+  // Cap at 6: up to 2 per type, fill remaining slots from overflow
+  const byType = {
+    hotel: pending.filter(b => b.type === 'hotel'),
+    train: pending.filter(b => b.type === 'train'),
+    tour:  pending.filter(b => b.type === 'tour'),
+  };
+  const visible = [
+    ...byType.hotel.slice(0, 2),
+    ...byType.train.slice(0, 2),
+    ...byType.tour.slice(0, 2),
+  ];
+  if (visible.length < 6) {
+    const overflow = [
+      ...byType.hotel.slice(2),
+      ...byType.train.slice(2),
+      ...byType.tour.slice(2),
+    ];
+    visible.push(...overflow.slice(0, 6 - visible.length));
+  }
+
+  listEl.innerHTML = visible.map(b => {
     const id        = `bk-dyn-${esc(String(b.id))}`;
     const icon      = _BOOKING_ICONS[b.type] ?? '';
     const typeLabel = b.type ? (b.type.charAt(0).toUpperCase() + b.type.slice(1)) : '';
@@ -801,7 +828,7 @@ function appendSupabasePackingItems(items) {
 
 /* ── Modal: new booking ────────────────────────────────────── */
 
-function openBookingModal() {
+function openBookingModal(preSelectType = null) {
   const bodyHTML = `
     <div class="modal-field">
       <label class="modal-label" for="bk-modal-name">Booking</label>
@@ -855,6 +882,11 @@ function openBookingModal() {
       }
     });
   });
+
+  if (preSelectType) {
+    const targetPill = pills.find(p => p.dataset.value === preSelectType);
+    if (targetPill) selectPill(targetPill);
+  }
 
   /* Character counter */
   const input   = document.getElementById('bk-modal-name');
@@ -1109,7 +1141,15 @@ export function initDesktopBookings() {
     ?.addEventListener('click', () => {
       const bookings = loadFromStorage('bookings') ?? STATIC_BOOKINGS_FALLBACK;
       openSidebar('Bookings', renderBookingsSidebarContent(bookings));
+      window.lucide?.createIcons();
     });
+
+  // Sidebar "Add item +" buttons — delegated from sidebar content
+  document.getElementById('sidebar-content')?.addEventListener('click', e => {
+    const btn = e.target.closest('.sb-add-link[data-booking-type]');
+    if (!btn) return;
+    openBookingModal(btn.dataset.bookingType);
+  });
 }
 
 /* ── Build merged packing categories (static + Supabase) ──── */
@@ -1353,6 +1393,69 @@ function renderDesktopReminders(reminders) {
   }
 }
 
+/* ── Inline edit for reminder labels ──────────────────────── */
+
+async function startReminderInlineEdit(el, reminderId, titleClass) {
+  const original = el.textContent;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = original;
+  input.className = 'reminder-inline-input';
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+
+  let committed = false;
+
+  async function commit() {
+    if (committed) return;
+    committed = true;
+    const val = input.value.trim();
+
+    if (val === '') {
+      try {
+        await supabase.from('reminders').delete().eq('id', reminderId);
+        const cached = loadFromStorage('reminders') ?? [];
+        saveToStorage('reminders', cached.filter(r => String(r.id) !== String(reminderId)));
+      } catch (err) { console.warn('[reminders] delete failed:', err); }
+      input.closest('.dk-reminder-item, .sb-reminder-item')?.remove();
+      return;
+    }
+
+    const span = document.createElement('span');
+    span.className = titleClass;
+    span.textContent = val;
+    input.replaceWith(span);
+
+    if (val !== original) {
+      try {
+        await supabase.from('reminders').update({ title: val }).eq('id', reminderId);
+        const cached = loadFromStorage('reminders') ?? [];
+        saveToStorage('reminders', cached.map(r =>
+          String(r.id) === String(reminderId) ? { ...r, title: val } : r
+        ));
+      } catch (err) { console.warn('[reminders] update failed:', err); }
+    }
+  }
+
+  function cancel() {
+    if (committed) return;
+    committed = true;
+    const span = document.createElement('span');
+    span.className = titleClass;
+    span.textContent = original;
+    input.replaceWith(span);
+  }
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+  });
+
+  input.addEventListener('blur', commit);
+}
+
 /* ── Desktop reminders handler ─────────────────────────────── */
 
 export function initDesktopReminders() {
@@ -1370,6 +1473,26 @@ export function initDesktopReminders() {
     const reminders = loadFromStorage('reminders') ?? STATIC_REMINDERS;
     const source = Array.isArray(reminders) && reminders.length > 0 ? reminders : STATIC_REMINDERS;
     openSidebar('Reminders', renderRemindersSidebarContent(source));
+  });
+
+  // Inline edit — desktop reminders card
+  document.querySelector('.dk-reminders')?.addEventListener('click', e => {
+    const titleEl = e.target.closest('.dk-reminder-title');
+    if (!titleEl) return;
+    const item = titleEl.closest('.dk-reminder-item');
+    const reminderId = item?.querySelector('[data-reminder-id]')?.dataset?.reminderId;
+    if (!reminderId) return;
+    startReminderInlineEdit(titleEl, reminderId, 'dk-reminder-title');
+  });
+
+  // Inline edit — reminders sidebar
+  document.getElementById('sidebar-content')?.addEventListener('click', e => {
+    const labelEl = e.target.closest('.sb-reminder-item .sb-booking-label');
+    if (!labelEl || labelEl.tagName === 'INPUT') return;
+    const row = labelEl.closest('.sb-reminder-item');
+    const reminderId = row?.querySelector('[data-reminder-id]')?.dataset?.reminderId;
+    if (!reminderId) return;
+    startReminderInlineEdit(labelEl, reminderId, 'sb-booking-label');
   });
 }
 
