@@ -666,21 +666,20 @@ a {
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  border: 1px solid var(--border);
-  background: #F0F0F0;
-  color: var(--text-primary);
+  border: none;
+  background: none;
+  color: var(--action);
   padding: 4px 12px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s ease;
+  transition: color 0.15s ease;
   margin-top: 8px;
 }
 
 .sb-add-link:hover {
-  background: #E0E0E0;
-  color: var(--text-primary);
+  color: var(--action-hover);
 }
 
 .sb-add-link:focus-visible {
@@ -698,7 +697,7 @@ a {
   border-radius: 50%;
   background: #F0F0F0;
   border: 1px solid var(--border);
-  color: var(--text-primary);
+  color: var(--action);
   flex-shrink: 0;
 }
 
