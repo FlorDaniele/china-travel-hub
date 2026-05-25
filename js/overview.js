@@ -585,7 +585,10 @@ function renderBookingsSidebarContent(bookings) {
         <span class="sb-section-count${countClass}">${confirmed}/${items.length}</span>
       </div>
       ${itemsHTML}
-      <button class="sb-add-link" type="button" data-booking-type="${esc(t.key)}">Add item +</button>
+      <button class="sb-add-link" type="button" data-booking-type="${esc(t.key)}">
+        <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+        Add booking
+      </button>
     `;
   }).join('');
 
@@ -670,7 +673,10 @@ function renderPackingSidebarContent(categories) {
         <span class="sb-section-count${countClass}">${packed}/${total}</span>
       </div>
       ${itemsHTML}
-      <button class="sb-add-link" type="button" data-packing-add="true">Add item +</button>
+      <button class="sb-add-link" type="button" data-packing-add="true">
+        <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+        Add item
+      </button>
     `;
   }).join('');
 
@@ -1334,7 +1340,10 @@ function renderRemindersSidebarContent(reminders) {
       </div>
       ${doneHTML}
     </div>` : ''}
-    <button class="sb-add-link" type="button" data-reminder-add="true">+ Add reminder</button>
+    <button class="sb-add-link" type="button" data-reminder-add="true">
+      <svg width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+      Add reminder
+    </button>
   `;
 }
 

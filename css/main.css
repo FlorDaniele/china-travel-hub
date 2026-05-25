@@ -662,28 +662,31 @@ a {
 /* ── Sidebar bookings: add link ─────────────────────────────── */
 
 .sb-add-link {
-  display: block;
-  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #F0F0F0;
+  color: var(--text-primary);
+  padding: 4px 12px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--action);
-  background: none;
-  border: none;
-  padding: 6px 0;
   cursor: pointer;
-  text-align: left;
   font-family: inherit;
-  transition: color 0.15s ease;
-  margin-top: 4px;
+  transition: background 0.15s ease;
+  margin-top: 8px;
 }
 
 .sb-add-link:hover {
-  color: var(--terracotta);
+  background: #E0E0E0;
+  color: var(--text-primary);
 }
 
 .sb-add-link:focus-visible {
-  outline: 2px solid var(--action);
+  outline: 2px solid var(--terracotta);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 999px;
 }
 
 /* ── Reminder inline edit input ────────────────────────────── */
