@@ -670,7 +670,7 @@ function renderPackingSidebarContent(categories) {
         <span class="sb-section-count${countClass}">${packed}/${total}</span>
       </div>
       ${itemsHTML}
-      <button class="sb-add-link" type="button">Add item +</button>
+      <button class="sb-add-link" type="button" data-packing-add="true">Add item +</button>
     `;
   }).join('');
 
@@ -1201,6 +1201,12 @@ export function initDesktopPacking() {
       openSidebar('Packing list', renderPackingSidebarContent(categories));
     });
 
+  // Sidebar "Add item +" — delegated from sidebar content
+  document.getElementById('sidebar-content')?.addEventListener('click', e => {
+    if (!e.target.closest('[data-packing-add]')) return;
+    openPackingModal();
+  });
+
   // Checkbox delegation — update packed state in Supabase
   const packingSection = document.querySelector('.dk-packing');
   packingSection?.addEventListener('change', async e => {
@@ -1328,7 +1334,7 @@ function renderRemindersSidebarContent(reminders) {
       </div>
       ${doneHTML}
     </div>` : ''}
-    <button class="sb-add-link" type="button">+ Add reminder</button>
+    <button class="sb-add-link" type="button" data-reminder-add="true">+ Add reminder</button>
   `;
 }
 
@@ -1483,6 +1489,12 @@ export function initDesktopReminders() {
     const reminderId = item?.querySelector('[data-reminder-id]')?.dataset?.reminderId;
     if (!reminderId) return;
     startReminderInlineEdit(titleEl, reminderId, 'dk-reminder-title');
+  });
+
+  // Sidebar "+ Add reminder" — delegated from sidebar content
+  document.getElementById('sidebar-content')?.addEventListener('click', e => {
+    if (!e.target.closest('[data-reminder-add]')) return;
+    openReminderModal();
   });
 
   // Inline edit — reminders sidebar
