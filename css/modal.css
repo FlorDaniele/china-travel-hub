@@ -1,0 +1,295 @@
+/* ============================================================
+   MODAL.CSS — Reusable modal shell
+   Used by packing, reminder, and booking "add item" flows.
+   ============================================================ */
+
+/* ── Overlay ───────────────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Card ──────────────────────────────────────────────────── */
+
+.modal-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: 0px 8px 32px rgba(56, 56, 46, 0.22);
+  min-width: 400px;
+  max-width: 480px;
+  width: 90vw;
+  z-index: 1101;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease-out;
+}
+
+.modal-card.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+
+.modal-header {
+  margin-bottom: 16px;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: var(--line-height-tight);
+}
+
+/* ── Close button — absolute top-right, last in tab order ─── */
+
+.modal-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.modal-close-btn:hover {
+  color: var(--text-primary);
+}
+
+.modal-close-btn:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 2px;
+}
+
+/* ── Divider ───────────────────────────────────────────────── */
+
+.modal-divider {
+  height: 1px;
+  background: var(--border);
+  border: none;
+  margin: 0 0 24px;
+}
+
+/* ── Content area ──────────────────────────────────────────── */
+
+.modal-content {
+  /* no special styles — fields stack naturally */
+}
+
+/* ── Form field ────────────────────────────────────────────── */
+
+.modal-field {
+  margin-bottom: 20px;
+}
+
+.modal-field:last-child {
+  margin-bottom: 0;
+}
+
+.modal-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.modal-input,
+.modal-select,
+.modal-date {
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: 16px;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  min-height: 44px;
+  transition: border-color 0.15s ease;
+}
+
+.modal-input:focus,
+.modal-select:focus,
+.modal-date:focus {
+  outline: none;
+  border-color: var(--action);
+}
+
+.modal-input.has-error,
+.modal-select.has-error,
+.modal-date.has-error {
+  border-color: var(--status-error);
+}
+
+.modal-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B6B80' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.modal-counter {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* ── Error message ─────────────────────────────────────────── */
+
+.modal-error {
+  font-size: 12px;
+  color: var(--status-error);
+  margin-top: 4px;
+  min-height: 16px;
+}
+
+/* ── Pill selector (booking type) ──────────────────────────── */
+
+.modal-pill-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modal-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-family: var(--font-family);
+  background: var(--warm-gold-light);
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.modal-pill[aria-checked="true"] {
+  background: var(--terracotta);
+  color: #ffffff;
+  border-color: var(--terracotta);
+}
+
+.modal-pill:hover:not([aria-checked="true"]) {
+  background: rgba(223, 188, 94, 0.3);
+}
+
+.modal-pill:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 2px;
+}
+
+/* ── Action row ────────────────────────────────────────────── */
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Primary "Guardar" — rightmost via order */
+.modal-btn-primary {
+  order: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  background: var(--terracotta);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  transition: filter 0.15s ease;
+}
+
+.modal-btn-primary:hover {
+  filter: brightness(0.9);
+}
+
+.modal-btn-primary:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 3px;
+  border-radius: var(--radius-full);
+}
+
+.modal-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Secondary "Cerrar" — leftmost via order */
+.modal-btn-secondary {
+  order: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.15s ease;
+}
+
+.modal-btn-secondary:hover {
+  background: var(--background);
+}
+
+.modal-btn-secondary:focus-visible {
+  outline: 2px solid var(--action);
+  outline-offset: 3px;
+  border-radius: var(--radius-full);
+}
+
+/* ── Reduced motion ────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
+  .modal-card {
+    transition: none;
+  }
+}

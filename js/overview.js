@@ -9,6 +9,7 @@
 import { supabase } from './supabase.js';
 import { saveToStorage, loadFromStorage } from './storage.js';
 import { openSidebar } from './sidebar.js';
+import { openModal, closeModal } from './modal.js';
 
 const DEPARTURE_DATE = '2026-06-06';
 
@@ -699,11 +700,333 @@ const STATIC_BOOKINGS_FALLBACK = [
   { id: 'ff', type: 'tour',  title: 'Yu Garden + Bund evening',   status: 'pending', date_start: '2026-06-28' },
 ];
 
+/* ── Refresh: desktop booking summary counts ───────────────── */
+
+function refreshDesktopBookings(bookings) {
+  const cols  = document.querySelectorAll('.dk-bookings .dk-booking-summary-col');
+  const types = ['hotel', 'train', 'tour'];
+  cols.forEach((col, i) => {
+    const items     = bookings.filter(b => b.type === types[i]);
+    const confirmed = items.filter(b => b.status === 'booked' || b.status === 'done').length;
+    const allDone   = items.length > 0 && confirmed === items.length;
+    const countEl   = col.querySelector('.dk-booking-summary-count');
+    if (countEl) {
+      countEl.innerHTML = `<span class="dk-booking-count-num">${confirmed}</span>/${items.length}`;
+    }
+    col.classList.toggle('dk-booking-summary-col--all-done', allDone);
+  });
+}
+
+/* ── Append: new item to desktop packing list ──────────────── */
+
+function appendPackingItem(label) {
+  const listEl = document.querySelector('.dk-packing-list');
+  if (!listEl) return;
+  const id = `pk-new-${Date.now()}`;
+  const li = document.createElement('li');
+  li.className = 'dk-booking-check-item';
+  li.innerHTML = `
+    <label class="dk-booking-cb-wrap" for="${id}" aria-label="Mark ${esc(label)} as packed">
+      <input type="checkbox" id="${id}" class="dk-booking-cb">
+    </label>
+    <span class="dk-booking-item-label">${esc(label)}</span>
+  `;
+  listEl.appendChild(li);
+}
+
+/* ── Modal: new booking ────────────────────────────────────── */
+
+function openBookingModal() {
+  const bodyHTML = `
+    <div class="modal-field">
+      <label class="modal-label" for="bk-modal-name">Booking</label>
+      <input type="text" id="bk-modal-name" class="modal-input"
+        placeholder="e.g. Hotel in Xi'an" maxlength="45" autocomplete="off">
+      <div class="modal-counter" id="bk-modal-counter" aria-live="polite">0/45</div>
+      <div class="modal-error" id="bk-modal-name-err" role="alert"></div>
+    </div>
+    <div class="modal-field">
+      <span class="modal-label" id="bk-modal-tipo-lbl">Tipo</span>
+      <div class="modal-pill-group" role="radiogroup" aria-labelledby="bk-modal-tipo-lbl">
+        <button class="modal-pill" type="button" role="radio" aria-checked="false"
+          data-value="hotel" tabindex="0">Hotel</button>
+        <button class="modal-pill" type="button" role="radio" aria-checked="false"
+          data-value="train" tabindex="-1">Train</button>
+        <button class="modal-pill" type="button" role="radio" aria-checked="false"
+          data-value="tour" tabindex="-1">Tour</button>
+      </div>
+      <div class="modal-error" id="bk-modal-type-err" role="alert"></div>
+    </div>
+  `;
+
+  openModal({ id: 'bk-modal', title: 'Nuevo booking', bodyHTML, onSave: handleBookingModalSave });
+
+  /* Pill selection + arrow-key navigation */
+  const pills = [...document.querySelectorAll('.modal-pill')];
+
+  function selectPill(pill) {
+    pills.forEach(p => {
+      p.setAttribute('aria-checked', 'false');
+      p.setAttribute('tabindex', '-1');
+    });
+    pill.setAttribute('aria-checked', 'true');
+    pill.setAttribute('tabindex', '0');
+    document.getElementById('bk-modal-type-err').textContent = '';
+  }
+
+  pills.forEach((pill, idx) => {
+    pill.addEventListener('click', () => selectPill(pill));
+    pill.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPill(pill); return; }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        const next = pills[(idx + 1) % pills.length];
+        selectPill(next); next.focus();
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const prev = pills[(idx - 1 + pills.length) % pills.length];
+        selectPill(prev); prev.focus();
+      }
+    });
+  });
+
+  /* Character counter */
+  const input   = document.getElementById('bk-modal-name');
+  const counter = document.getElementById('bk-modal-counter');
+  input?.addEventListener('input', () => {
+    counter.textContent = `${input.value.length}/45`;
+    if (input.value.length > 0) {
+      input.classList.remove('has-error');
+      document.getElementById('bk-modal-name-err').textContent = '';
+    }
+  });
+}
+
+async function handleBookingModalSave() {
+  const nameInput = document.getElementById('bk-modal-name');
+  const pill      = document.querySelector('.modal-pill[aria-checked="true"]');
+  const nameErr   = document.getElementById('bk-modal-name-err');
+  const typeErr   = document.getElementById('bk-modal-type-err');
+  let valid = true;
+
+  if (!nameInput?.value.trim()) {
+    nameInput?.classList.add('has-error');
+    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    nameInput.classList.remove('has-error');
+    if (nameErr) nameErr.textContent = '';
+  }
+
+  if (!pill) {
+    if (typeErr) typeErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    if (typeErr) typeErr.textContent = '';
+  }
+
+  if (!valid) return;
+
+  const title     = nameInput.value.trim();
+  const type      = pill.dataset.value;
+  const btn       = document.getElementById('bk-modal-guardar');
+  if (btn) btn.disabled = true;
+
+  const newEntry = { title, type, status: 'pending' };
+
+  try {
+    const { data, error } = await supabase.from('bookings').insert([newEntry]).select();
+    if (error) throw error;
+    const cached = loadFromStorage('bookings') ?? [];
+    saveToStorage('bookings', [...cached, ...(data ?? [newEntry])]);
+  } catch (err) {
+    console.warn('[modal] booking insert failed:', err);
+    const cached = loadFromStorage('bookings') ?? [];
+    saveToStorage('bookings', [...cached, { ...newEntry, id: `temp-${Date.now()}` }]);
+  }
+
+  closeModal();
+  initOverview().then(() => {
+    const bookings = loadFromStorage('bookings') ?? STATIC_BOOKINGS_FALLBACK;
+    refreshDesktopBookings(bookings);
+  });
+}
+
+/* ── Modal: new reminder ───────────────────────────────────── */
+
+function openReminderModal() {
+  const bodyHTML = `
+    <div class="modal-field">
+      <label class="modal-label" for="rm-modal-name">Reminder</label>
+      <input type="text" id="rm-modal-name" class="modal-input"
+        placeholder="e.g. Book train tickets" maxlength="50" autocomplete="off">
+      <div class="modal-counter" id="rm-modal-counter" aria-live="polite">0/50</div>
+      <div class="modal-error" id="rm-modal-name-err" role="alert"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="rm-modal-date">Fecha límite</label>
+      <input type="date" id="rm-modal-date" class="modal-date">
+      <div class="modal-error" id="rm-modal-date-err" role="alert"></div>
+    </div>
+  `;
+
+  openModal({ id: 'rm-modal', title: 'Nuevo reminder', bodyHTML, onSave: handleReminderModalSave });
+
+  const input   = document.getElementById('rm-modal-name');
+  const counter = document.getElementById('rm-modal-counter');
+  input?.addEventListener('input', () => {
+    counter.textContent = `${input.value.length}/50`;
+    if (input.value.length > 0) {
+      input.classList.remove('has-error');
+      document.getElementById('rm-modal-name-err').textContent = '';
+    }
+  });
+}
+
+async function handleReminderModalSave() {
+  const nameInput = document.getElementById('rm-modal-name');
+  const dateInput = document.getElementById('rm-modal-date');
+  const nameErr   = document.getElementById('rm-modal-name-err');
+  const dateErr   = document.getElementById('rm-modal-date-err');
+  let valid = true;
+
+  if (!nameInput?.value.trim()) {
+    nameInput?.classList.add('has-error');
+    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    nameInput.classList.remove('has-error');
+    if (nameErr) nameErr.textContent = '';
+  }
+
+  if (!dateInput?.value) {
+    dateInput?.classList.add('has-error');
+    if (dateErr) dateErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    dateInput.classList.remove('has-error');
+    if (dateErr) dateErr.textContent = '';
+  }
+
+  if (!valid) return;
+
+  const title    = nameInput.value.trim();
+  const due_date = dateInput.value;
+  const btn      = document.getElementById('rm-modal-guardar');
+  if (btn) btn.disabled = true;
+
+  const newEntry = { title, due_date, status: 'pending' };
+
+  try {
+    const { data, error } = await supabase.from('reminders').insert([newEntry]).select();
+    if (error) throw error;
+    const cached = loadFromStorage('reminders') ?? [];
+    saveToStorage('reminders', [...cached, ...(data ?? [newEntry])]);
+  } catch (err) {
+    console.warn('[modal] reminder insert failed:', err);
+    const cached = loadFromStorage('reminders') ?? [];
+    saveToStorage('reminders', [...cached, { ...newEntry, id: `temp-${Date.now()}` }]);
+  }
+
+  closeModal();
+
+  const updated = loadFromStorage('reminders') ?? [];
+  renderDesktopReminders(updated.length > 0 ? updated : STATIC_REMINDERS);
+}
+
+/* ── Modal: new packing item ───────────────────────────────── */
+
+function openPackingModal() {
+  const optionsHTML = STATIC_PACKING_LIST
+    .map(c => `<option value="${esc(c.category)}">${esc(c.category)}</option>`)
+    .join('');
+
+  const bodyHTML = `
+    <div class="modal-field">
+      <label class="modal-label" for="pk-modal-name">Item</label>
+      <input type="text" id="pk-modal-name" class="modal-input"
+        placeholder="e.g. Rain jacket" maxlength="40" autocomplete="off">
+      <div class="modal-counter" id="pk-modal-counter" aria-live="polite">0/40</div>
+      <div class="modal-error" id="pk-modal-name-err" role="alert"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="pk-modal-cat">Categoría</label>
+      <select id="pk-modal-cat" class="modal-select">
+        <option value="" disabled selected>Select a category</option>
+        ${optionsHTML}
+      </select>
+      <div class="modal-error" id="pk-modal-cat-err" role="alert"></div>
+    </div>
+  `;
+
+  openModal({ id: 'pk-modal', title: 'Nuevo item', bodyHTML, onSave: handlePackingModalSave });
+
+  const input   = document.getElementById('pk-modal-name');
+  const counter = document.getElementById('pk-modal-counter');
+  input?.addEventListener('input', () => {
+    counter.textContent = `${input.value.length}/40`;
+    if (input.value.length > 0) {
+      input.classList.remove('has-error');
+      document.getElementById('pk-modal-name-err').textContent = '';
+    }
+  });
+}
+
+async function handlePackingModalSave() {
+  const nameInput = document.getElementById('pk-modal-name');
+  const catSelect = document.getElementById('pk-modal-cat');
+  const nameErr   = document.getElementById('pk-modal-name-err');
+  const catErr    = document.getElementById('pk-modal-cat-err');
+  let valid = true;
+
+  if (!nameInput?.value.trim()) {
+    nameInput?.classList.add('has-error');
+    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    nameInput.classList.remove('has-error');
+    if (nameErr) nameErr.textContent = '';
+  }
+
+  if (!catSelect?.value) {
+    catSelect?.classList.add('has-error');
+    if (catErr) catErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    catSelect.classList.remove('has-error');
+    if (catErr) catErr.textContent = '';
+  }
+
+  if (!valid) return;
+
+  const label    = nameInput.value.trim();
+  const category = catSelect.value;
+  const btn      = document.getElementById('pk-modal-guardar');
+  if (btn) btn.disabled = true;
+
+  try {
+    const { error } = await supabase
+      .from('packing_list')
+      .insert([{ label, category, packed: false }]);
+    if (error) throw error;
+  } catch (err) {
+    console.warn('[modal] packing_list insert failed:', err);
+  }
+
+  closeModal();
+  appendPackingItem(label);
+}
+
 /* ── Desktop bookings handlers ─────────────────────────────── */
 
 export function initDesktopBookings() {
   const section = document.querySelector('.dk-bookings');
   if (!section) return;
+
+  // "+" button — opens the add booking modal
+  document.getElementById('dk-bookings-add')
+    ?.addEventListener('click', openBookingModal);
 
   // Checkbox delegation — real Supabase update wired in Session 3
   section.addEventListener('change', e => {
@@ -723,6 +1046,10 @@ export function initDesktopBookings() {
 /* ── Desktop packing list handler ─────────────────────────── */
 
 export function initDesktopPacking() {
+  // "+" button — opens the add packing item modal
+  document.getElementById('dk-packing-add')
+    ?.addEventListener('click', openPackingModal);
+
   document.getElementById('dk-packing-see-all')
     ?.addEventListener('click', () => {
       openSidebar('Packing list', renderPackingSidebarContent(STATIC_PACKING_LIST));
@@ -888,6 +1215,10 @@ function renderDesktopReminders(reminders) {
 /* ── Desktop reminders handler ─────────────────────────────── */
 
 export function initDesktopReminders() {
+  // "+" button — opens the add reminder modal
+  document.getElementById('dk-reminders-add')
+    ?.addEventListener('click', openReminderModal);
+
   const viewAllBtn = document.getElementById('dk-reminders-view-all');
   if (!viewAllBtn) return;
 
