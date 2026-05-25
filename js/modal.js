@@ -9,6 +9,7 @@ let _overlay    = null;
 let _card       = null;
 let _trigger    = null;
 let _keyHandler = null;
+let _openRafId  = null;
 
 /* ── Create DOM elements once, reuse on every open ─────────── */
 
@@ -105,8 +106,15 @@ export function openModal({ id, title, bodyHTML, onSave }) {
   };
   document.addEventListener('keydown', _keyHandler);
 
+  if (_openRafId !== null) {
+    cancelAnimationFrame(_openRafId);
+    _openRafId = null;
+  }
   _overlay.classList.add('is-open');
-  requestAnimationFrame(() => _card.classList.add('is-open'));
+  _openRafId = requestAnimationFrame(() => {
+    _openRafId = null;
+    _card.classList.add('is-open');
+  });
 
   setTimeout(() => {
     (_card.querySelector('input') ?? _card.querySelector('select'))?.focus();
@@ -117,6 +125,10 @@ export function openModal({ id, title, bodyHTML, onSave }) {
 
 export function closeModal() {
   if (!_overlay) return;
+  if (_openRafId !== null) {
+    cancelAnimationFrame(_openRafId);
+    _openRafId = null;
+  }
   _overlay.classList.remove('is-open');
   _card.classList.remove('is-open');
 

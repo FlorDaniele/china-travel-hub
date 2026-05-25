@@ -2103,6 +2103,132 @@ function fadePanel(panelEl, renderFn) {
   });
 }
 
+/* ── Modal: nueva actividad ────────────────────────────────── */
+
+function openActivityModal(cityKeyStr, dateStr, refreshFn) {
+  const bodyHTML = `
+    <div class="modal-field">
+      <label class="modal-label" for="act-modal-name">Nombre de la actividad</label>
+      <input type="text" id="act-modal-name" class="modal-input"
+        placeholder="Nombre de la actividad" maxlength="60" autocomplete="off">
+      <div class="modal-counter" id="act-modal-counter" aria-live="polite">0 / 60</div>
+      <div class="modal-error" id="act-modal-name-err" role="alert"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="act-modal-time">Hora de inicio</label>
+      <input type="time" id="act-modal-time" class="modal-input">
+      <div class="modal-error" id="act-modal-time-err" role="alert"></div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="act-modal-end">Hora de fin (opcional)</label>
+      <input type="time" id="act-modal-end" class="modal-input">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label" for="act-modal-type">Tipo</label>
+      <select id="act-modal-type" class="modal-select">
+        <option value="" selected>— Sin tipo —</option>
+        <option value="tour">Tour</option>
+        <option value="transport">Transport</option>
+        <option value="accommodation">Accommodation</option>
+        <option value="sightseeing">Sightseeing</option>
+        <option value="cultural">Cultural</option>
+        <option value="temple">Temple</option>
+        <option value="park">Park</option>
+        <option value="street">Street</option>
+        <option value="market">Market</option>
+      </select>
+    </div>
+  `;
+
+  openModal({
+    id: 'act-modal',
+    title: 'Nueva actividad',
+    bodyHTML,
+    onSave: () => handleActivityModalSave(cityKeyStr, dateStr, refreshFn),
+  });
+
+  const input   = document.getElementById('act-modal-name');
+  const counter = document.getElementById('act-modal-counter');
+  input?.addEventListener('input', () => {
+    counter.textContent = `${input.value.length} / 60`;
+    if (input.value.length > 0) {
+      input.classList.remove('has-error');
+      document.getElementById('act-modal-name-err').textContent = '';
+    }
+  });
+}
+
+async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
+  const nameInput  = document.getElementById('act-modal-name');
+  const timeInput  = document.getElementById('act-modal-time');
+  const endInput   = document.getElementById('act-modal-end');
+  const typeSelect = document.getElementById('act-modal-type');
+  const nameErr    = document.getElementById('act-modal-name-err');
+  const timeErr    = document.getElementById('act-modal-time-err');
+  let valid = true;
+
+  if (!nameInput?.value.trim()) {
+    nameInput?.classList.add('has-error');
+    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    nameInput.classList.remove('has-error');
+    if (nameErr) nameErr.textContent = '';
+  }
+
+  if (!timeInput?.value) {
+    timeInput?.classList.add('has-error');
+    if (timeErr) timeErr.textContent = 'Este campo es obligatorio';
+    valid = false;
+  } else {
+    timeInput.classList.remove('has-error');
+    if (timeErr) timeErr.textContent = '';
+  }
+
+  if (!valid) return;
+
+  const title    = nameInput.value.trim();
+  const time     = timeInput.value;
+  const end_time = endInput?.value || null;
+  const type     = typeSelect?.value || null;
+  const btn      = document.getElementById('act-modal-guardar');
+  if (btn) btn.disabled = true;
+
+  const existingCount = (STATIC_ACTIVITIES[cityKeyStr]?.[dateStr] ?? [])
+    .flatMap(g => g.items).length;
+  const sort_order = existingCount;
+
+  const newEntry = { city: cityKeyStr, date: dateStr, title, time, end_time, type, sort_order };
+
+  try {
+    const { error } = await supabase.from('activities').insert([newEntry]);
+    if (error) throw error;
+  } catch (err) {
+    console.warn('[modal] activity insert failed:', err);
+  }
+
+  /* Update in-memory data so the timeline re-render shows the new item */
+  const newItem  = { title, time, end_time, type, source: 'User added' };
+  const period   = getPeriod(time) ?? 'Other';
+  if (!STATIC_ACTIVITIES[cityKeyStr])        STATIC_ACTIVITIES[cityKeyStr] = {};
+  if (!STATIC_ACTIVITIES[cityKeyStr][dateStr]) STATIC_ACTIVITIES[cityKeyStr][dateStr] = [];
+  const dayGroups = STATIC_ACTIVITIES[cityKeyStr][dateStr];
+  const existing  = dayGroups.find(g => g.period === period);
+  if (existing) {
+    existing.items.push(newItem);
+  } else {
+    const insertIdx = dayGroups.findIndex(g => PERIOD_ORDER.indexOf(g.period) > PERIOD_ORDER.indexOf(period));
+    if (insertIdx === -1) {
+      dayGroups.push({ period, items: [newItem] });
+    } else {
+      dayGroups.splice(insertIdx, 0, { period, items: [newItem] });
+    }
+  }
+
+  closeModal();
+  refreshFn(cityKeyStr, dateStr);
+}
+
 /* ── Main itinerary init ───────────────────────────────────── */
 
 export function initItinerary() {
@@ -2221,4 +2347,11 @@ export function initItinerary() {
   labelEl.textContent  = itinFormatDateLabel(firstDate, firstCity.city);
   timelineEl.innerHTML = renderActivityTimeline(selectedCityKey, firstDate);
   initTimelineSortable(timelineEl, selectedCityKey, firstDate);
+
+  /* Event delegation: "+" button in timeline — attached once, works after every re-render */
+  timelineEl.addEventListener('click', e => {
+    if (e.target.closest('.dk-add-activity-btn')) {
+      openActivityModal(selectedCityKey, activeDates[selectedCityKey], updatePanel);
+    }
+  });
 }
