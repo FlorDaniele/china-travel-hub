@@ -784,15 +784,16 @@ function appendSupabasePackingItems(items) {
   const listEl = document.querySelector('.dk-packing-list');
   if (!listEl || !items || items.length === 0) return;
   items.forEach(item => {
-    const id = `pk-sb-${esc(String(item.id))}`;
-    const li = document.createElement('li');
+    const id  = `pk-sb-${esc(String(item.id))}`;
+    const lbl = item.item ?? item.label ?? '';
+    const li  = document.createElement('li');
     li.className = 'dk-booking-check-item';
-    li.dataset.packingId = item.id;
     li.innerHTML = `
-      <label class="dk-booking-cb-wrap" for="${id}" aria-label="Mark ${esc(item.label)} as packed">
-        <input type="checkbox" id="${id}" class="dk-booking-cb" ${item.packed ? 'checked' : ''}>
+      <label class="dk-booking-cb-wrap" for="${id}" aria-label="Mark ${esc(lbl)} as packed">
+        <input type="checkbox" id="${id}" class="dk-booking-cb"
+               data-packing-id="${esc(String(item.id))}" ${item.packed ? 'checked' : ''}>
       </label>
-      <span class="dk-booking-item-label">${esc(item.label)}</span>
+      <span class="dk-booking-item-label">${esc(lbl)}</span>
     `;
     listEl.appendChild(li);
   });
@@ -903,7 +904,8 @@ async function handleBookingModalSave() {
     const { data, error } = await supabase.from('bookings').insert([newEntry]).select();
     if (error) throw error;
     const cached = loadFromStorage('bookings') ?? [];
-    saveToStorage('bookings', [...cached, ...(data ?? [newEntry])]);
+    const saved  = data?.length ? data : [{ ...newEntry, id: `temp-${Date.now()}` }];
+    saveToStorage('bookings', [...cached, ...saved]);
   } catch (err) {
     console.warn('[modal] booking insert failed:', err);
     const cached = loadFromStorage('bookings') ?? [];
@@ -1062,22 +1064,23 @@ async function handlePackingModalSave() {
   if (!valid) return;
 
   const label    = nameInput.value.trim();
-  const category = catSelect.value;
+  const category = catSelect.value.toLowerCase();
   const btn      = document.getElementById('pk-modal-guardar');
   if (btn) btn.disabled = true;
 
   try {
     const { data, error } = await supabase
       .from('packing_list')
-      .insert([{ label, category, packed: false }])
+      .insert([{ item: label, category, packed: false }])
       .select();
     if (error) throw error;
-    const cached = loadFromStorage('packing_list') ?? [];
-    saveToStorage('packing_list', [...cached, ...(data ?? [{ label, category, packed: false, id: `temp-${Date.now()}` }])]);
+    const cached  = loadFromStorage('packing_list') ?? [];
+    const saved   = data?.length ? data : [{ item: label, category, packed: false, id: `temp-${Date.now()}` }];
+    saveToStorage('packing_list', [...cached, ...saved]);
   } catch (err) {
     console.warn('[modal] packing_list insert failed:', err);
     const cached = loadFromStorage('packing_list') ?? [];
-    saveToStorage('packing_list', [...cached, { label, category, packed: false, id: `temp-${Date.now()}` }]);
+    saveToStorage('packing_list', [...cached, { item: label, category, packed: false, id: `temp-${Date.now()}` }]);
   }
 
   closeModal();
@@ -1109,6 +1112,41 @@ export function initDesktopBookings() {
     });
 }
 
+/* ── Build merged packing categories (static + Supabase) ──── */
+
+async function buildPackingCategories() {
+  let supabaseItems = [];
+  try {
+    const { data, error } = await supabase.from('packing_list').select('*');
+    if (!error && data) {
+      supabaseItems = data;
+      saveToStorage('packing_list', data);
+    }
+  } catch (_) {
+    supabaseItems = loadFromStorage('packing_list') ?? [];
+  }
+
+  // Clone static list as base (static items don't have a DB row)
+  const merged = STATIC_PACKING_LIST.map(cat => ({
+    category: cat.category,
+    items: cat.items.map(i => ({ id: i.id, label: i.label, packed: i.packed })),
+  }));
+
+  // Append Supabase items to their category slot (create slot if unknown)
+  supabaseItems.forEach(row => {
+    const catKey   = (row.category ?? '').toLowerCase();
+    const catLabel = catKey.charAt(0).toUpperCase() + catKey.slice(1);
+    let slot = merged.find(c => c.category.toLowerCase() === catKey);
+    if (!slot) {
+      slot = { category: catLabel, items: [] };
+      merged.push(slot);
+    }
+    slot.items.push({ id: row.id, label: row.item ?? '', packed: row.packed ?? false });
+  });
+
+  return merged;
+}
+
 /* ── Desktop packing list handler ─────────────────────────── */
 
 export function initDesktopPacking() {
@@ -1116,10 +1154,34 @@ export function initDesktopPacking() {
   document.getElementById('dk-packing-add')
     ?.addEventListener('click', openPackingModal);
 
+  // "See all" — merges static defaults with Supabase rows before opening sidebar
   document.getElementById('dk-packing-see-all')
-    ?.addEventListener('click', () => {
-      openSidebar('Packing list', renderPackingSidebarContent(STATIC_PACKING_LIST));
+    ?.addEventListener('click', async () => {
+      const categories = await buildPackingCategories();
+      openSidebar('Packing list', renderPackingSidebarContent(categories));
     });
+
+  // Checkbox delegation — update packed state in Supabase
+  const packingSection = document.querySelector('.dk-packing');
+  packingSection?.addEventListener('change', async e => {
+    const cb = e.target;
+    if (!cb.matches('.dk-booking-cb') || !cb.dataset.packingId) return;
+    const packed = cb.checked;
+    try {
+      const { error } = await supabase
+        .from('packing_list')
+        .update({ packed })
+        .eq('id', cb.dataset.packingId);
+      if (error) throw error;
+      const cached = loadFromStorage('packing_list') ?? [];
+      saveToStorage('packing_list', cached.map(i =>
+        String(i.id) === String(cb.dataset.packingId) ? { ...i, packed } : i
+      ));
+    } catch (err) {
+      console.warn('[packing] packed update failed:', err);
+      cb.checked = !packed;
+    }
+  });
 
   // Load user-added packing items from Supabase and append to static list
   (async () => {
