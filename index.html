@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="css/city.css">
 
   <link rel="stylesheet" href="css/reminders.css">
+  <link rel="stylesheet" href="css/modal.css">
 </head>
 <body>
 
@@ -81,39 +82,8 @@
             </div>
           </div>
 
-          <!-- Pending bookings checklist — static placeholder, Supabase in Session 3 -->
-          <ul class="dk-booking-checklist" role="list" aria-label="Pending bookings">
-            <li class="dk-booking-check-item">
-              <label class="dk-booking-cb-wrap" for="bk-1" aria-label="Mark Hotel Chongqing as booked">
-                <input type="checkbox" id="bk-1" class="dk-booking-cb">
-              </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Hotel"><i data-lucide="bed-double" width="16" height="16" aria-hidden="true"></i></span> Chongqing — 2 nights</span>
-            </li>
-            <li class="dk-booking-check-item">
-              <label class="dk-booking-cb-wrap" for="bk-2" aria-label="Mark Hotel Shanghai as booked">
-                <input type="checkbox" id="bk-2" class="dk-booking-cb">
-              </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Hotel"><i data-lucide="bed-double" width="16" height="16" aria-hidden="true"></i></span> Shanghai — 5 nights</span>
-            </li>
-            <li class="dk-booking-check-item">
-              <label class="dk-booking-cb-wrap" for="bk-3" aria-label="Mark Xi'an to Chengdu train as booked">
-                <input type="checkbox" id="bk-3" class="dk-booking-cb">
-              </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Train"><i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i></span> Xi'an → Chengdu</span>
-            </li>
-            <li class="dk-booking-check-item">
-              <label class="dk-booking-cb-wrap" for="bk-4" aria-label="Mark Chengdu to Chongqing train as booked">
-                <input type="checkbox" id="bk-4" class="dk-booking-cb">
-              </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Train"><i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i></span> Chengdu → Chongqing</span>
-            </li>
-            <li class="dk-booking-check-item">
-              <label class="dk-booking-cb-wrap" for="bk-5" aria-label="Mark Chongqing to Shanghai train as booked">
-                <input type="checkbox" id="bk-5" class="dk-booking-cb">
-              </label>
-              <span class="dk-booking-item-label"><span class="dk-booking-item-type" aria-label="Train"><i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i></span> Chongqing → Shanghai</span>
-            </li>
-          </ul>
+          <!-- Pending bookings checklist — rendered dynamically from Supabase -->
+          <ul class="dk-booking-checklist" role="list" aria-label="Pending bookings"></ul>
 
           <button class="dk-view-all" id="dk-bookings-view-all">View all →</button>
         </section>
@@ -134,7 +104,7 @@
         <section class="dk-card dk-packing" aria-labelledby="dk-packing-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-packing-title">Packing list</h2>
-            <button class="dk-icon-btn dk-icon-btn--action" aria-label="Add packing item">
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-packing-add" aria-label="Add packing item">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
             </button>
           </div>
@@ -174,7 +144,6 @@
                 <span class="dk-booking-item-label">Medical Aid</span>
               </li>
             </ul>
-            <div class="dk-packing-fade" aria-hidden="true"></div>
           </div>
           <button class="dk-view-all" id="dk-packing-see-all">View all →</button>
         </section>

@@ -493,7 +493,7 @@ function renderSkeletons() {
 /* ── Booking check handler ─────────────────────────────────── */
 
 async function handleBookingCheck(bookingId, checkboxEl) {
-  const item = checkboxEl.closest('.booking-check-item');
+  const item = checkboxEl.closest('.booking-check-item, .dk-booking-check-item');
   if (!item) return;
 
   // Optimistic UI: dim the row while the async save is in flight
@@ -717,6 +717,50 @@ function refreshDesktopBookings(bookings) {
   });
 }
 
+/* ── Render: desktop bookings checklist (dynamic) ──────────── */
+
+const _BOOKING_ICONS = {
+  hotel: '<i data-lucide="bed-double" width="16" height="16" aria-hidden="true"></i>',
+  train: '<i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i>',
+  tour: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+         <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+         <path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>`,
+};
+
+function renderDesktopBookingChecklist(bookings) {
+  const listEl = document.querySelector('.dk-booking-checklist');
+  if (!listEl) return;
+
+  const pending = bookings.filter(b => b.status !== 'booked' && b.status !== 'done');
+
+  if (pending.length === 0) {
+    listEl.innerHTML = `<li class="dk-booking-check-item">
+      <span class="dk-booking-item-label" style="color:var(--text-secondary)">All bookings confirmed ✓</span>
+    </li>`;
+    return;
+  }
+
+  listEl.innerHTML = pending.map(b => {
+    const id        = `bk-dyn-${esc(String(b.id))}`;
+    const icon      = _BOOKING_ICONS[b.type] ?? '';
+    const typeLabel = b.type ? (b.type.charAt(0).toUpperCase() + b.type.slice(1)) : '';
+    return `
+      <li class="dk-booking-check-item">
+        <label class="dk-booking-cb-wrap" for="${id}" aria-label="Mark ${esc(b.title)} as booked">
+          <input type="checkbox" id="${id}" class="dk-booking-cb" data-booking-id="${esc(String(b.id))}">
+        </label>
+        <span class="dk-booking-item-label">
+          ${icon ? `<span class="dk-booking-item-type" aria-label="${esc(typeLabel)}">${icon}</span>` : ''}
+          ${esc(b.title)}
+        </span>
+      </li>
+    `;
+  }).join('');
+
+  window.lucide?.createIcons();
+}
+
 /* ── Append: new item to desktop packing list ──────────────── */
 
 function appendPackingItem(label) {
@@ -732,6 +776,26 @@ function appendPackingItem(label) {
     <span class="dk-booking-item-label">${esc(label)}</span>
   `;
   listEl.appendChild(li);
+}
+
+/* ── Append: Supabase packing items on load ────────────────── */
+
+function appendSupabasePackingItems(items) {
+  const listEl = document.querySelector('.dk-packing-list');
+  if (!listEl || !items || items.length === 0) return;
+  items.forEach(item => {
+    const id = `pk-sb-${esc(String(item.id))}`;
+    const li = document.createElement('li');
+    li.className = 'dk-booking-check-item';
+    li.dataset.packingId = item.id;
+    li.innerHTML = `
+      <label class="dk-booking-cb-wrap" for="${id}" aria-label="Mark ${esc(item.label)} as packed">
+        <input type="checkbox" id="${id}" class="dk-booking-cb" ${item.packed ? 'checked' : ''}>
+      </label>
+      <span class="dk-booking-item-label">${esc(item.label)}</span>
+    `;
+    listEl.appendChild(li);
+  });
 }
 
 /* ── Modal: new booking ────────────────────────────────────── */
@@ -847,10 +911,7 @@ async function handleBookingModalSave() {
   }
 
   closeModal();
-  initOverview().then(() => {
-    const bookings = loadFromStorage('bookings') ?? STATIC_BOOKINGS_FALLBACK;
-    refreshDesktopBookings(bookings);
-  });
+  initOverview();
 }
 
 /* ── Modal: new reminder ───────────────────────────────────── */
@@ -1006,12 +1067,17 @@ async function handlePackingModalSave() {
   if (btn) btn.disabled = true;
 
   try {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('packing_list')
-      .insert([{ label, category, packed: false }]);
+      .insert([{ label, category, packed: false }])
+      .select();
     if (error) throw error;
+    const cached = loadFromStorage('packing_list') ?? [];
+    saveToStorage('packing_list', [...cached, ...(data ?? [{ label, category, packed: false, id: `temp-${Date.now()}` }])]);
   } catch (err) {
     console.warn('[modal] packing_list insert failed:', err);
+    const cached = loadFromStorage('packing_list') ?? [];
+    saveToStorage('packing_list', [...cached, { label, category, packed: false, id: `temp-${Date.now()}` }]);
   }
 
   closeModal();
@@ -1028,10 +1094,10 @@ export function initDesktopBookings() {
   document.getElementById('dk-bookings-add')
     ?.addEventListener('click', openBookingModal);
 
-  // Checkbox delegation — real Supabase update wired in Session 3
+  // Checkbox delegation — mark booking as booked in Supabase on check
   section.addEventListener('change', e => {
-    if (e.target.matches('.dk-booking-cb')) {
-      // TODO Session 3: update status to 'booked' in Supabase on check
+    if (e.target.matches('.dk-booking-cb') && e.target.dataset.bookingId) {
+      handleBookingCheck(e.target.dataset.bookingId, e.target);
     }
   });
 
@@ -1054,6 +1120,19 @@ export function initDesktopPacking() {
     ?.addEventListener('click', () => {
       openSidebar('Packing list', renderPackingSidebarContent(STATIC_PACKING_LIST));
     });
+
+  // Load user-added packing items from Supabase and append to static list
+  (async () => {
+    try {
+      const { data, error } = await supabase.from('packing_list').select('*');
+      if (error) throw error;
+      saveToStorage('packing_list', data ?? []);
+      appendSupabasePackingItems(data ?? []);
+    } catch (err) {
+      console.warn('[packing] load failed, trying localStorage:', err);
+      appendSupabasePackingItems(loadFromStorage('packing_list') ?? []);
+    }
+  })();
 }
 
 /* ── Static reminders data ─────────────────────────────────── */
@@ -1488,6 +1567,13 @@ export async function initOverview() {
     ? reminders
     : STATIC_REMINDERS;
   renderDesktopReminders(remindersSource);
+
+  // Render desktop bookings checklist + summary counts with real data
+  const bookingsSource = Array.isArray(bookings) && bookings.length > 0
+    ? bookings
+    : STATIC_BOOKINGS_FALLBACK;
+  renderDesktopBookingChecklist(bookingsSource);
+  refreshDesktopBookings(bookingsSource);
 
   // Wire up mode toggle
   document.getElementById('mode-toggle-btn')
