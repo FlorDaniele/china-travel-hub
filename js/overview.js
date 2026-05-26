@@ -64,23 +64,23 @@ export async function initDesktopCountdown() {
 const STATIC_CITIES = [
   {
     city: 'Beijing',    city_zh: '北京',   city_pinyin: 'Běijīng',
-    date_start: '2026-06-06', date_end: '2026-06-12',
+    date_start: '2026-06-06', date_end: '2026-06-11',
   },
   {
     city: "Xi'an",      city_zh: '西安',   city_pinyin: "Xī'ān",
-    date_start: '2026-06-13', date_end: '2026-06-16',
+    date_start: '2026-06-12', date_end: '2026-06-14',
   },
   {
     city: 'Chengdu',    city_zh: '成都',   city_pinyin: 'Chéngdū',
-    date_start: '2026-06-17', date_end: '2026-06-21',
+    date_start: '2026-06-15', date_end: '2026-06-17',
   },
   {
     city: 'Chongqing',  city_zh: '重庆',   city_pinyin: 'Chóngqìng',
-    date_start: '2026-06-22', date_end: '2026-06-25',
+    date_start: '2026-06-18', date_end: '2026-06-19',
   },
   {
     city: 'Shanghai',   city_zh: '上海',   city_pinyin: 'Shànghǎi',
-    date_start: '2026-06-26', date_end: '2026-07-05',
+    date_start: '2026-06-20', date_end: '2026-06-25',
   },
 ];
 
@@ -1979,189 +1979,176 @@ export async function initOverview() {
 const STATIC_ACTIVITIES = {
   beijing: {
     '2026-06-06': [
-      { period: 'Morning', items: [
-        { title: 'Arrive Beijing Capital Airport', time: '10:00', source: 'Self-organised', type: 'transport' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Check-in Yitel Hotel', time: '14:00', source: 'Self-organised', type: 'accommodation' },
+      { period: 'Day', items: [
+        { title: 'Arrive Beijing Capital Airport', time: '15:55', end_time: null, duration: null, type: 'transport', source: 'Self-organised' },
+        { title: 'Check-in Yitel Hotel', time: '18:00', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
       ]},
     ],
     '2026-06-07': [
-      { period: 'Morning', items: [
-        { title: 'Mutianyu Great Wall', time: '07:50', source: 'GetYourGuide', type: 'tour' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Forbidden City', time: '13:00', source: 'Self-organised', type: 'sightseeing' },
+      { period: 'Day', items: [
+        { title: 'Mutianyu Great Wall Tour', time: '07:40', end_time: '12:00', duration: null, type: 'tour', source: 'GetYourGuide' },
+        { title: 'Forbidden City Tour', time: null, end_time: null, duration: '3h30m', period: 'Afternoon', type: 'sightseeing', source: 'Self-organised' },
       ]},
     ],
     '2026-06-08': [
-      { period: 'Morning', items: [
-        { title: 'Walking Tour', time: '10:00', source: 'GetYourGuide', type: 'tour' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Qianmen Street', time: '14:00', source: 'Self-organised', type: 'street' },
-        { title: 'Wangfujing', time: '15:30', source: 'Self-organised', type: 'street' },
-        { title: 'Nanluogu Xiang', time: '17:00', source: 'Self-organised', type: 'street' },
-        { title: 'Shichahai Scenic Area', time: '18:30', source: 'Self-organised', type: 'sightseeing' },
+      { period: 'Day', items: [
+        { title: 'Walking Tour', time: '10:00', end_time: '13:30', duration: null, type: 'tour', source: 'GetYourGuide' },
+        { title: 'Qianmen Street', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Wangfujing', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Nanluogu Xiang', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Shichahai Scenic Area', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: 'Self-organised' },
       ]},
     ],
     '2026-06-09': [
-      { period: 'Morning', items: [
-        { title: 'Drum Tower', time: '09:00', source: 'Self-organised', type: 'cultural' },
-        { title: 'Jingshan Park', time: '10:30', source: 'Self-organised', type: 'park' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'National Museum of China', time: '13:00', source: 'Self-organised', type: 'cultural' },
-        { title: 'Beihai Park', time: '15:30', source: 'Self-organised', type: 'park' },
+      { period: 'Day', items: [
+        { title: 'Drum Tower', time: '09:30', end_time: null, duration: null, type: 'cultural', source: 'Self-organised' },
+        { title: 'Jingshan Park', time: null, end_time: null, duration: null, period: 'Morning', type: 'park', source: 'Self-organised' },
+        { title: 'National Museum of China', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: 'Self-organised' },
+        { title: 'Beihai Park', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: 'Self-organised' },
       ]},
     ],
     '2026-06-10': [
-      { period: 'Morning', items: [
-        { title: 'Temple of Heaven', time: '09:00', source: 'Self-organised', type: 'temple' },
-        { title: 'Hongqiao Pearl Market', time: '11:30', source: 'Self-organised', type: 'market' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Eight Great Hutongs', time: '14:00', source: 'Self-organised', type: 'street' },
-        { title: 'Jiuwan Hutong', time: '15:30', source: 'Self-organised', type: 'street' },
-        { title: "Prince Kung's Palace Museum", time: '16:30', source: 'Self-organised', type: 'cultural' },
-        { title: 'Sanlitun', time: '19:00', source: 'Self-organised', type: 'street' },
+      { period: 'Day', items: [
+        { title: 'Temple of Heaven', time: '08:30', end_time: null, duration: null, type: 'temple', source: 'Self-organised' },
+        { title: 'Hongqiao Pearl Market', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'market', source: 'Self-organised' },
+        { title: 'Eight Great Hutongs', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Jiuwan Hutong', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: "Prince Kung's Palace Museum", time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: 'Self-organised' },
+        { title: 'Sanlitun', time: null, end_time: null, duration: null, period: 'Evening', type: 'street', source: 'Self-organised' },
       ]},
     ],
     '2026-06-11': [
-      { period: 'Morning', items: [
-        { title: 'Summer Palace', time: '09:00', source: 'Self-organised', type: 'sightseeing' },
-        { title: 'Yuanmingyuan Park', time: '12:00', source: 'Self-organised', type: 'park' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Xiushui Street', time: '14:30', source: 'Self-organised', type: 'street' },
-        { title: 'Lama Temple', time: '16:30', source: 'Self-organised', type: 'temple' },
+      { period: 'Day', items: [
+        { title: 'Summer Palace', time: '08:30', end_time: null, duration: null, type: 'sightseeing', source: 'Self-organised' },
+        { title: 'Yuanmingyuan Park', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: 'Self-organised' },
+        { title: 'Xiushui Street', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'market', source: 'Self-organised' },
+        { title: 'Lama Temple', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: 'Self-organised' },
+        { title: 'Wudaoying Alley', time: null, end_time: null, duration: null, period: 'Evening', type: 'street', source: null },
       ]},
     ],
     '2026-06-12': [
-      { period: 'Morning', items: [
-        { title: 'Check-out Yitel Hotel', time: '10:00', source: 'Self-organised', type: 'accommodation' },
-        { title: "Train Beijing to Xi'an", time: '13:00', source: 'Self-organised', type: 'transport' },
+      { period: 'Day', items: [
+        { title: 'Check-out Yitel Hotel', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
+        { title: "Train Beijingxi → Xi'anbei", time: '08:10', end_time: '12:31', duration: null, type: 'transport', source: 'Self-organised' },
       ]},
     ],
   },
   xian: {
-    '2026-06-13': [
-      { period: 'Morning', items: [
-        { title: 'Train Beijing → Xi\'an (G87)', time: '09:00', source: 'Self-organised', type: null },
-        { title: 'Arrive Xi\'an North', time: '13:30', source: 'Self-organised', type: null },
+    '2026-06-12': [
+      { period: 'Day', items: [
+        { title: "Check-in Xi'an LanOuShangPin Hotel", time: '13:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Walking Tour', time: '14:00', end_time: '16:30', duration: null, type: 'tour', source: null },
+        { title: 'Muslim Quarter', time: null, end_time: null, duration: null, period: 'Evening', type: 'street', source: null },
       ]},
-      { period: 'Afternoon', items: [
-        { title: 'City Wall cycling', time: '15:00', source: 'Self-organised', type: null },
+    ],
+    '2026-06-13': [
+      { period: 'Day', items: [
+        { title: 'Terracotta Warriors and Huaqing Palace + Lunch Tour', time: '07:30', end_time: '16:00', duration: null, type: 'tour', source: null },
       ]},
     ],
     '2026-06-14': [
-      { period: 'Morning', items: [
-        { title: 'Terracotta Warriors', time: '08:00', source: 'GetYourGuide', type: null },
-        { title: 'Huaqing Hot Springs', time: '13:00', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Evening', items: [
-        { title: 'Muslim Quarter Night Market', time: '18:30', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: 'Grand Tang Mall', time: null, end_time: null, duration: null, period: 'Morning', type: 'street', source: null },
+        { title: 'Big Wild Goose Pagoda', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: null },
+        { title: 'Shaanxi History Museum', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: null },
       ]},
     ],
     '2026-06-15': [
-      { period: 'Morning', items: [
-        { title: 'Big Wild Goose Pagoda', time: '09:00', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Shaanxi History Museum', time: '13:00', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: "Check-out Xi'an LanOuShangPin Hotel", time: '06:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: "Train Xi'anbei → Chengdudong", time: '08:39', end_time: '12:40', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
   chengdu: {
+    '2026-06-15': [
+      { period: 'Day', items: [
+        { title: 'Check-in Chupin Hotel', time: '13:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Walking Tour', time: '18:00', end_time: '20:30', duration: null, type: 'tour', source: null },
+      ]},
+    ],
+    '2026-06-16': [
+      { period: 'Day', items: [
+        { title: 'Panda Base & Leshan Buddha Tour', time: '07:35', end_time: '19:35', duration: null, type: 'tour', source: null },
+      ]},
+    ],
     '2026-06-17': [
-      { period: 'Morning', items: [
-        { title: 'Train Xi\'an → Chengdu (G309)', time: '08:30', source: 'Self-organised', type: null },
-        { title: 'Arrive Chengdu East', time: '12:00', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: "People's Park", time: null, end_time: null, duration: null, period: 'Morning', type: 'park', source: null },
+        { title: 'Wuhou Shrine Museum', time: null, end_time: null, duration: null, period: 'Morning', type: 'cultural', source: null },
+        { title: 'Yeyou Jinjiang', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Kuanzhai Alleys', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
       ]},
     ],
     '2026-06-18': [
-      { period: 'Morning', items: [
-        { title: 'Giant Panda Breeding Base', time: '08:00', source: 'GetYourGuide', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Jinli Ancient Street', time: '14:00', source: 'Self-organised', type: null },
-      ]},
-    ],
-    '2026-06-19': [
-      { period: 'All day', items: [
-        { title: 'Day trip to Leshan Giant Buddha', time: '07:30', source: 'GetYourGuide', type: null },
-      ]},
-    ],
-    '2026-06-20': [
-      { period: 'Morning', items: [
-        { title: 'Wenshu Monastery', time: '09:00', source: 'Self-organised', type: null },
-        { title: 'Kuanzhai Xiangzi lanes', time: '11:00', source: 'Self-organised', type: null },
-      ]},
-    ],
-    '2026-06-21': [
-      { period: 'Morning', items: [
-        { title: 'People\'s Park tea ceremony', time: '09:30', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: 'Check-out Chupin Hotel', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Train Chengdudong → Chongqingbei', time: '08:02', end_time: '09:56', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
   chongqing: {
-    '2026-06-22': [
-      { period: 'Morning', items: [
-        { title: 'Train Chengdu → Chongqing (G8632)', time: '10:00', source: 'Self-organised', type: null },
-        { title: 'Arrive Chongqing North', time: '11:15', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Hongya Cave & Jialing River view', time: '14:00', source: 'Self-organised', type: null },
+    '2026-06-18': [
+      { period: 'Day', items: [
+        { title: 'Check-in Yubo River View Hotel', time: '11:00', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: "The People's Great Hall", time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: null },
+        { title: 'Luohan Temple', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: null },
+        { title: 'Huguang Huiguan Guild Complex', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: null },
+        { title: 'Walking Tour', time: '17:00', end_time: '19:15', duration: null, type: 'tour', source: null },
+        { title: "Chongqing's People's Square", time: null, end_time: null, duration: null, period: 'Evening', type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-06-23': [
-      { period: 'Morning', items: [
-        { title: 'Yangtze River cruise', time: '09:00', source: 'GetYourGuide', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Ciqikou Ancient Town', time: '15:00', source: 'Self-organised', type: null },
+    '2026-06-19': [
+      { period: 'Day', items: [
+        { title: 'Check-out Yubo River View Hotel', time: '08:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Raffles City', time: null, end_time: null, duration: null, period: 'Morning', type: 'street', source: null },
+        { title: 'Liziba Monorail', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'sightseeing', source: null },
+        { title: 'Eling Park', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: null },
+        { title: 'Train Chongqingbei → Shanghai Hongqiao', time: '20:13', end_time: '08:04+1', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
   shanghai: {
-    '2026-06-26': [
-      { period: 'Morning', items: [
-        { title: 'Train Chongqing → Shanghai (G570)', time: '08:00', source: 'Self-organised', type: null },
-        { title: 'Arrive Shanghai Hongqiao', time: '14:30', source: 'Self-organised', type: null },
+    '2026-06-20': [
+      { period: 'Day', items: [
+        { title: 'Check-in MoYu Movie Hotel', time: '09:15', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Walking Tour', time: '14:00', end_time: '18:00', duration: null, type: 'tour', source: null },
+        { title: 'The Bund', time: null, end_time: null, duration: null, period: 'Evening', type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-06-27': [
-      { period: 'Morning', items: [
-        { title: 'The Bund morning walk', time: '08:00', source: 'Self-organised', type: null },
-        { title: 'Yu Garden + Old Town', time: '10:30', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Evening', items: [
-        { title: 'Bund evening walk', time: '19:00', source: 'Self-organised', type: null },
-      ]},
-    ],
-    '2026-06-28': [
-      { period: 'Morning', items: [
-        { title: 'Shanghai Museum', time: '09:00', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Xintiandi', time: '13:30', source: 'Self-organised', type: null },
-        { title: 'Former French Concession walk', time: '15:00', source: 'Self-organised', type: null },
+    '2026-06-21': [
+      { period: 'Day', items: [
+        { title: 'Coffee at 13 de Marzo', time: null, end_time: null, duration: null, period: 'Morning', type: 'cultural', source: null },
+        { title: 'Nanjing Road Street', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Oriental Pearl Tower', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'sightseeing', source: null },
+        { title: 'Shanghai Tower', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'sightseeing', source: null },
+        { title: 'Huangpu River Cruise', time: null, end_time: null, duration: null, period: 'Evening', type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-06-29': [
-      { period: 'Morning', items: [
-        { title: 'Zhujiajiao Water Town day trip', time: '08:30', source: 'GetYourGuide', type: null },
+    '2026-06-22': [
+      { period: 'Day', items: [
+        { title: 'Yu Garden', time: null, end_time: null, duration: null, period: 'Morning', type: 'sightseeing', source: null },
+        { title: 'Xintiandi', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Jingan Temple', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: null },
       ]},
     ],
-    '2026-07-04': [
-      { period: 'Evening', items: [
-        { title: 'Last night dinner · Lost Heaven', time: '19:30', source: 'Self-organised', type: null },
+    '2026-06-23': [
+      { period: 'Day', items: [
+        { title: 'Suzhou Day Trip', time: null, end_time: null, duration: null, type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-07-05': [
-      { period: 'Morning', items: [
-        { title: 'Transfer to Pudong Airport', time: '06:00', source: 'Self-organised', type: null },
-        { title: 'Flight to Tokyo', time: '09:30', source: 'Self-organised', type: null },
+    '2026-06-24': [
+      { period: 'Day', items: [
+        { title: 'Shanghai Museum', time: null, end_time: null, duration: null, period: 'Morning', type: 'cultural', source: null },
+        { title: 'Tianzifang', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Sinan Mansions', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Wukan Road', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+      ]},
+    ],
+    '2026-06-25': [
+      { period: 'Day', items: [
+        { title: 'Check-out MoYu Movie Hotel', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Flight Shanghai → Tokyo', time: '11:30', end_time: '20:00', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
@@ -2312,16 +2299,45 @@ function getPeriod(timeStr) {
 
 function regroupByTime(groups) {
   const flat = groups.flatMap(g => g.items);
-  flat.sort((a, b) => (a.time ?? '').localeCompare(b.time ?? ''));
+  flat.sort((a, b) => {
+    const ta = a.time ?? 'zzz';
+    const tb = b.time ?? 'zzz';
+    return ta.localeCompare(tb);
+  });
   const buckets = {};
   for (const item of flat) {
-    const p = getPeriod(item.time) ?? 'Other';
+    const p = getPeriod(item.time) ?? item.period ?? 'Other';
     if (!buckets[p]) buckets[p] = [];
     buckets[p].push(item);
   }
   const result = PERIOD_ORDER.filter(p => buckets[p]).map(p => ({ period: p, items: buckets[p] }));
-  if (buckets['Other']) result.push({ period: '', items: buckets['Other'] });
+  if (buckets['Other']) result.push({ period: 'All day', items: buckets['Other'] });
   return result;
+}
+
+/* ── Time display helper ──────────────────────────────────── */
+
+function formatActivityTime(item) {
+  if (item.time && item.end_time) return `${item.time} – ${item.end_time}`;
+  if (item.time) return item.time;
+  if (item.duration) return `~${item.duration}`;
+  return '';
+}
+
+/* ── Helper: time row for activity cards ───────────────────── */
+
+function buildTimeRow(item) {
+  const ts = formatActivityTime(item);
+  if (item.time) {
+    const endBtn = !item.end_time
+      ? `<button class="dk-add-end-time-btn" type="button" aria-label="Add end time">+ end time</button>`
+      : '';
+    return `<span class="dk-activity-meta dk-time-trigger" role="button" tabindex="0" aria-label="Edit time">${esc(ts)}</span>${endBtn}`;
+  }
+  if (item.duration) {
+    return `<span class="dk-activity-meta dk-time-trigger" role="button" tabindex="0" aria-label="Edit duration">${esc(ts)}</span>`;
+  }
+  return `<button class="dk-add-time-btn" type="button" aria-label="Add time">+ Add time</button>`;
 }
 
 /* ── Render: activity timeline ─────────────────────────────── */
@@ -2369,10 +2385,17 @@ function renderActivityTimeline(cityKey, dateStr) {
         <span class="dk-timeline-period">${esc(group.period)}</span>
         <ul class="dk-activity-list" role="list" data-period="${esc(group.period)}">
           ${group.items.map(item => `
-            <li class="dk-activity-card" data-title="${esc(item.title)}">
+            <li class="dk-activity-card"
+                data-title="${esc(item.title)}"
+                data-original-title="${esc(item.title)}"
+                data-city="${esc(cityKey)}"
+                data-date="${esc(dateStr)}"
+                data-time="${esc(item.time ?? '')}"
+                data-end-time="${esc(item.end_time ?? '')}"
+                data-duration="${esc(item.duration ?? '')}">
               <div class="dk-activity-body">
-                <span class="dk-activity-title">${esc(item.title)}</span>
-                <span class="dk-activity-meta">${esc(item.time)}</span>
+                <span class="dk-activity-title" role="button" tabindex="0" aria-label="Edit: ${esc(item.title)}">${esc(item.title)}</span>
+                <div class="dk-activity-time-row">${buildTimeRow(item)}</div>
               </div>
               <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-label="Drag to reorder" focusable="false">
                 <circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/>
@@ -2408,6 +2431,161 @@ async function persistSortOrder(listEl, cityKeyStr, dateStr) {
   } catch (err) {
     console.warn('[itinerary] sort_order update failed:', err);
   }
+}
+
+/* ── Inline edit: patch to Supabase + in-memory ────────────── */
+
+async function patchActivity(cityKeyStr, dateStr, originalTitle, patch) {
+  /* Update in-memory STATIC_ACTIVITIES */
+  const dayGroups = (STATIC_ACTIVITIES[cityKeyStr] ?? {})[dateStr] ?? [];
+  for (const group of dayGroups) {
+    const item = group.items?.find(i => i.title === originalTitle);
+    if (item) { Object.assign(item, patch); break; }
+  }
+  /* PATCH Supabase */
+  try {
+    await supabase.from('activities').update(patch)
+      .eq('city', cityKeyStr).eq('date', dateStr).eq('title', originalTitle);
+  } catch (err) {
+    console.warn('[inline-edit] PATCH failed:', err);
+  }
+}
+
+/* ── Inline edit: title ─────────────────────────────────────── */
+
+function activateTitleEdit(cardEl) {
+  if (cardEl.querySelector('.dk-activity-title-input')) return; /* already editing */
+  const titleEl = cardEl.querySelector('.dk-activity-title');
+  if (!titleEl) return;
+
+  const currentTitle = titleEl.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'dk-activity-title-input';
+  input.value = currentTitle;
+  input.setAttribute('aria-label', 'Edit activity title');
+  titleEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function commitTitle() {
+    const newTitle = input.value.trim();
+    if (!newTitle || newTitle === currentTitle) {
+      _restoreTitleSpan(cardEl, currentTitle);
+      return;
+    }
+    _restoreTitleSpan(cardEl, newTitle);
+    const originalTitle = cardEl.dataset.originalTitle;
+    patchActivity(cardEl.dataset.city, cardEl.dataset.date, originalTitle, { title: newTitle });
+    cardEl.dataset.title = newTitle;
+    cardEl.dataset.originalTitle = newTitle;
+  }
+
+  input.addEventListener('blur', commitTitle);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') {
+      input.removeEventListener('blur', commitTitle);
+      _restoreTitleSpan(cardEl, currentTitle);
+    }
+  });
+}
+
+function _restoreTitleSpan(cardEl, text) {
+  const input = cardEl.querySelector('.dk-activity-title-input');
+  if (!input) return;
+  const span = document.createElement('span');
+  span.className = 'dk-activity-title';
+  span.setAttribute('role', 'button');
+  span.setAttribute('tabindex', '0');
+  span.textContent = text;
+  input.replaceWith(span);
+}
+
+/* ── Inline edit: time ──────────────────────────────────────── */
+
+function activateTimeEdit(cardEl) {
+  if (cardEl.querySelector('.dk-time-panel')) return; /* already open */
+  const currentTime     = cardEl.dataset.time     || '';
+  const currentEndTime  = cardEl.dataset.endTime  || '';
+  const currentDuration = cardEl.dataset.duration || '';
+  const isDuration = !currentTime && !!currentDuration;
+
+  const panel = document.createElement('div');
+  panel.className = 'dk-time-panel';
+  panel.innerHTML = `
+    <div class="dk-time-panel-tabs" role="tablist">
+      <button class="dk-time-tab${!isDuration ? ' is-active' : ''}" data-mode="exact" role="tab" aria-selected="${!isDuration}" type="button">Exact</button>
+      <button class="dk-time-tab${isDuration ? ' is-active' : ''}" data-mode="duration" role="tab" aria-selected="${isDuration}" type="button">Duration</button>
+    </div>
+    <div class="dk-time-fields dk-time-exact"${isDuration ? ' hidden' : ''}>
+      <input type="time" class="dk-time-start-input" value="${esc(currentTime)}" aria-label="Start time">
+      <span class="dk-time-sep" aria-hidden="true">–</span>
+      <input type="time" class="dk-time-end-input" value="${esc(currentEndTime)}" aria-label="End time (optional)">
+    </div>
+    <div class="dk-time-fields dk-time-duration"${!isDuration ? ' hidden' : ''}>
+      <input type="text" class="dk-time-dur-input" value="${esc(currentDuration)}" placeholder="e.g. 3h30m" aria-label="Duration">
+    </div>
+    <div class="dk-time-panel-actions">
+      <button class="dk-time-save-btn" type="button">Save</button>
+      <button class="dk-time-cancel-btn" type="button">Cancel</button>
+    </div>
+  `;
+  cardEl.appendChild(panel);
+  panel.querySelector('.dk-time-exact:not([hidden]) input, .dk-time-duration:not([hidden]) input')?.focus();
+}
+
+function _switchTimeMode(cardEl, mode) {
+  const panel = cardEl.querySelector('.dk-time-panel');
+  if (!panel) return;
+  panel.querySelectorAll('.dk-time-tab').forEach(tab => {
+    const active = tab.dataset.mode === mode;
+    tab.classList.toggle('is-active', active);
+    tab.setAttribute('aria-selected', String(active));
+  });
+  const exactFields = panel.querySelector('.dk-time-exact');
+  const durFields   = panel.querySelector('.dk-time-duration');
+  if (mode === 'exact') {
+    exactFields?.removeAttribute('hidden');
+    durFields?.setAttribute('hidden', '');
+    exactFields?.querySelector('input')?.focus();
+  } else {
+    exactFields?.setAttribute('hidden', '');
+    durFields?.removeAttribute('hidden');
+    durFields?.querySelector('input')?.focus();
+  }
+}
+
+function saveTimeEdit(cardEl) {
+  const panel = cardEl.querySelector('.dk-time-panel');
+  if (!panel) return;
+  const mode = panel.querySelector('.dk-time-tab.is-active')?.dataset.mode ?? 'exact';
+  let patch;
+  if (mode === 'exact') {
+    const t = panel.querySelector('.dk-time-start-input')?.value || null;
+    const e = panel.querySelector('.dk-time-end-input')?.value   || null;
+    patch = { time: t, end_time: e, duration: null };
+  } else {
+    const d = panel.querySelector('.dk-time-dur-input')?.value || null;
+    patch = { time: null, end_time: null, duration: d };
+  }
+
+  /* Update data attributes on the card */
+  cardEl.dataset.time     = patch.time     ?? '';
+  cardEl.dataset.endTime  = patch.end_time ?? '';
+  cardEl.dataset.duration = patch.duration ?? '';
+
+  /* Rebuild the time row display */
+  const fakeItem = { time: patch.time, end_time: patch.end_time, duration: patch.duration };
+  const timeRow  = cardEl.querySelector('.dk-activity-time-row');
+  if (timeRow) timeRow.innerHTML = buildTimeRow(fakeItem);
+
+  panel.remove();
+  patchActivity(cardEl.dataset.city, cardEl.dataset.date, cardEl.dataset.originalTitle, patch);
+}
+
+function cancelTimeEdit(cardEl) {
+  cardEl.querySelector('.dk-time-panel')?.remove();
 }
 
 function initTimelineSortable(containerEl, cityKeyStr, dateStr) {
@@ -2760,10 +2938,45 @@ export function initItinerary() {
   timelineEl.innerHTML = renderActivityTimeline(selectedCityKey, firstDate);
   initTimelineSortable(timelineEl, selectedCityKey, firstDate);
 
-  /* Event delegation: "+" button in timeline — attached once, works after every re-render */
+  /* Event delegation: all timeline interactions — attached once, works after every re-render */
   timelineEl.addEventListener('click', e => {
+    /* Add activity */
     if (e.target.closest('.dk-add-activity-btn')) {
       openActivityModal(selectedCityKey, activeDates[selectedCityKey], updatePanel);
+      return;
+    }
+    const card = e.target.closest('.dk-activity-card');
+    if (!card) return;
+
+    /* Title edit — but not when input is already active */
+    if (e.target.closest('.dk-activity-title') && !e.target.closest('.dk-activity-title-input')) {
+      activateTitleEdit(card); return;
+    }
+    /* Time edit — meta click, + Add time, or + end time */
+    if (e.target.closest('.dk-time-trigger') || e.target.closest('.dk-add-time-btn') || e.target.closest('.dk-add-end-time-btn')) {
+      activateTimeEdit(card); return;
+    }
+    /* Time panel: tab switch */
+    const tab = e.target.closest('.dk-time-tab');
+    if (tab) { _switchTimeMode(card, tab.dataset.mode); return; }
+    /* Time panel: save / cancel */
+    if (e.target.closest('.dk-time-save-btn'))   { saveTimeEdit(card);   return; }
+    if (e.target.closest('.dk-time-cancel-btn')) { cancelTimeEdit(card); return; }
+  });
+
+  /* Keyboard: activate title and time edits via Enter / Space */
+  timelineEl.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.dk-activity-card');
+    if (!card) return;
+    if (e.target.classList.contains('dk-activity-title')) {
+      e.preventDefault(); activateTitleEdit(card);
+    } else if (
+      e.target.classList.contains('dk-time-trigger') ||
+      e.target.classList.contains('dk-add-time-btn') ||
+      e.target.classList.contains('dk-add-end-time-btn')
+    ) {
+      e.preventDefault(); activateTimeEdit(card);
     }
   });
 }

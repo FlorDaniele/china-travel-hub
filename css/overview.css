@@ -1435,11 +1435,175 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: text;
+  }
+
+  .dk-activity-title-input {
+    width: 100%;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--terracotta);
+    padding: 0;
+    outline: none;
+    font-family: inherit;
   }
 
   .dk-activity-meta {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--text-secondary);
+  }
+
+  /* ── Inline time row ────────────────────────────────────── */
+
+  .dk-activity-time-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-height: 20px;
+  }
+
+  .dk-time-trigger {
+    cursor: pointer;
+  }
+
+  .dk-time-trigger:hover {
+    color: var(--text-primary);
+  }
+
+  .dk-add-time-btn,
+  .dk-add-end-time-btn {
+    font-size: 13px;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0.6;
+    font-family: inherit;
+  }
+
+  .dk-add-time-btn:hover,
+  .dk-add-end-time-btn:hover {
+    opacity: 1;
+    color: var(--text-primary);
+  }
+
+  /* ── Time edit panel ────────────────────────────────────── */
+
+  .dk-time-panel {
+    padding: 10px 10px 10px;
+    border-top: 1px solid var(--border);
+    background: #F8F8FA;
+    border-radius: 0 0 8px 8px;
+    margin: 10px -10px -12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dk-time-panel-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .dk-time-tab {
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .dk-time-tab.is-active {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+    color: white;
+  }
+
+  .dk-time-fields {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .dk-time-start-input,
+  .dk-time-end-input,
+  .dk-time-dur-input {
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 8px;
+    color: var(--text-primary);
+    background: white;
+    font-family: inherit;
+    min-width: 0;
+  }
+
+  .dk-time-start-input,
+  .dk-time-end-input {
+    width: 108px;
+  }
+
+  .dk-time-dur-input {
+    width: 140px;
+  }
+
+  .dk-time-start-input:focus,
+  .dk-time-end-input:focus,
+  .dk-time-dur-input:focus {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 0;
+    border-color: transparent;
+  }
+
+  .dk-time-sep {
+    font-size: 14px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .dk-time-panel-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .dk-time-save-btn {
+    font-size: 13px;
+    padding: 5px 14px;
+    background: var(--terracotta);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+  }
+
+  .dk-time-save-btn:hover {
+    opacity: 0.9;
+  }
+
+  .dk-time-cancel-btn {
+    font-size: 13px;
+    padding: 5px 14px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .dk-time-cancel-btn:hover {
+    color: var(--text-primary);
+    border-color: #ccc;
   }
 
   /* ── Calendar card ──────────────────────────────────────── */
