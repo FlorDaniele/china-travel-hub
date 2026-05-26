@@ -848,7 +848,7 @@ function openBookingModal(preSelectType = null) {
       <div class="modal-error" id="bk-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <span class="modal-label" id="bk-modal-tipo-lbl">Tipo</span>
+      <span class="modal-label" id="bk-modal-tipo-lbl">Type</span>
       <div class="modal-pill-group" role="radiogroup" aria-labelledby="bk-modal-tipo-lbl">
         <button class="modal-pill" type="button" role="radio" aria-checked="false"
           data-value="hotel" tabindex="0">Hotel</button>
@@ -861,7 +861,7 @@ function openBookingModal(preSelectType = null) {
     </div>
   `;
 
-  openModal({ id: 'bk-modal', title: 'Nuevo booking', bodyHTML, onSave: handleBookingModalSave });
+  openModal({ id: 'bk-modal', title: 'Add booking', bodyHTML, onSave: handleBookingModalSave });
 
   /* Pill selection + arrow-key navigation */
   const pills = [...document.querySelectorAll('.modal-pill')];
@@ -919,7 +919,7 @@ async function handleBookingModalSave() {
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
@@ -927,7 +927,7 @@ async function handleBookingModalSave() {
   }
 
   if (!pill) {
-    if (typeErr) typeErr.textContent = 'Este campo es obligatorio';
+    if (typeErr) typeErr.textContent = 'This field is required';
     valid = false;
   } else {
     if (typeErr) typeErr.textContent = '';
@@ -962,6 +962,9 @@ async function handleBookingModalSave() {
 /* ── Modal: new reminder ───────────────────────────────────── */
 
 function openReminderModal() {
+  const CHEVRON_LEFT  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
+  const CHEVRON_RIGHT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>`;
+
   const bodyHTML = `
     <div class="modal-field">
       <label class="modal-label" for="rm-modal-name">Reminder</label>
@@ -971,14 +974,26 @@ function openReminderModal() {
       <div class="modal-error" id="rm-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="rm-modal-date">Fecha límite</label>
-      <input type="date" id="rm-modal-date" class="modal-date">
+      <label class="modal-label" id="rm-modal-date-lbl">Deadline</label>
+      <div class="modal-calendar" id="rm-modal-calendar" role="group" aria-labelledby="rm-modal-date-lbl">
+        <div class="modal-cal-header">
+          <button class="modal-cal-nav" type="button" id="rm-cal-prev" aria-label="Previous month">${CHEVRON_LEFT}</button>
+          <span class="modal-cal-title" id="rm-cal-title" aria-live="polite"></span>
+          <button class="modal-cal-nav" type="button" id="rm-cal-next" aria-label="Next month">${CHEVRON_RIGHT}</button>
+        </div>
+        <div class="modal-cal-weekdays" aria-hidden="true">
+          <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+        </div>
+        <div class="modal-cal-grid" role="grid" id="rm-cal-grid" aria-label="Select a deadline date"></div>
+      </div>
+      <input type="hidden" id="rm-modal-date">
       <div class="modal-error" id="rm-modal-date-err" role="alert"></div>
     </div>
   `;
 
-  openModal({ id: 'rm-modal', title: 'Nuevo reminder', bodyHTML, onSave: handleReminderModalSave });
+  openModal({ id: 'rm-modal', title: 'Add reminder', bodyHTML, onSave: handleReminderModalSave });
 
+  /* Character counter */
   const input   = document.getElementById('rm-modal-name');
   const counter = document.getElementById('rm-modal-counter');
   input?.addEventListener('input', () => {
@@ -988,6 +1003,80 @@ function openReminderModal() {
       document.getElementById('rm-modal-name-err').textContent = '';
     }
   });
+
+  /* Calendar */
+  const MONTH_NAMES = [
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December',
+  ];
+  const now   = new Date();
+  let   displayYear  = now.getFullYear();
+  let   displayMonth = now.getMonth();
+  let   selectedDate = null;
+
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+  function renderCalendar() {
+    const titleEl = document.getElementById('rm-cal-title');
+    const gridEl  = document.getElementById('rm-cal-grid');
+    if (!titleEl || !gridEl) return;
+
+    titleEl.textContent = `${MONTH_NAMES[displayMonth]} ${displayYear}`;
+
+    const firstDow    = new Date(displayYear, displayMonth, 1).getDay();
+    const startOffset = (firstDow + 6) % 7; // Mon-first offset
+    const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
+    const prevDays    = new Date(displayYear, displayMonth, 0).getDate();
+
+    let html = '';
+
+    for (let i = 0; i < startOffset; i++) {
+      html += `<button class="modal-cal-day modal-cal-day--outside" type="button" aria-hidden="true" tabindex="-1">${prevDays - startOffset + i + 1}</button>`;
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr  = `${displayYear}-${String(displayMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isToday  = dateStr === todayStr;
+      const isSel    = dateStr === selectedDate;
+      let   cls      = 'modal-cal-day';
+      if (isToday) cls += ' modal-cal-day--today';
+      if (isSel)   cls += ' modal-cal-day--selected';
+      const ariaLabel = `${d} ${MONTH_NAMES[displayMonth]} ${displayYear}${isSel ? ', selected' : ''}${isToday ? ', today' : ''}`;
+      html += `<button class="${cls}" type="button" data-date="${dateStr}" aria-label="${ariaLabel}" aria-pressed="${isSel}">${d}</button>`;
+    }
+
+    const filled  = startOffset + daysInMonth;
+    const remaining = (7 - (filled % 7)) % 7;
+    for (let d = 1; d <= remaining; d++) {
+      html += `<button class="modal-cal-day modal-cal-day--outside" type="button" aria-hidden="true" tabindex="-1">${d}</button>`;
+    }
+
+    gridEl.innerHTML = html;
+
+    gridEl.querySelectorAll('.modal-cal-day:not(.modal-cal-day--outside)').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedDate = btn.dataset.date;
+        document.getElementById('rm-modal-date').value = selectedDate;
+        document.getElementById('rm-modal-date-err').textContent = '';
+        document.getElementById('rm-modal-calendar')?.classList.remove('has-error');
+        renderCalendar();
+      });
+    });
+  }
+
+  document.getElementById('rm-cal-prev')?.addEventListener('click', () => {
+    displayMonth--;
+    if (displayMonth < 0) { displayMonth = 11; displayYear--; }
+    renderCalendar();
+  });
+
+  document.getElementById('rm-cal-next')?.addEventListener('click', () => {
+    displayMonth++;
+    if (displayMonth > 11) { displayMonth = 0; displayYear++; }
+    renderCalendar();
+  });
+
+  renderCalendar();
 }
 
 async function handleReminderModalSave() {
@@ -999,7 +1088,7 @@ async function handleReminderModalSave() {
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
@@ -1007,11 +1096,11 @@ async function handleReminderModalSave() {
   }
 
   if (!dateInput?.value) {
-    dateInput?.classList.add('has-error');
-    if (dateErr) dateErr.textContent = 'Este campo es obligatorio';
+    document.getElementById('rm-modal-calendar')?.classList.add('has-error');
+    if (dateErr) dateErr.textContent = 'This field is required';
     valid = false;
   } else {
-    dateInput.classList.remove('has-error');
+    document.getElementById('rm-modal-calendar')?.classList.remove('has-error');
     if (dateErr) dateErr.textContent = '';
   }
 
@@ -1045,9 +1134,12 @@ async function handleReminderModalSave() {
 /* ── Modal: new packing item ───────────────────────────────── */
 
 function openPackingModal() {
-  const optionsHTML = STATIC_PACKING_LIST
-    .map(c => `<option value="${esc(c.category)}">${esc(c.category)}</option>`)
-    .join('');
+  const CAT_OPTIONS = STATIC_PACKING_LIST.map(c => c.category);
+
+  const optionsHTML = CAT_OPTIONS.map(cat => `
+    <li class="modal-custom-select-option" role="option" aria-selected="false"
+        data-value="${esc(cat.toLowerCase())}" tabindex="-1">${esc(cat)}</li>
+  `).join('');
 
   const bodyHTML = `
     <div class="modal-field">
@@ -1058,17 +1150,31 @@ function openPackingModal() {
       <div class="modal-error" id="pk-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="pk-modal-cat">Categoría</label>
-      <select id="pk-modal-cat" class="modal-select">
-        <option value="" disabled selected>Select a category</option>
-        ${optionsHTML}
-      </select>
+      <label class="modal-label" id="pk-modal-cat-lbl">Category</label>
+      <div class="modal-custom-select" aria-expanded="false">
+        <button class="modal-custom-select-trigger is-placeholder" type="button"
+                id="pk-modal-cat-btn"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="pk-modal-cat-list"
+                aria-labelledby="pk-modal-cat-lbl">
+          <span class="modal-custom-select-value">Select a category</span>
+          <svg class="modal-custom-select-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="modal-custom-select-list" role="listbox" id="pk-modal-cat-list" aria-labelledby="pk-modal-cat-lbl">
+          ${optionsHTML}
+        </ul>
+        <input type="hidden" id="pk-modal-cat" value="">
+      </div>
       <div class="modal-error" id="pk-modal-cat-err" role="alert"></div>
     </div>
   `;
 
-  openModal({ id: 'pk-modal', title: 'Nuevo item', bodyHTML, onSave: handlePackingModalSave });
+  openModal({ id: 'pk-modal', title: 'Add item', bodyHTML, onSave: handlePackingModalSave });
 
+  /* Character counter */
   const input   = document.getElementById('pk-modal-name');
   const counter = document.getElementById('pk-modal-counter');
   input?.addEventListener('input', () => {
@@ -1078,37 +1184,97 @@ function openPackingModal() {
       document.getElementById('pk-modal-name-err').textContent = '';
     }
   });
+
+  /* Custom select — category */
+  const csWrap    = document.querySelector('#pk-modal-cat-list')?.closest('.modal-custom-select');
+  const csTrigger = document.getElementById('pk-modal-cat-btn');
+  const csList    = document.getElementById('pk-modal-cat-list');
+  const csValue   = csTrigger?.querySelector('.modal-custom-select-value');
+  const csHidden  = document.getElementById('pk-modal-cat');
+  const csOptions = [...(csList?.querySelectorAll('.modal-custom-select-option') ?? [])];
+
+  function pkCsOutside(e) {
+    if (!csWrap?.contains(e.target)) pkCsClose();
+  }
+
+  function pkCsOpen() {
+    csWrap?.setAttribute('aria-expanded', 'true');
+    csTrigger?.setAttribute('aria-expanded', 'true');
+    csList?.classList.add('is-open');
+    const sel = csOptions.find(o => o.getAttribute('aria-selected') === 'true') ?? csOptions[0];
+    sel?.focus();
+    setTimeout(() => document.addEventListener('click', pkCsOutside, { capture: true }), 0);
+  }
+
+  function pkCsClose() {
+    csWrap?.setAttribute('aria-expanded', 'false');
+    csTrigger?.setAttribute('aria-expanded', 'false');
+    csList?.classList.remove('is-open');
+    document.removeEventListener('click', pkCsOutside, { capture: true });
+  }
+
+  function pkCsSelect(opt) {
+    csOptions.forEach(o => o.setAttribute('aria-selected', 'false'));
+    opt.setAttribute('aria-selected', 'true');
+    if (csHidden)  csHidden.value      = opt.dataset.value ?? '';
+    if (csValue)   csValue.textContent = opt.textContent;
+    csTrigger?.classList.remove('is-placeholder');
+    csTrigger?.classList.remove('has-error');
+    document.getElementById('pk-modal-cat-err').textContent = '';
+    pkCsClose();
+    csTrigger?.focus();
+  }
+
+  csTrigger?.addEventListener('click', () => {
+    csList?.classList.contains('is-open') ? pkCsClose() : pkCsOpen();
+  });
+
+  csTrigger?.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pkCsOpen(); }
+    if (e.key === 'Escape') pkCsClose();
+  });
+
+  csOptions.forEach((opt, idx) => {
+    opt.addEventListener('click', () => pkCsSelect(opt));
+    opt.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ')  { e.preventDefault(); pkCsSelect(opt); }
+      if (e.key === 'Escape')                  { pkCsClose(); csTrigger?.focus(); }
+      if (e.key === 'ArrowDown')               { e.preventDefault(); csOptions[Math.min(idx + 1, csOptions.length - 1)]?.focus(); }
+      if (e.key === 'ArrowUp')                 { e.preventDefault(); csOptions[Math.max(idx - 1, 0)]?.focus(); }
+    });
+  });
 }
 
 async function handlePackingModalSave() {
-  const nameInput = document.getElementById('pk-modal-name');
-  const catSelect = document.getElementById('pk-modal-cat');
-  const nameErr   = document.getElementById('pk-modal-name-err');
-  const catErr    = document.getElementById('pk-modal-cat-err');
+  const nameInput  = document.getElementById('pk-modal-name');
+  const catHidden  = document.getElementById('pk-modal-cat');
+  const catTrigger = document.getElementById('pk-modal-cat-btn');
+  const nameErr    = document.getElementById('pk-modal-name-err');
+  const catErr     = document.getElementById('pk-modal-cat-err');
   let valid = true;
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
     if (nameErr) nameErr.textContent = '';
   }
 
-  if (!catSelect?.value) {
-    catSelect?.classList.add('has-error');
-    if (catErr) catErr.textContent = 'Este campo es obligatorio';
+  if (!catHidden?.value) {
+    catTrigger?.classList.add('has-error');
+    if (catErr) catErr.textContent = 'This field is required';
     valid = false;
   } else {
-    catSelect.classList.remove('has-error');
+    catTrigger?.classList.remove('has-error');
     if (catErr) catErr.textContent = '';
   }
 
   if (!valid) return;
 
   const label    = nameInput.value.trim();
-  const category = catSelect.value.toLowerCase();
+  const category = catHidden.value;
   const btn      = document.getElementById('pk-modal-guardar');
   if (btn) btn.disabled = true;
 
@@ -2277,23 +2443,23 @@ function fadePanel(panelEl, renderFn) {
 function openActivityModal(cityKeyStr, dateStr, refreshFn) {
   const bodyHTML = `
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-name">Nombre de la actividad</label>
+      <label class="modal-label" for="act-modal-name">Activity name</label>
       <input type="text" id="act-modal-name" class="modal-input"
-        placeholder="Nombre de la actividad" maxlength="60" autocomplete="off">
+        placeholder="e.g. Mutianyu Great Wall" maxlength="60" autocomplete="off">
       <div class="modal-counter" id="act-modal-counter" aria-live="polite">0 / 60</div>
       <div class="modal-error" id="act-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-time">Hora de inicio</label>
+      <label class="modal-label" for="act-modal-time">Start time</label>
       <input type="time" id="act-modal-time" class="modal-input">
       <div class="modal-error" id="act-modal-time-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-end">Hora de fin (opcional)</label>
+      <label class="modal-label" for="act-modal-end">End time (optional)</label>
       <input type="time" id="act-modal-end" class="modal-input">
     </div>
     <div class="modal-field">
-      <label class="modal-label" id="act-modal-type-lbl">Tipo</label>
+      <label class="modal-label" id="act-modal-type-lbl">Type</label>
       <div class="modal-custom-select" aria-expanded="false">
         <button class="modal-custom-select-trigger is-placeholder" type="button"
                 id="act-modal-type-btn"
@@ -2301,13 +2467,13 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
                 aria-expanded="false"
                 aria-controls="act-modal-type-list"
                 aria-labelledby="act-modal-type-lbl">
-          <span class="modal-custom-select-value">— Sin tipo —</span>
+          <span class="modal-custom-select-value">— No type —</span>
           <svg class="modal-custom-select-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
             <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
         <ul class="modal-custom-select-list" role="listbox" id="act-modal-type-list" aria-labelledby="act-modal-type-lbl">
-          <li class="modal-custom-select-option" role="option" aria-selected="true"  data-value="" data-placeholder tabindex="-1">— Sin tipo —</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="true"  data-value="" data-placeholder tabindex="-1">— No type —</li>
           <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="tour"          tabindex="-1">Tour</li>
           <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="transport"     tabindex="-1">Transport</li>
           <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="accommodation" tabindex="-1">Accommodation</li>
@@ -2325,7 +2491,7 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
 
   openModal({
     id: 'act-modal',
-    title: 'Nueva actividad',
+    title: 'Add activity',
     bodyHTML,
     onSave: () => handleActivityModalSave(cityKeyStr, dateStr, refreshFn),
   });
@@ -2377,6 +2543,7 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
       csTrigger.classList.remove('is-placeholder');
     } else {
       csTrigger.classList.add('is-placeholder');
+      csValue.textContent = '— No type —';
     }
     csClose();
     csTrigger.focus();
@@ -2413,7 +2580,7 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
@@ -2422,7 +2589,7 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
 
   if (!timeInput?.value) {
     timeInput?.classList.add('has-error');
-    if (timeErr) timeErr.textContent = 'Este campo es obligatorio';
+    if (timeErr) timeErr.textContent = 'This field is required';
     valid = false;
   } else {
     timeInput.classList.remove('has-error');
