@@ -3021,11 +3021,14 @@ export function initItinerary() {
     if (e.target.closest('.dk-time-cancel-btn')) { cancelTimeEdit(card); return; }
   });
 
-  /* Keyboard: activate title and time edits via Enter / Space */
+  /* Keyboard: activate title/time edits via Enter/Space; close time panel via Escape */
   timelineEl.addEventListener('keydown', e => {
-    if (e.key !== 'Enter' && e.key !== ' ') return;
     const card = e.target.closest('.dk-activity-card');
     if (!card) return;
+    if (e.key === 'Escape') {
+      cancelTimeEdit(card); return;
+    }
+    if (e.key !== 'Enter' && e.key !== ' ') return;
     if (e.target.classList.contains('dk-activity-title')) {
       e.preventDefault(); activateTitleEdit(card);
     } else if (
