@@ -2628,13 +2628,20 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
       <div class="modal-error" id="act-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-time">Start time</label>
-      <input type="time" id="act-modal-time" class="modal-input">
+      <span class="modal-label" id="act-modal-time-lbl">Time</span>
+      <div class="dk-time-panel-tabs modal-time-tabs" role="tablist" aria-labelledby="act-modal-time-lbl">
+        <button class="dk-time-tab is-active" data-mode="exact" role="tab" aria-selected="true" type="button">Exact</button>
+        <button class="dk-time-tab" data-mode="duration" role="tab" aria-selected="false" type="button">Duration</button>
+      </div>
+      <div class="dk-time-fields" id="act-modal-exact-fields">
+        <input type="time" id="act-modal-time" class="dk-time-start-input" aria-label="Start time">
+        <span class="dk-time-sep" aria-hidden="true">–</span>
+        <input type="time" id="act-modal-end" class="dk-time-end-input" aria-label="End time (optional)">
+      </div>
+      <div class="dk-time-fields" id="act-modal-dur-fields" hidden>
+        <input type="text" id="act-modal-dur" class="dk-time-dur-input" placeholder="e.g. 3h30m" aria-label="Duration">
+      </div>
       <div class="modal-error" id="act-modal-time-err" role="alert"></div>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label" for="act-modal-end">End time (optional)</label>
-      <input type="time" id="act-modal-end" class="modal-input">
     </div>
     <div class="modal-field">
       <label class="modal-label" id="act-modal-type-lbl">Type</label>
@@ -2682,6 +2689,34 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
       input.classList.remove('has-error');
       document.getElementById('act-modal-name-err').textContent = '';
     }
+  });
+
+  /* ── Time mode toggle (Exact / Duration) ─────────────────── */
+  const modalTimeTabs  = [...document.querySelectorAll('.modal-time-tabs .dk-time-tab')];
+  const exactFields    = document.getElementById('act-modal-exact-fields');
+  const durFields      = document.getElementById('act-modal-dur-fields');
+  modalTimeTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      modalTimeTabs.forEach(t => {
+        const active = t === tab;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', String(active));
+      });
+      if (tab.dataset.mode === 'exact') {
+        exactFields?.removeAttribute('hidden');
+        durFields?.setAttribute('hidden', '');
+        document.getElementById('act-modal-time')?.focus();
+      } else {
+        exactFields?.setAttribute('hidden', '');
+        durFields?.removeAttribute('hidden');
+        document.getElementById('act-modal-dur')?.focus();
+      }
+      /* Clear any time error when switching modes */
+      const timeErrEl = document.getElementById('act-modal-time-err');
+      if (timeErrEl) timeErrEl.textContent = '';
+      document.getElementById('act-modal-time')?.classList.remove('has-error');
+      document.getElementById('act-modal-dur')?.classList.remove('has-error');
+    });
   });
 
   /* ── Custom select: Tipo ─────────────────────────────────── */
@@ -2751,9 +2786,11 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
   const nameInput  = document.getElementById('act-modal-name');
   const timeInput  = document.getElementById('act-modal-time');
   const endInput   = document.getElementById('act-modal-end');
+  const durInput   = document.getElementById('act-modal-dur');
   const typeSelect = document.getElementById('act-modal-type');
   const nameErr    = document.getElementById('act-modal-name-err');
   const timeErr    = document.getElementById('act-modal-time-err');
+  const activeMode = document.querySelector('.modal-time-tabs .dk-time-tab.is-active')?.dataset.mode ?? 'exact';
   let valid = true;
 
   if (!nameInput?.value.trim()) {
@@ -2765,29 +2802,49 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
     if (nameErr) nameErr.textContent = '';
   }
 
-  if (!timeInput?.value) {
-    timeInput?.classList.add('has-error');
-    if (timeErr) timeErr.textContent = 'This field is required';
-    valid = false;
+  if (activeMode === 'exact') {
+    if (!timeInput?.value) {
+      timeInput?.classList.add('has-error');
+      if (timeErr) timeErr.textContent = 'Start time is required';
+      valid = false;
+    } else {
+      timeInput.classList.remove('has-error');
+      if (timeErr) timeErr.textContent = '';
+    }
   } else {
-    timeInput.classList.remove('has-error');
-    if (timeErr) timeErr.textContent = '';
+    if (!durInput?.value.trim()) {
+      durInput?.classList.add('has-error');
+      if (timeErr) timeErr.textContent = 'Duration is required (e.g. 3h30m)';
+      valid = false;
+    } else {
+      durInput?.classList.remove('has-error');
+      if (timeErr) timeErr.textContent = '';
+    }
   }
 
   if (!valid) return;
 
   const title    = nameInput.value.trim();
-  const time     = timeInput.value;
-  const end_time = endInput?.value || null;
   const type     = typeSelect?.value || null;
   const btn      = document.getElementById('act-modal-guardar');
   if (btn) btn.disabled = true;
+
+  let time, end_time, duration;
+  if (activeMode === 'exact') {
+    time     = timeInput?.value || null;
+    end_time = endInput?.value  || null;
+    duration = null;
+  } else {
+    time     = null;
+    end_time = null;
+    duration = durInput?.value.trim() || null;
+  }
 
   const existingCount = (STATIC_ACTIVITIES[cityKeyStr]?.[dateStr] ?? [])
     .flatMap(g => g.items).length;
   const sort_order = existingCount;
 
-  const newEntry = { city: cityKeyStr, date: dateStr, title, time, end_time, type, sort_order };
+  const newEntry = { city: cityKeyStr, date: dateStr, title, time, end_time, duration, type, sort_order };
 
   try {
     const { error } = await supabase.from('activities').insert([newEntry]);
@@ -2798,7 +2855,7 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
   }
 
   /* Update in-memory data so the timeline re-render shows the new item */
-  const newItem  = { title, time, end_time, type, source: 'User added' };
+  const newItem  = { title, time, end_time, duration, type, source: 'User added' };
   const period   = getPeriod(time) ?? 'Other';
   if (!STATIC_ACTIVITIES[cityKeyStr])        STATIC_ACTIVITIES[cityKeyStr] = {};
   if (!STATIC_ACTIVITIES[cityKeyStr][dateStr]) STATIC_ACTIVITIES[cityKeyStr][dateStr] = [];

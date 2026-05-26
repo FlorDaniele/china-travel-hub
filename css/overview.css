@@ -1510,6 +1510,11 @@
     gap: 4px;
   }
 
+  /* When used inside the Add Activity modal */
+  .modal-time-tabs {
+    margin-bottom: 8px;
+  }
+
   .dk-time-tab {
     font-size: 13px;
     padding: 3px 10px;
