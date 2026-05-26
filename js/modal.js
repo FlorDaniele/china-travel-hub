@@ -35,7 +35,7 @@ function ensureDOM() {
 
 function focusableEls() {
   return [...(_card?.querySelectorAll(
-    'input:not([disabled]), select:not([disabled]), ' +
+    'input:not([disabled]):not([type="hidden"]), select:not([disabled]), ' +
     'button:not([disabled]), [tabindex]:not([tabindex="-1"])'
   ) ?? [])];
 }
