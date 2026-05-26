@@ -6,6 +6,11 @@
   <meta name="description" content="China Travel Hub — personal trip planner for a solo trip across China">
   <title>China Travel Hub</title>
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+
   <!-- Styles -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/nav.css">
@@ -13,6 +18,7 @@
   <link rel="stylesheet" href="css/city.css">
 
   <link rel="stylesheet" href="css/reminders.css">
+  <link rel="stylesheet" href="css/modal.css">
 </head>
 <body>
 
@@ -29,6 +35,230 @@
       <div id="overview-header"></div>
       <!-- City cards grid -->
       <div id="city-cards-grid"></div>
+
+      <!-- ── Desktop overview grid — visible at ≥ 1024px ── -->
+      <div class="desktop-layout">
+
+        <!-- Row 1: Hero carousel (full width) -->
+        <div class="dk-hero" role="region" aria-label="City highlights">
+          <!-- Slides and dots injected by initCarousel() -->
+          <div class="dk-mode-toggle" role="group" aria-label="Switch app mode">
+            <button class="dk-mode-btn active" aria-pressed="true">Planning</button>
+            <button class="dk-mode-btn" aria-pressed="false">Travel</button>
+          </div>
+        </div>
+
+        <!-- Row 2, Col A: Bookings -->
+        <section class="dk-card dk-bookings" aria-labelledby="dk-bookings-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-bookings-title">Bookings</h2>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-bookings-add" aria-label="Add booking">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
+          </div>
+
+          <!-- Static summary row — counts will be wired to Supabase in Session 3 -->
+          <div class="dk-booking-summary" aria-label="Booking totals by type">
+            <div class="dk-booking-summary-col" aria-label="Hotels">
+              <span class="dk-booking-summary-label">
+                <i data-lucide="bed-double" width="16" height="16" aria-hidden="true"></i>
+                <span class="dk-booking-category-name">Hotels</span>
+              </span>
+              <span class="dk-booking-summary-count"><span class="dk-booking-count-num">3</span>/5</span>
+            </div>
+            <div class="dk-booking-summary-col" aria-label="Trains">
+              <span class="dk-booking-summary-label">
+                <i data-lucide="train-front" width="16" height="16" aria-hidden="true"></i>
+                <span class="dk-booking-category-name">Trains</span>
+              </span>
+              <span class="dk-booking-summary-count"><span class="dk-booking-count-num">1</span>/4</span>
+            </div>
+            <div class="dk-booking-summary-col" aria-label="Tours">
+              <span class="dk-booking-summary-label">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+                <span class="dk-booking-category-name">Tours</span>
+              </span>
+              <span class="dk-booking-summary-count"><span class="dk-booking-count-num">3</span>/6</span>
+            </div>
+          </div>
+
+          <!-- Pending bookings checklist — rendered dynamically from Supabase -->
+          <ul class="dk-booking-checklist" role="list" aria-label="Pending bookings"></ul>
+
+          <button class="dk-view-all" id="dk-bookings-view-all">View all →</button>
+        </section>
+
+        <!-- Row 2, Col B: Reminders -->
+        <section class="dk-card dk-reminders" aria-labelledby="dk-reminders-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-reminders-title">Reminders</h2>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-reminders-add" aria-label="Add reminder">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
+          </div>
+          <ul class="dk-reminder-list" role="list" aria-label="Active reminders"></ul>
+          <button class="dk-view-all" id="dk-reminders-view-all">View all →</button>
+        </section>
+
+        <!-- Row 2, Col C: Packing list -->
+        <section class="dk-card dk-packing" aria-labelledby="dk-packing-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-packing-title">Packing list</h2>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-packing-add" aria-label="Add packing item">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
+          </div>
+          <div class="dk-packing-list-wrapper">
+            <ul class="dk-packing-list" role="list" aria-label="Packing list preview">
+              <li class="dk-packing-category" role="presentation">Documents</li>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-1" aria-label="Mark Passport as packed">
+                  <input type="checkbox" id="pk-1" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Passport</span>
+              </li>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-2" aria-label="Mark Visa printout as packed">
+                  <input type="checkbox" id="pk-2" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Visa printout</span>
+              </li>
+              <li class="dk-packing-category" role="presentation">Tech</li>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-3" aria-label="Mark Camera and GoPro as packed">
+                  <input type="checkbox" id="pk-3" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Camera &amp; GoPro</span>
+              </li>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-4" aria-label="Mark Laptop and Charger as packed">
+                  <input type="checkbox" id="pk-4" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Laptop &amp; Charger</span>
+              </li>
+              <li class="dk-packing-category" role="presentation">Health</li>
+              <li class="dk-booking-check-item">
+                <label class="dk-booking-cb-wrap" for="pk-5" aria-label="Mark Medical Aid as packed">
+                  <input type="checkbox" id="pk-5" class="dk-booking-cb">
+                </label>
+                <span class="dk-booking-item-label">Medical Aid</span>
+              </li>
+            </ul>
+          </div>
+          <button class="dk-view-all" id="dk-packing-see-all">View all →</button>
+        </section>
+
+        <!-- Row 3, Cols 1-2: Unified Itinerary -->
+        <section class="dk-card dk-itinerary" aria-labelledby="dk-itinerary-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-itinerary-title">Itinerary</h2>
+          </div>
+          <div class="dk-itin-layout">
+            <!-- Left: city list (240px) -->
+            <div class="dk-itin-cities-col">
+              <ul
+                class="dk-itin-city-list"
+                role="listbox"
+                aria-label="Trip cities"
+                id="dk-itin-city-list"
+              ></ul>
+            </div>
+            <!-- Right: activity panel -->
+            <div class="dk-itin-panel" id="dk-itin-panel" aria-live="polite" aria-atomic="true">
+              <p class="dk-itin-panel-label" id="dk-itin-panel-label" aria-live="polite"></p>
+              <ol class="dk-timeline" role="list" id="dk-itin-timeline" aria-label="Daily itinerary"></ol>
+            </div>
+          </div>
+        </section>
+
+        <!-- Row 3, Col B top: Calendar -->
+        <section class="dk-card dk-calendar" aria-labelledby="dk-calendar-title">
+            <div class="dk-card-header">
+              <h2 class="dk-card-title" id="dk-calendar-title">Calendar</h2>
+            </div>
+            <table class="dk-cal-grid" role="grid" aria-label="Trip calendar June–July 2026">
+              <thead>
+                <tr>
+                  <th scope="col" abbr="Monday">Mo</th>
+                  <th scope="col" abbr="Tuesday">Tu</th>
+                  <th scope="col" abbr="Wednesday">We</th>
+                  <th scope="col" abbr="Thursday">Th</th>
+                  <th scope="col" abbr="Friday">Fr</th>
+                  <th scope="col" abbr="Saturday">Sa</th>
+                  <th scope="col" abbr="Sunday">Su</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Jun 1–7: pre-trip days muted; Jun 6–7 Beijing -->
+                <tr>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-01">1</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-02">2</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-03">3</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-04">4</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-05">5</time></td>
+                  <td class="dk-cal-day" style="background:#c8b8d8"><time datetime="2026-06-06">6</time></td>
+                  <td class="dk-cal-day" style="background:#c8b8d8"><time datetime="2026-06-07">7</time></td>
+                </tr>
+                <!-- Jun 8–14: Beijing → Xi'an -->
+                <tr>
+                  <td class="dk-cal-day" style="background:#c8b8d8"><time datetime="2026-06-08">8</time></td>
+                  <td class="dk-cal-day" style="background:#c8b8d8"><time datetime="2026-06-09">9</time></td>
+                  <td class="dk-cal-day" style="background:#c8b8d8"><time datetime="2026-06-10">10</time></td>
+                  <td class="dk-cal-day" style="background:#c8b8d8"><time datetime="2026-06-11">11</time></td>
+                  <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-12">12</time></td>
+                  <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-13">13</time></td>
+                  <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-14">14</time></td>
+                </tr>
+                <!-- Jun 15–16: Xi'an; Jun 17–21: Chengdu -->
+                <tr>
+                  <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-15">15</time></td>
+                  <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-16">16</time></td>
+                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-17">17</time></td>
+                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-18">18</time></td>
+                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-19">19</time></td>
+                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-20">20</time></td>
+                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-21">21</time></td>
+                </tr>
+                <!-- Jun 22–28: Shanghai (22–25), post-trip muted (26–28) -->
+                <tr>
+                  <td class="dk-cal-day" style="background:#f4b8c0"><time datetime="2026-06-22">22</time></td>
+                  <td class="dk-cal-day" style="background:#f4b8c0"><time datetime="2026-06-23">23</time></td>
+                  <td class="dk-cal-day" style="background:#f4b8c0"><time datetime="2026-06-24">24</time></td>
+                  <td class="dk-cal-day" style="background:#f4b8c0"><time datetime="2026-06-25">25</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-26">26</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-27">27</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-28">28</time></td>
+                </tr>
+                <!-- Jun 29–Jul 5: post-trip muted -->
+                <tr>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-29">29</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-06-30">30</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-07-01">1</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-07-02">2</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-07-03">3</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-07-04">4</time></td>
+                  <td class="dk-cal-day" style="background:#EDEDEB"><time datetime="2026-07-05">5</time></td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="dk-cal-legend" role="list" aria-label="City color legend">
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#c8b8d8" aria-hidden="true"></span>Beijing</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#b8cce4" aria-hidden="true"></span>Xi'an</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#dfbc5e" aria-hidden="true"></span>Chengdu</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#f4c89e" aria-hidden="true"></span>Chongqing</span>
+              <span class="dk-legend-item" role="listitem"><span class="dk-legend-dot" style="background:#f4b8c0" aria-hidden="true"></span>Shanghai</span>
+            </div>
+          </section>
+
+        <!-- Row 3, Col C: Next Up — spans rows 3 and 4 via CSS -->
+        <section class="dk-card dk-next-up" aria-labelledby="dk-next-up-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-next-up-title">Next tour</h2>
+          </div>
+          <ul class="dk-next-list" role="list" aria-label="Upcoming tour"></ul>
+        </section>
+
+      </div><!-- /.desktop-layout -->
     </section>
 
     <!-- ── City page (sub-view inside Overview) ────────── -->
@@ -68,34 +298,32 @@
     Working offline — changes will sync when connected
   </div>
 
-  <!-- ── Floating bottom nav bar ─────────────────────────── -->
-  <nav class="bottom-nav" role="tablist" aria-label="Main navigation">
+  <!-- Sidebar shell — shared across all "View all" panels -->
+  <div
+    id="sidebar-overlay"
+    class="sidebar-overlay hidden"
+    aria-hidden="true"
+  ></div>
+  <aside
+    id="sidebar-panel"
+    class="sidebar-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Details"
+  >
+    <div class="sidebar-header">
+      <span class="sidebar-title" id="sidebar-title"></span>
+      <button
+        class="sidebar-close"
+        id="sidebar-close"
+        aria-label="Close panel"
+      >×</button>
+    </div>
+    <div class="sidebar-divider" aria-hidden="true"></div>
+    <div class="sidebar-content" id="sidebar-content"></div>
+  </aside>
 
-    <button
-      class="nav-tab active"
-      id="nav-overview"
-      role="tab"
-      aria-selected="true"
-      aria-controls="tab-overview"
-      data-tab="overview"
-    >
-      <i data-lucide="map" class="nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Overview</span>
-    </button>
-
-    <button
-      class="nav-tab"
-      id="nav-reminders"
-      role="tab"
-      aria-selected="false"
-      aria-controls="tab-reminders"
-      data-tab="reminders"
-    >
-      <i data-lucide="bell" class="nav-icon" aria-hidden="true"></i>
-      <span class="nav-label">Reminders</span>
-    </button>
-
-  </nav>
+  <!-- Bottom nav removed for desktop mid-fidelity prototype -->
 
   <!-- SortableJS (global, used for drag-and-drop in city pages) -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>

@@ -3,7 +3,8 @@
    Tab switching, app initialisation.
    ============================================================ */
 
-import { initOverview } from './overview.js';
+import { initOverview, initDesktopToggle, initDesktopNextUp, initDesktopBookings, initDesktopPacking, initItinerary, initDesktopCountdown, initDesktopReminders, initCarousel } from './overview.js';
+import { initSidebar } from './sidebar.js';
 
 /* ── Tab switching ─────────────────────────────────────────── */
 
@@ -26,11 +27,26 @@ navTabs.forEach(tab => {
   tab.addEventListener('click', () => activateTab(tab.dataset.tab));
 });
 
+/* ── Calendar: bold today's date ───────────────────────────── */
+
+function initCalendar() {
+  const today = new Date().toISOString().split('T')[0];
+  const timeEl = document.querySelector(`.dk-cal-grid time[datetime="${today}"]`);
+  if (timeEl) timeEl.style.fontWeight = '700';
+}
+
 /* ── Init ──────────────────────────────────────────────────── */
 
 async function init() {
   activateTab('overview');
-  await initOverview();
+  initSidebar();
+  initDesktopToggle();
+  initDesktopBookings();
+  initDesktopPacking();
+  initItinerary();
+  initCalendar();
+  initDesktopReminders();
+  await Promise.all([initOverview(), initDesktopNextUp(), initDesktopCountdown(), initCarousel()]);
 }
 
 init();

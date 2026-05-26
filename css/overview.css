@@ -122,29 +122,42 @@
 }
 
 .booking-card-type {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
 
+.booking-card-count-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .booking-card-count {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  color: var(--text-primary);
   line-height: var(--line-height-tight);
 }
 
-.booking-card-count .count-booked {
-  color: var(--color-success);
+.booking-card-count .count-confirmed {
+  color: var(--text-primary);
 }
 
 .booking-card-count .count-total {
-  color: var(--color-text-secondary);
+  color: var(--text-primary);
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-base);
 }
+
+/* All-confirmed state — both numbers turn success green */
+.booking-card-count-wrap.all-done .count-confirmed,
+.booking-card-count-wrap.all-done .count-total {
+  color: var(--status-success);
+}
+
 
 /* Thin divider before checklist */
 .booking-card-divider {
@@ -411,4 +424,1827 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-medium);
+}
+
+/* ============================================================
+   DESKTOP LAYOUT — 1024px and above
+   3-column bento grid: 3fr 2fr 2fr
+   All selectors prefixed with .desktop-layout or .dk-
+   to avoid collisions with existing mobile styles.
+   ============================================================ */
+
+/* Hidden on mobile — shown only at desktop breakpoint */
+.desktop-layout {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+
+  /* Override tab-panel constraints for the overview desktop view */
+  #tab-overview {
+    max-width: 1400px;
+    padding: 24px;
+  }
+
+  /* Hide mobile JS-rendered content; show desktop grid */
+  #overview-header,
+  #city-cards-grid {
+    display: none;
+  }
+
+  .desktop-layout {
+    display: grid;
+    grid-template-columns: 3fr 2fr 2fr;
+    gap: 16px;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Hero spans all 3 columns */
+  .dk-hero {
+    grid-column: 1 / -1;
+  }
+
+  /* Row 3–4 explicit placement — 4-row grid:
+     Row 1: Hero  Row 2: Bookings/Reminders/Packing
+     Row 3: Cities (span 2) | Itinerary (span 2) | Calendar
+     Row 4:                  |                    | Next Tours */
+
+  .dk-itinerary {
+    grid-column: 1 / 3;
+    grid-row: 3 / 5;
+  }
+
+  .dk-calendar {
+    grid-column: 3;
+    grid-row: 3;
+  }
+
+  .dk-next-up {
+    grid-column: 3;
+    grid-row: 4;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Card base ──────────────────────────────────────────── */
+
+  .dk-card {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(69, 69, 50, 0.07);
+    padding: 32px;
+    min-width: 0;
+  }
+
+  .dk-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .dk-card-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 28px;
+  }
+
+  .dk-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .dk-header-tag {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .dk-header-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .dk-header-badge {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: #F0F0F0;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  /* ── Shared button atoms ────────────────────────────────── */
+
+  .dk-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    color: var(--text-secondary);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    /* Expand click area without changing visual size */
+    position: relative;
+  }
+
+  .dk-icon-btn::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+  }
+
+  .dk-icon-btn:hover {
+    background: #E0E0E0;
+    color: var(--text-primary);
+  }
+
+  .dk-icon-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 3px;
+  }
+
+  .dk-icon-btn--action {
+    color: var(--action);
+  }
+
+  .dk-icon-btn--action:hover {
+    color: var(--action);
+  }
+
+  .dk-add-btn {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--action);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    min-height: 30px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-add-btn:hover {
+    background: var(--warm-gold-light);
+    color: var(--text-primary);
+    border-color: var(--warm-gold);
+  }
+
+  .dk-add-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  .dk-remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 16px;
+    cursor: pointer;
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s ease;
+    font-family: inherit;
+    /* Expand hit area */
+    position: relative;
+  }
+
+  .dk-remove-btn::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+  }
+
+  .dk-remove-btn:hover { color: var(--terracotta); }
+
+  .dk-remove-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  .dk-text-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--action);
+    cursor: pointer;
+    min-height: 32px;
+    padding: 0 4px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-text-btn:hover { color: var(--text-primary); }
+
+  .dk-text-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  .dk-add-activity-row {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  /* ── Drag and drop feedback ─────────────────────────────── */
+
+  .dk-activity-card.sortable-drag {
+    opacity: 0.5;
+  }
+
+  .dk-activity-card.sortable-ghost {
+    opacity: 1;
+    background: transparent;
+    border: 2px solid var(--terracotta);
+    transition: border 150ms ease;
+  }
+
+  .dk-add-activity-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    color: var(--action);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    position: relative;
+  }
+
+  .dk-add-activity-btn::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+  }
+
+  .dk-add-activity-btn:hover {
+    background: #E0E0E0;
+    color: var(--action);
+  }
+
+  .dk-add-activity-btn:active { opacity: 0.6; }
+
+  .dk-add-activity-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 3px;
+    border-radius: 50%;
+  }
+
+  /* ── Shared checkbox + check-item ───────────────────────── */
+
+  .dk-checklist,
+  .dk-packing-list,
+  .dk-reminder-list,
+  .dk-next-list,
+  .dk-activity-list,
+  .dk-cities-strip,
+  .dk-timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 2px 0;
+  }
+
+  .dk-check-item label {
+    flex: 1;
+    font-size: 16px;
+    color: var(--text-primary);
+    cursor: pointer;
+    line-height: 1.4;
+  }
+
+  .dk-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+
+  .dk-checkbox:checked {
+    background: var(--status-success);
+    border-color: var(--status-success);
+  }
+
+  .dk-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .dk-checkbox:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────── */
+
+  .dk-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    height: 320px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  .dk-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 60%;
+    display: block;
+  }
+
+  .dk-hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 15%,
+      rgba(0, 0, 0, 0.18) 50%,
+      rgba(0, 0, 0, 0.52) 100%
+    );
+    pointer-events: none;
+  }
+
+  .dk-hero-content {
+    position: absolute;
+    bottom: 24px;
+    left: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dk-countdown-number {
+    font-size: 72px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  .dk-countdown-label {
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.01em;
+  }
+
+  /* Mode toggle pill — top-right inside hero */
+  .dk-mode-toggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .dk-mode-btn {
+    font-size: 16px;
+    font-weight: 500;
+    padding: 7px 20px;
+    min-height: 36px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    background: transparent;
+    transition: background 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-mode-btn.active,
+  .dk-mode-btn[aria-pressed="true"] {
+    background: var(--terracotta);
+    color: #ffffff;
+  }
+
+  .dk-mode-btn:hover:not(.active):not([aria-pressed="true"]) {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .dk-mode-btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  /* ── Bookings card ──────────────────────────────────────── */
+
+  /* Static summary row — 3 equal columns, no interactivity */
+  .dk-booking-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    margin-bottom: 20px;
+  }
+
+  .dk-booking-summary-col {
+    padding: 16px 24px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Right border on first two cols creates the dividers */
+  .dk-booking-summary-col:not(:last-child) {
+    border-right: 1px solid var(--border);
+  }
+
+  .dk-booking-summary-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-secondary);
+  }
+
+  .dk-booking-category-name {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+
+  .dk-booking-summary-count {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .dk-booking-count-num {
+    color: var(--text-primary);
+  }
+
+  /* All-confirmed state — both numbers and sublabel turn success green */
+  .dk-booking-summary-col--all-done .dk-booking-count-num,
+  .dk-booking-summary-col--all-done .dk-booking-summary-count {
+    color: var(--status-success);
+  }
+
+
+  /* Booking checklist */
+  .dk-booking-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-booking-check-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* Checkbox wrapper — comfortable mouse hit area, no need for 44px on desktop */
+  .dk-booking-cb-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .dk-booking-cb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+
+  .dk-booking-cb:checked {
+    background: var(--action);
+    border-color: var(--action);
+  }
+
+  .dk-booking-cb:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .dk-booking-cb:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+  }
+
+  .dk-booking-item-label {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: var(--line-height-normal);
+    flex: 1;
+  }
+
+  .dk-booking-item-type {
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+  }
+
+  /* "View all →" link */
+  .dk-view-all {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--action);
+    cursor: pointer;
+    padding: 0;
+    margin-top: auto;
+    padding-top: 20px;
+    display: block;
+    text-align: left;
+    transition: color 0.15s ease;
+  }
+
+  .dk-view-all:hover {
+    color: var(--terracotta);
+  }
+
+  .dk-view-all:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Loading state — outlined shape with no content */
+  .dk-booking-summary--loading {
+    min-height: 72px;
+  }
+
+  /* Skeleton rows for checklist during load */
+  .dk-booking-skeleton-row {
+    height: 20px;
+    width: 70%;
+    background: var(--border);
+    border-radius: 4px;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    background: linear-gradient(
+      90deg,
+      #F0F0EE 25%,
+      #E8E8E5 50%,
+      #F0F0EE 75%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* Empty state */
+  .dk-bookings-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 8px 0;
+  }
+
+  .dk-bookings-empty-text {
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  /* Error state */
+  .dk-bookings-error {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 0;
+  }
+
+  .dk-bookings-error-text {
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  .dk-bookings-retry {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--action);
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.15s ease;
+  }
+
+  .dk-bookings-retry:hover {
+    color: var(--text-primary);
+  }
+
+  /* ── Reminders card ─────────────────────────────────────── */
+
+  .dk-reminder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dk-reminder-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .dk-reminder-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 1px;
+  }
+
+  .dk-reminder-title {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: var(--line-height-normal);
+  }
+
+  .dk-reminder-due {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .dk-due-overdue { color: var(--due-overdue); }
+  .dk-due-today   { color: var(--due-today); }
+  .dk-due-future  { color: var(--text-secondary); }
+
+  .dk-reminder-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .dk-reminder-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 4px;
+  }
+
+  .dk-reminder-divider::before,
+  .dk-reminder-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px dashed var(--border);
+  }
+
+  .dk-divider-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .dk-reminder-item--done .dk-reminder-title {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+  }
+
+  .dk-reminder-item--done .dk-checkbox {
+    opacity: 0.45;
+  }
+
+  /* ── Packing list card ──────────────────────────────────── */
+
+  .dk-packing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dk-bookings,
+  .dk-reminders,
+  .dk-packing {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dk-packing-list-wrapper {
+    position: relative;
+  }
+
+  .dk-packing-category {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 8px 0 4px;
+    display: block;
+  }
+
+  .dk-packing-list > li.dk-packing-category:first-child {
+    padding-top: 0;
+  }
+
+  .dk-see-all {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--action);
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .dk-see-all:hover {
+    color: var(--text-primary);
+  }
+
+  /* ── Itinerary card ─────────────────────────────────────── */
+
+  .dk-filter-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .dk-filter-sublabel {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    padding-top: 6px;
+    min-width: 28px;
+  }
+
+  /* Date filter still uses tabs */
+  .dk-filter-tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .dk-filter-tab {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--action);
+    background: #F5F5F5;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 12px;
+    min-height: 28px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-filter-tab:hover {
+    background: #EBEBEB;
+    color: var(--text-primary);
+  }
+
+  .dk-filter-tab.active,
+  .dk-filter-tab[aria-selected="true"] {
+    background: var(--text-primary);
+    color: #ffffff;
+    border-color: var(--text-primary);
+  }
+
+  .dk-filter-tab:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+  }
+
+  /* City filter: select dropdown */
+  .dk-filter-city-select {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .dk-city-select {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: #F5F5F5;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 32px 8px 14px;
+    min-height: 36px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B6B80' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    transition: border-color 0.15s ease;
+  }
+
+  .dk-city-select:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 999px;
+    border-color: var(--action);
+  }
+
+  .dk-add-city-link {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--action);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.15s ease;
+  }
+
+  .dk-add-city-link:hover {
+    color: var(--action-hover);
+  }
+
+  .dk-add-city-link:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Action text links — used in card headers */
+  .dk-action-link {
+    color: var(--action) !important;
+  }
+
+  .dk-action-link:hover {
+    color: var(--action-hover) !important;
+  }
+
+  /* Timeline */
+
+  .dk-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 14px;
+  }
+
+  .dk-timeline-group {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    position: relative;
+    margin-top: 8px;
+  }
+
+  .dk-timeline-marker {
+    display: none;
+  }
+
+  .dk-timeline-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .dk-timeline-period {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: block;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .dk-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dk-activity-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 10px;
+    min-height: 44px;
+  }
+
+  .dk-drag-handle {
+    font-size: 16px;
+    color: #CCCCCC;
+    cursor: grab;
+    flex-shrink: 0;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .dk-activity-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .dk-activity-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dk-activity-meta {
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Calendar card ──────────────────────────────────────── */
+
+  .dk-cal-grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 3px;
+    margin: 0 -3px;
+    width: calc(100% + 6px);
+    margin-bottom: 10px;
+  }
+
+  .dk-cal-grid thead th {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 3px 0;
+  }
+
+  .dk-cal-day {
+    background: var(--warm-gold-light);
+    border-radius: 5px;
+    text-align: center;
+    padding: 0;
+    height: 28px;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-primary);
+    vertical-align: middle;
+  }
+
+  .dk-cal-day time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .dk-cal-empty {
+    background: transparent;
+  }
+
+  .dk-cal-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 6px;
+  }
+
+  .dk-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  .dk-legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Cities card ────────────────────────────────────────── */
+
+  .dk-cities-count {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: 3px;
+  }
+
+  .dk-cities-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Each city: dot column (left) + name-then-photo column (right) */
+  .dk-city-card {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 8px;
+    padding-bottom: 16px;
+    position: relative;
+  }
+
+  /* Timeline dot */
+  .dk-city-card::before {
+    content: '';
+    grid-column: 1;
+    grid-row: 1;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #BBBBBB;
+    background: var(--surface);
+    align-self: center;
+    justify-self: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Dashed connector — centered in dot column, starts below dot */
+  .dk-city-card:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 9px;
+    top: 24px;
+    bottom: 0;
+    border-left: 1px dashed #BBBBBB;
+    pointer-events: none;
+  }
+
+  /* Name row: grid col 2, row 1 */
+  .dk-city-info {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-self: center;
+  }
+
+  /* Photo row: grid col 2, row 2 — full width, taller */
+  .dk-city-photo {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100%;
+    height: 90px;
+    background: var(--warm-gold-light);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .dk-city-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    border-radius: 8px;
+  }
+
+  .dk-city-pinyin {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .dk-city-hanzi {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .dk-city-dates {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Next Up card ───────────────────────────────────────── */
+
+  .dk-next-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+  }
+
+  .dk-next-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .dk-next-photo {
+    width: 100%;
+    flex: 1;
+    min-height: 180px;
+    background: var(--warm-gold-light);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .dk-next-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    display: block;
+    border-radius: 8px;
+  }
+
+  .dk-next-item + .dk-next-item {
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .dk-next-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dk-next-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .dk-next-meta {
+    font-size: 16px;
+    color: var(--text-secondary);
+  }
+
+  .dk-next-booking-link {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--action);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 2px;
+    transition: color 0.15s ease;
+  }
+
+  .dk-next-booking-link:hover {
+    color: var(--text-primary);
+  }
+
+  .dk-next-booking-link:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  .dk-next-actions {
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
+  }
+
+  /* ── Travel mode: row swap — itinerary/cal/next move to rows 2–3 ── */
+  .mode-travel .dk-bookings  { grid-column: 1; grid-row: 4; }
+  .mode-travel .dk-reminders { grid-column: 2; grid-row: 4; }
+  .mode-travel .dk-packing   { grid-column: 3; grid-row: 4; }
+  .mode-travel .dk-itinerary { grid-column: 1 / 3; grid-row: 2 / 4; }
+  .mode-travel .dk-calendar  { grid-column: 3; grid-row: 2; }
+  .mode-travel .dk-next-up   { grid-column: 3; grid-row: 3; }
+
+
+  /* ── Unified Itinerary component ────────────────────────── */
+
+  .dk-itinerary {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .dk-itin-layout {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Left column: equal share with the right panel */
+  .dk-itin-cities-col {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding-right: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: #BEBEBE transparent;
+  }
+
+  .dk-itin-cities-col::-webkit-scrollbar { width: 4px; }
+  .dk-itin-cities-col::-webkit-scrollbar-track { background: transparent; }
+  .dk-itin-cities-col::-webkit-scrollbar-thumb {
+    background: #BEBEBE;
+    border-radius: 4px;
+  }
+  .dk-itin-cities-col::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+  /* Right column: activity panel, independent scroll */
+  .dk-itin-panel {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    padding-left: 24px;
+    transition: opacity 150ms ease;
+    scrollbar-width: thin;
+    scrollbar-color: #BEBEBE transparent;
+  }
+
+  .dk-itin-panel::-webkit-scrollbar { width: 4px; }
+  .dk-itin-panel::-webkit-scrollbar-track { background: transparent; }
+  .dk-itin-panel::-webkit-scrollbar-thumb {
+    background: #BEBEBE;
+    border-radius: 4px;
+  }
+
+  .dk-itin-panel.is-fading { opacity: 0; }
+
+  .dk-itin-panel-label {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  /* ── City list ──────────────────────────────────────────── */
+
+  .dk-itin-city-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+
+  /* Line is drawn per-item via .dk-itin-city-dot-col::after — see below */
+  .dk-itin-city-list::before {
+    display: none;
+  }
+
+  /* Each city item */
+  .dk-itin-city-item {
+    display: flex;
+    gap: 10px;
+    padding-bottom: 24px;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .dk-itin-city-item:last-child { padding-bottom: 0; }
+
+  .dk-itin-city-item:focus-visible .dk-itin-city-card {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* Left dot column */
+  .dk-itin-city-dot-col {
+    width: 20px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+
+  /* Connector line from dot bottom to the next item's dot */
+  .dk-itin-city-item:not(:last-child) .dk-itin-city-dot-col::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 8px;    /* start exactly at the bottom edge of the 8px dot */
+    bottom: -24px; /* span through the 24px gap to the next item */
+    width: 1px;
+    background: var(--border);
+    pointer-events: none;
+  }
+
+  /* Dot sits at the top of the column, aligned with the card's top edge */
+  .dk-itin-city-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--text-secondary);
+    background: var(--surface);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    margin-top: 0;
+  }
+
+  /* Selected dot */
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-city-dot {
+    border-color: var(--terracotta);
+    background: var(--terracotta);
+  }
+
+  /* Card content */
+  .dk-itin-city-card {
+    flex: 1;
+    min-width: 0;
+    border-radius: 8px;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    border: 1.5px solid transparent;
+    overflow: hidden;
+  }
+
+  /* Default state: no shadow, no stroke */
+  .dk-itin-city-item:not([aria-selected="true"]) .dk-itin-city-card {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  /* Hover state (desktop only, not on selected) */
+  @media (hover: hover) {
+    .dk-itin-city-item:not([aria-selected="true"]):hover .dk-itin-city-card {
+      transform: translateY(-2px);
+      box-shadow: 0px 4px 16px rgba(56, 56, 46, 0.14);
+    }
+  }
+
+  /* Selected state */
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-city-card {
+    border-color: var(--terracotta);
+    box-shadow: 0px 6px 20px rgba(238, 97, 70, 0.20);
+    transform: none;
+  }
+
+  /* Photo */
+  .dk-itin-city-photo {
+    position: relative;
+    width: 100%;
+    height: 90px;
+    background: var(--warm-gold-light);
+    overflow: hidden;
+  }
+
+  .dk-itin-city-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .dk-itin-city-item[data-city-key="chengdu"] .dk-itin-city-photo img {
+    object-position: center 30%;
+  }
+
+  /* Date pill overlaid bottom-left of photo */
+  .dk-itin-date-pill {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, 0.45);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 400;
+    padding: 2px 7px;
+    border-radius: 999px;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* Name row */
+  .dk-itin-city-names {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 7px 8px;
+    background: var(--surface);
+  }
+
+  .dk-itin-name-en {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: color 180ms ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-name-en {
+    color: var(--terracotta);
+  }
+
+  .dk-itin-name-pinyin {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-family: 'Plus Jakarta Sans', 'Noto Sans SC', system-ui, sans-serif;
+  }
+
+  /* ── Calendar strip (inside selected card) ──────────────── */
+
+  .dk-itin-cal-strip {
+    background: var(--background);
+    border-top: 0.5px solid var(--border);
+    padding: 8px;
+    display: none; /* hidden by default */
+  }
+
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-cal-strip {
+    display: block;
+  }
+
+  .dk-itin-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .dk-itin-cal-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 0.5px solid transparent;
+    transition: background 150ms ease;
+    min-height: 44px; /* WCAG touch target */
+    justify-content: center;
+    outline: none;
+  }
+
+  .dk-itin-cal-cell:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 1px;
+  }
+
+  /* Active day */
+  .dk-itin-cal-cell[aria-current="date"] {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+
+  /* Out-of-range day */
+  .dk-itin-cal-cell.is-out-range {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .dk-itin-cal-weekday {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .dk-itin-cal-day-num {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  /* Active day: weekday + number → terracotta */
+  .dk-itin-cal-cell[aria-current="date"] .dk-itin-cal-weekday,
+  .dk-itin-cal-cell[aria-current="date"] .dk-itin-cal-day-num {
+    color: var(--terracotta);
+  }
+
+  /* Activity dot */
+  .dk-itin-cal-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: transparent;
+    flex-shrink: 0;
+  }
+
+  .dk-itin-cal-cell.has-activities .dk-itin-cal-dot {
+    background: var(--text-secondary);
+  }
+
+  .dk-itin-cal-cell[aria-current="date"].has-activities .dk-itin-cal-dot {
+    background: var(--terracotta);
+  }
+
+  /* ── Activity panel empty state ─────────────────────────── */
+
+  .dk-itin-empty {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+  }
+
+  .dk-itin-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .dk-itin-empty-icon {
+    display: block;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  .dk-itin-empty-primary {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .dk-itin-empty-secondary {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Hero carousel ──────────────────────────────────────── */
+
+  .dk-carousel {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dk-carousel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+
+  .dk-carousel-slide.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dk-carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .dk-carousel-slide[data-city="beijing"] img {
+    object-position: center calc(50% - 40px);
+  }
+
+  .dk-carousel-slide[data-city="chengdu"] img {
+    object-position: center calc(50% - 120px);
+  }
+
+  .dk-carousel-slide[data-city="shanghai"] img {
+    object-position: center calc(50% - 120px);
+  }
+
+  .dk-slide-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 15%,
+      rgba(0, 0, 0, 0.18) 50%,
+      rgba(0, 0, 0, 0.52) 100%
+    );
+    pointer-events: none;
+  }
+
+  .dk-slide-content {
+    position: absolute;
+    bottom: 24px;
+    left: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dk-carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+  }
+
+  .dk-carousel-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .dk-carousel-dot.is-active {
+    background: var(--terracotta);
+  }
+
+  .dk-carousel-dot:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  /* ── Mobile accordion (≤ 768px) ─────────────────────────── */
+}
+/* end @media desktop */
+
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .dk-carousel-slide {
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .dk-itin-layout {
+    flex-direction: column;
+  }
+
+  .dk-itin-cities-col {
+    width: 100%;
+    overflow-y: visible;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding-right: 0;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .dk-itin-city-list::before { display: none; }
+
+  .dk-itin-city-item {
+    flex-direction: column;
+    padding-bottom: 0;
+    margin-bottom: 1px;
+  }
+
+  .dk-itin-city-dot-col { display: none; }
+
+  .dk-itin-city-card {
+    border-radius: 8px;
+    border: 1px solid var(--border) !important;
+    overflow: hidden;
+  }
+
+  /* Mobile accordion header: name + date on one line */
+  .dk-itin-mob-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--surface);
+    cursor: pointer;
+    min-height: 44px;
+  }
+
+  .dk-itin-mob-city-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: color 180ms ease;
+  }
+
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-mob-city-name {
+    color: var(--terracotta);
+  }
+
+  .dk-itin-mob-dates {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+
+  /* Accordion body: strip + activities */
+  .dk-itin-mob-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 220ms ease;
+  }
+
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-mob-body {
+    max-height: 800px;
+  }
+
+  /* On mobile, strip is always inside the mob-body, not inside card */
+  .dk-itin-cal-strip { display: none !important; }
+
+  .dk-itin-mob-strip {
+    background: var(--background);
+    border-top: 0.5px solid var(--border);
+    padding: 6px 8px;
+  }
+
+  .dk-itin-panel {
+    padding-left: 0;
+    padding-top: 12px;
+  }
+
+  .dk-itin-panel-label { padding: 0 14px; }
+
+  .dk-timeline { padding: 0 14px; }
 }

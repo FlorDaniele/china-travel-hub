@@ -8,3 +8,5 @@ CLAUDE.local.md
 .vscode/
 .idea/
 *.log
+.claude/worktrees/
+.claude/launch.json
