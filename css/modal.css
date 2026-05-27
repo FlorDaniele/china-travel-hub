@@ -545,3 +545,12 @@
     transition: none;
   }
 }
+
+/* ── Mobile: constrain height and enable internal scroll ──── */
+
+@media (max-width: 479px) {
+  .modal-card {
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+}

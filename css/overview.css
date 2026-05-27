@@ -2417,3 +2417,1273 @@
 
   .dk-timeline { padding: 0 14px; }
 }
+
+/* ============================================================
+   PHONE LAYOUT — max-width: 479px
+   Single-column mobile layout. Additive only — desktop (≥480px)
+   is completely untouched. All desktop JS runs regardless of
+   viewport, so .desktop-layout sections are fully initialised.
+   ============================================================ */
+
+@media (max-width: 479px) {
+
+  /* ── Show desktop layout as single column ───────────────── */
+
+  /* Remove overview tab padding so sections control their own spacing */
+  #tab-overview {
+    padding: 0;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  /* Show the desktop-layout grid as a vertical flex column */
+  .desktop-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 16px;
+  }
+
+  /* Hide the mobile JS-rendered fallback content */
+  #overview-header,
+  #city-cards-grid {
+    display: none;
+  }
+
+  /* ── Card base ──────────────────────────────────────────── */
+
+  .dk-card {
+    margin: 0 16px;
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .dk-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .dk-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .dk-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .dk-header-badge {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background: #F0F0F0;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .dk-header-tag,
+  .dk-header-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Shared icon button ─────────────────────────────────── */
+
+  .dk-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    color: var(--text-secondary);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .dk-icon-btn--action {
+    color: var(--action);
+  }
+
+  .dk-icon-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 3px;
+  }
+
+  /* ── View all link ──────────────────────────────────────── */
+
+  .dk-view-all {
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--action);
+    cursor: pointer;
+    padding: 0;
+    margin-top: 12px;
+    display: block;
+    text-align: left;
+    transition: color 0.15s ease;
+  }
+
+  .dk-view-all:hover { color: var(--terracotta); }
+
+  .dk-view-all:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* ── Shared checkbox ────────────────────────────────────── */
+
+  .dk-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+
+  .dk-checkbox:checked {
+    background: var(--status-success);
+    border-color: var(--status-success);
+  }
+
+  .dk-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .dk-checkbox:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+  }
+
+  /* ── Hero carousel ──────────────────────────────────────── */
+
+  .dk-hero {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+  }
+
+  .dk-carousel {
+    position: absolute;
+    inset: 0;
+  }
+
+  .dk-carousel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 400ms ease;
+    pointer-events: none;
+  }
+
+  .dk-carousel-slide.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dk-carousel-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .dk-slide-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 15%,
+      rgba(0, 0, 0, 0.18) 50%,
+      rgba(0, 0, 0, 0.52) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Countdown: scaled down for small screens */
+  .dk-slide-content {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dk-countdown-number {
+    font-size: 40px;
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  .dk-countdown-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.01em;
+  }
+
+  /* Carousel dots */
+  .dk-carousel-dots {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  .dk-carousel-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .dk-carousel-dot.is-active { background: var(--terracotta); }
+
+  .dk-carousel-dot:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+  }
+
+  /* ── Mode toggle: smaller text, stays top-right of hero ─── */
+
+  .dk-mode-toggle {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 999px;
+    padding: 2px;
+    gap: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    z-index: 5;
+  }
+
+  .dk-mode-btn {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 12px;
+    min-height: 32px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+    background: transparent;
+    transition: background 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-mode-btn.active,
+  .dk-mode-btn[aria-pressed="true"] {
+    background: var(--terracotta);
+    color: #ffffff;
+  }
+
+  .dk-mode-btn:hover:not(.active):not([aria-pressed="true"]) {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+  }
+
+  .dk-mode-btn:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  /* ── Bookings card ──────────────────────────────────────── */
+
+  /* Reduce column padding so 3-col summary fits in narrow card */
+  .dk-booking-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    margin-bottom: 14px;
+  }
+
+  .dk-booking-summary-col {
+    padding: 10px 6px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dk-booking-summary-col:not(:last-child) {
+    border-right: 1px solid var(--border);
+  }
+
+  .dk-booking-summary-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--text-secondary);
+  }
+
+  .dk-booking-category-name {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+
+  .dk-booking-summary-count {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  /* Booking checklist */
+  .dk-booking-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-booking-check-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 44px;
+  }
+
+  .dk-booking-cb-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    flex-shrink: 0;
+    cursor: pointer;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .dk-booking-cb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: background 0.12s ease, border-color 0.12s ease;
+  }
+
+  .dk-booking-cb:checked {
+    background: var(--action);
+    border-color: var(--action);
+  }
+
+  .dk-booking-cb:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #fff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .dk-booking-cb:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+  }
+
+  .dk-booking-item-label {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  /* ── Reminders card ─────────────────────────────────────── */
+
+  .dk-reminder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-reminder-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 2px;
+    min-height: 36px;
+  }
+
+  .dk-reminder-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-top: 1px;
+  }
+
+  .dk-reminder-title {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .dk-reminder-due {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  .dk-due-overdue { color: var(--due-overdue); }
+  .dk-due-today   { color: var(--due-today); }
+  .dk-due-future  { color: var(--text-secondary); }
+
+  .dk-reminder-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .dk-reminder-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 2px;
+  }
+
+  .dk-reminder-divider::before,
+  .dk-reminder-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 1px dashed var(--border);
+  }
+
+  .dk-divider-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .dk-reminder-item--done .dk-reminder-title {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+  }
+
+  /* ── Packing card ───────────────────────────────────────── */
+
+  .dk-packing-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-packing-category {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 8px 0 2px;
+    display: block;
+  }
+
+  .dk-packing-list > li.dk-packing-category:first-child {
+    padding-top: 0;
+  }
+
+  /* ── Itinerary card ─────────────────────────────────────── */
+
+  .dk-itinerary {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  /* Override 768px stacked layout — city col becomes horiz scroll */
+  .dk-itin-layout {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .dk-itin-cities-col {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+    border-right: none;
+    padding-right: 0;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    width: 100%;
+    min-height: 0;
+  }
+
+  .dk-itin-cities-col::-webkit-scrollbar { display: none; }
+
+  /* Horizontal row of city cards */
+  .dk-itin-city-list {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: max-content;
+    padding-bottom: 4px;
+  }
+
+  /* Each city card: fixed width, no flex shrink */
+  .dk-itin-city-item {
+    flex-direction: column;
+    flex-shrink: 0;
+    width: 108px;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .dk-itin-city-item:last-child { padding-bottom: 0; }
+
+  /* Remove the desktop connector-line pseudo-element */
+  .dk-itin-city-item:not(:last-child) .dk-itin-city-dot-col::after {
+    display: none;
+  }
+
+  /* Card border — deselected transparent, selected terracotta */
+  .dk-itin-city-card {
+    border: 1.5px solid transparent !important;
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-city-card {
+    border-color: var(--terracotta) !important;
+    box-shadow: 0px 4px 12px rgba(238, 97, 70, 0.18);
+  }
+
+  /* Photo: 80px tall */
+  .dk-itin-city-photo {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    background: var(--warm-gold-light);
+    overflow: hidden;
+  }
+
+  .dk-itin-city-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* Smaller date pill */
+  .dk-itin-date-pill {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.45);
+    color: #ffffff;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* Name row below photo */
+  .dk-itin-city-names {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    padding: 5px 6px;
+    background: var(--surface);
+  }
+
+  .dk-itin-name-en {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: color 180ms ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-name-en {
+    color: var(--terracotta);
+  }
+
+  .dk-itin-name-pinyin {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Calendar strip: show below selected city card
+     (overrides the 768px !important hide rule) */
+  .dk-itin-city-item[aria-selected="true"] .dk-itin-cal-strip {
+    display: block !important;
+  }
+
+  /* Calendar strip styling */
+  .dk-itin-cal-strip {
+    background: var(--background);
+    border-top: 0.5px solid var(--border);
+    padding: 6px 4px;
+  }
+
+  .dk-itin-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+
+  .dk-itin-cal-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 3px 1px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 0.5px solid transparent;
+    transition: background 150ms ease;
+    min-height: 36px;
+    justify-content: center;
+    outline: none;
+  }
+
+  .dk-itin-cal-cell:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 1px;
+  }
+
+  .dk-itin-cal-cell[aria-current="date"] {
+    background: var(--surface);
+    border-color: var(--border);
+  }
+
+  .dk-itin-cal-cell.is-out-range {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .dk-itin-cal-weekday {
+    font-size: 10px;
+    color: var(--text-secondary);
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .dk-itin-cal-day-num {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .dk-itin-cal-cell[aria-current="date"] .dk-itin-cal-weekday,
+  .dk-itin-cal-cell[aria-current="date"] .dk-itin-cal-day-num {
+    color: var(--terracotta);
+  }
+
+  .dk-itin-cal-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: transparent;
+    flex-shrink: 0;
+  }
+
+  .dk-itin-cal-cell.has-activities .dk-itin-cal-dot {
+    background: var(--text-secondary);
+  }
+
+  .dk-itin-cal-cell[aria-current="date"].has-activities .dk-itin-cal-dot {
+    background: var(--terracotta);
+  }
+
+  /* Activity panel: full width below city row */
+  .dk-itin-panel {
+    padding-left: 0;
+    padding-top: 0;
+    overflow-y: visible;
+  }
+
+  .dk-itin-panel-label {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    padding: 0;
+  }
+
+  /* Empty state */
+  .dk-itin-empty {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+  }
+
+  .dk-itin-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .dk-itin-empty-icon {
+    display: block;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .dk-itin-empty-primary {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 3px;
+  }
+
+  .dk-itin-empty-secondary {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Timeline and activity cards */
+  .dk-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .dk-timeline-group {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+    position: relative;
+    margin-top: 4px;
+  }
+
+  .dk-timeline-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .dk-timeline-period {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    display: block;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+
+  .dk-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-activity-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #FAFAFA;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    min-height: 44px;
+  }
+
+  .dk-drag-handle {
+    font-size: 14px;
+    color: #CCCCCC;
+    cursor: grab;
+    flex-shrink: 0;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .dk-activity-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .dk-activity-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: text;
+  }
+
+  .dk-activity-title-input {
+    width: 100%;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--terracotta);
+    padding: 0;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .dk-activity-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .dk-activity-time-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    min-height: 18px;
+  }
+
+  .dk-add-time-btn,
+  .dk-add-end-time-btn {
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0.6;
+    font-family: inherit;
+  }
+
+  /* Inline time edit panel */
+  .dk-time-panel {
+    padding: 8px;
+    border-top: 1px solid var(--border);
+    background: #F8F8FA;
+    border-radius: 0 0 8px 8px;
+    margin: 8px -8px -10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dk-time-panel-tabs { display: flex; gap: 4px; }
+
+  .dk-time-tab {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .dk-time-tab.is-active {
+    background: var(--terracotta);
+    border-color: var(--terracotta);
+    color: white;
+  }
+
+  .dk-time-fields {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .dk-time-start-input,
+  .dk-time-end-input,
+  .dk-time-dur-input {
+    font-size: 13px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 7px;
+    color: var(--text-primary);
+    background: white;
+    font-family: inherit;
+    min-width: 0;
+  }
+
+  .dk-time-start-input,
+  .dk-time-end-input { width: 88px; }
+  .dk-time-dur-input  { width: 116px; }
+
+  .dk-time-start-input:focus,
+  .dk-time-end-input:focus,
+  .dk-time-dur-input:focus {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 0;
+    border-color: transparent;
+  }
+
+  .dk-time-sep {
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  .dk-time-panel-actions { display: flex; gap: 6px; }
+
+  .dk-time-save-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    background: var(--terracotta);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: inherit;
+  }
+
+  .dk-time-save-btn:hover { opacity: 0.9; }
+
+  .dk-time-cancel-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* Add activity button */
+  .dk-add-activity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    color: var(--action);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    position: relative;
+  }
+
+  .dk-add-activity-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 3px;
+    border-radius: 50%;
+  }
+
+  /* Drag ghost */
+  .dk-activity-card.sortable-drag  { opacity: 0.5; }
+  .dk-activity-card.sortable-ghost {
+    opacity: 1;
+    background: transparent;
+    border: 2px solid var(--terracotta);
+  }
+
+  /* Itinerary filter group (date tabs + city select) */
+  .dk-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .dk-filter-sublabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .dk-filter-tabs {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .dk-filter-tab {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--action);
+    background: #F5F5F5;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 10px;
+    min-height: 32px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .dk-filter-tab.active,
+  .dk-filter-tab[aria-selected="true"] {
+    background: var(--text-primary);
+    color: #ffffff;
+    border-color: var(--text-primary);
+  }
+
+  .dk-filter-tab:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+  }
+
+  .dk-filter-city-select { display: flex; flex-direction: column; gap: 4px; }
+
+  .dk-city-select {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    background: #F5F5F5;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 32px 8px 14px;
+    min-height: 36px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%236B6B80' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+  }
+
+  .dk-city-select:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 999px;
+  }
+
+  /* ── Calendar card ──────────────────────────────────────── */
+
+  .dk-cal-grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .dk-cal-grid thead th {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 2px 0;
+  }
+
+  .dk-cal-day {
+    background: var(--warm-gold-light);
+    border-radius: 4px;
+    text-align: center;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-primary);
+    vertical-align: middle;
+  }
+
+  .dk-cal-day time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 36px;
+  }
+
+  .dk-cal-empty { background: transparent; }
+
+  .dk-cal-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin-top: 6px;
+  }
+
+  .dk-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  .dk-legend-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Next tour card ─────────────────────────────────────── */
+
+  .dk-next-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .dk-next-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dk-next-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .dk-next-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .dk-next-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .dk-next-booking-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--action);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 2px;
+    transition: color 0.15s ease;
+  }
+
+  .dk-next-booking-link:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Photo below metadata */
+  .dk-next-photo {
+    width: 100%;
+    min-height: 160px;
+    background: var(--warm-gold-light);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+
+  .dk-next-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    display: block;
+    border-radius: 8px;
+  }
+
+  .dk-next-actions {
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
+  }
+
+}
+/* end @media (max-width: 479px) */

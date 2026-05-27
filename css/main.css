@@ -409,7 +409,7 @@ a {
 }
 
 /* Mobile — bottom sheet: slides up from bottom */
-@media (max-width: 768px) {
+@media (max-width: 479px) {
   .sidebar-panel {
     top: auto;
     bottom: 0;
