@@ -2673,23 +2673,37 @@
     z-index: 10;
   }
 
+  /* Dot button is 44×44 transparent; visual dot lives in ::after */
   .dk-carousel-dot {
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .dk-carousel-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 8px;
     height: 8px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.5);
-    border: none;
-    cursor: pointer;
     transition: background 0.15s ease;
-    padding: 0;
-    flex-shrink: 0;
   }
 
-  .dk-carousel-dot.is-active { background: var(--terracotta); }
+  .dk-carousel-dot.is-active::after { background: var(--terracotta); }
 
   .dk-carousel-dot:focus-visible {
     outline: 2px solid #ffffff;
-    outline-offset: 2px;
+    outline-offset: -18px;
+    border-radius: 50%;
   }
 
   /* ── Mode toggle: smaller text, stays top-right of hero ─── */
@@ -2714,7 +2728,7 @@
     font-size: 12px;
     font-weight: 500;
     padding: 5px 12px;
-    min-height: 32px;
+    min-height: 44px;
     border-radius: 999px;
     border: none;
     cursor: pointer;
@@ -2724,10 +2738,11 @@
     font-family: inherit;
   }
 
+  /* Active: dark text on terracotta — contrast ≈5.2:1 at 12px (WCAG AA) */
   .dk-mode-btn.active,
   .dk-mode-btn[aria-pressed="true"] {
     background: var(--terracotta);
-    color: #ffffff;
+    color: #1a1a1a;
   }
 
   .dk-mode-btn:hover:not(.active):not([aria-pressed="true"]) {
