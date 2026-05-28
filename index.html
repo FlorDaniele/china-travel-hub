@@ -19,6 +19,7 @@
 
   <link rel="stylesheet" href="css/reminders.css">
   <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/travel.css">
 </head>
 <body>
 
@@ -146,6 +147,46 @@
             </ul>
           </div>
           <button class="dk-view-all" id="dk-packing-see-all">View all →</button>
+        </section>
+
+        <!-- Travel mode: Daily Steps (col 1, row 2) -->
+        <section class="dk-card dk-steps" aria-labelledby="dk-steps-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-steps-title">Daily steps</h2>
+          </div>
+          <div class="dk-steps-scroll" role="img" aria-label="Daily step count chart">
+            <canvas id="steps-canvas"></canvas>
+            <div class="steps-tooltip" aria-hidden="true"></div>
+            <div class="steps-dot" aria-hidden="true"></div>
+          </div>
+        </section>
+
+        <!-- Travel mode: Next Transport (col 3, row 2) -->
+        <section class="dk-card dk-transport" aria-labelledby="dk-transport-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-transport-title">Next transport</h2>
+          </div>
+          <div class="dk-transport-body">
+            <span class="dk-transport-loading">Loading…</span>
+          </div>
+        </section>
+
+        <!-- Travel mode: Hotels carousel (full width, row 5) -->
+        <section class="dk-card dk-hotels" aria-labelledby="dk-hotels-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-hotels-title">Hotels</h2>
+            <div class="dk-hotel-nav">
+              <button class="dk-hotel-prev" aria-label="Previous hotel" disabled>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button class="dk-hotel-next" aria-label="Next hotel">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="dk-hotels-body">
+            <span class="dk-transport-loading">Loading…</span>
+          </div>
         </section>
 
         <!-- Row 3, Cols 1-2: Unified Itinerary -->
