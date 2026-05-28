@@ -1482,7 +1482,9 @@
     border: none;
     padding: 0;
     cursor: pointer;
-    opacity: 0.6;
+    /* Hidden by default; revealed on card hover (desktop) */
+    opacity: 0;
+    transition: opacity 150ms ease;
     font-family: inherit;
   }
 
@@ -1490,6 +1492,20 @@
   .dk-add-end-time-btn:hover {
     opacity: 1;
     color: var(--text-primary);
+  }
+
+  /* Show on parent card hover */
+  .dk-activity-card:hover .dk-add-time-btn,
+  .dk-activity-card:hover .dk-add-end-time-btn {
+    opacity: 1;
+  }
+
+  /* Touch devices: always visible (hover is not reliable) */
+  @media (hover: none) {
+    .dk-add-time-btn,
+    .dk-add-end-time-btn {
+      opacity: 0.6;
+    }
   }
 
   /* ── Time edit panel ────────────────────────────────────── */
@@ -1861,20 +1877,21 @@
     margin-top: 2px;
   }
 
-  /* ── Travel mode: row swap ──────────────────────────────────
-     Row 2: Steps (col 1) | Reminders (col 2) | Transport (col 3)
-     Rows 3–4: Itinerary (cols 1–2) | Calendar (col 3) | Next Tour
-     Row 5: Hotels (full width)
+  /* ── Travel mode: row layout ────────────────────────────────
+     Row 1: Hero (full width)
+     Row 2: Hotels (col 1) | Transport (col 2) | Reminders (col 3)
+     Row 3: Daily Steps (full width, all 3 cols)
+     Rows 4–5: Itinerary (cols 1–2) | Calendar (col 3, row 4) | Next Tour (col 3, row 5)
      Bookings + Packing: hidden                                ── */
   .mode-travel .dk-bookings  { display: none; }
   .mode-travel .dk-packing   { display: none; }
-  .mode-travel .dk-reminders { grid-column: 2; grid-row: 2; }
-  .mode-travel .dk-itinerary { grid-column: 1 / 3; grid-row: 3 / 5; }
-  .mode-travel .dk-calendar  { grid-column: 3; grid-row: 3; }
-  .mode-travel .dk-next-up   { grid-column: 3; grid-row: 4; }
-  .mode-travel .dk-steps     { grid-column: 1; grid-row: 2; display: flex; }
-  .mode-travel .dk-transport { grid-column: 3; grid-row: 2; display: flex; }
-  .mode-travel .dk-hotels    { grid-column: 1 / -1; grid-row: 5; display: flex; }
+  .mode-travel .dk-hotels    { grid-column: 1; grid-row: 2; display: flex; }
+  .mode-travel .dk-transport { grid-column: 2; grid-row: 2; display: flex; }
+  .mode-travel .dk-reminders { grid-column: 3; grid-row: 2; }
+  .mode-travel .dk-steps     { grid-column: 1 / -1; grid-row: 3; display: flex; }
+  .mode-travel .dk-itinerary { grid-column: 1 / 3; grid-row: 4 / 6; }
+  .mode-travel .dk-calendar  { grid-column: 3; grid-row: 4; }
+  .mode-travel .dk-next-up   { grid-column: 3; grid-row: 5; }
 
 
   /* ── Unified Itinerary component ────────────────────────── */
@@ -1933,7 +1950,19 @@
   .dk-itin-panel-label {
     font-size: 16px;
     color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  /* Day summary: "N activities · X km" below the date/city header */
+  .dk-itin-panel-summary {
+    font-size: 12px;
+    color: var(--text-secondary);
     margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  .dk-itin-panel-summary .summary-sep {
+    padding: 0 6px;
   }
 
   /* ── City list ──────────────────────────────────────────── */
@@ -2323,6 +2352,51 @@
   .dk-carousel-dot:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 2px;
+  }
+
+  /* ── Weather widget (Travel mode, hero bottom-right) ───── */
+
+  .dk-weather-widget {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 20px;
+    padding: 8px 12px;
+    pointer-events: none;
+    z-index: 10;
+    /* Hidden until travel mode + data loaded */
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .dk-weather-widget.is-visible {
+    opacity: 1;
+  }
+
+  /* Hidden entirely in planning mode */
+  .desktop-layout:not(.mode-travel) .dk-weather-widget {
+    display: none;
+  }
+
+  .dk-weather-icon {
+    color: #ffffff;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .dk-weather-temp {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    white-space: nowrap;
+    line-height: 1;
   }
 
   /* ── Mobile accordion (≤ 768px) ─────────────────────────── */

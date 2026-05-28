@@ -89,42 +89,51 @@ function renderTransport(t) {
     ? `<span class="dk-transport-gate">Gate ${esc(t.gate)}</span>`
     : '';
 
+  // CalendarDays icon (Lucide)
+  const calIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M8 2v4"/><path d="M16 2v4"/>
+    <rect width="18" height="18" x="3" y="4" rx="2"/>
+    <path d="M3 10h18"/>
+    <path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/>
+    <path d="M8 18h.01"/><path d="M12 18h.01"/>
+  </svg>`;
+
   return `
-    <div class="dk-transport-meta-row">
-      <span class="dk-transport-badge">${esc(typeBadge)}</span>
-      <span class="dk-transport-provider">${esc(t.transport_number)} · ${esc(t.provider)}</span>
-      <span class="dk-transport-date">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M8 2v4"/><path d="M16 2v4"/>
-          <rect width="18" height="18" x="3" y="4" rx="2"/>
-          <path d="M3 10h18"/>
-        </svg>
+    <div class="dk-transport-header-row">
+      <div class="dk-transport-header-left">
+        <span class="dk-transport-badge">${esc(typeBadge)}</span>
+        <span class="dk-transport-provider">${esc(t.transport_number)} · ${esc(t.provider)}</span>
+      </div>
+      <div class="dk-transport-header-right">
+        ${calIcon}
         ${esc(formatDepartureDate(t.departure_date))}
-      </span>
+      </div>
     </div>
+
+    <hr class="dk-transport-divider" aria-hidden="true">
 
     <div class="dk-transport-route">
       <div class="dk-transport-origin">
         <span class="dk-transport-city">${esc(t.origin_city)}</span>
         <span class="dk-transport-code">${esc(t.origin_code ?? '')}</span>
-        ${gateHTML}
         <span class="dk-transport-time">${esc(formatTime(t.origin_time))}</span>
+        ${gateHTML}
       </div>
 
       <div class="dk-transport-line">
+        <span class="dk-transport-icon-wrap">${transportIcon(t.type)}</span>
         <span class="dk-transport-duration">${esc(t.duration ?? '')}</span>
         <div class="dk-transport-dashes" aria-hidden="true">
           <span class="dk-transport-dash-line"></span>
-          <span class="dk-transport-icon-wrap">${transportIcon(t.type)}</span>
           <span class="dk-transport-dash-line"></span>
         </div>
       </div>
 
       <div class="dk-transport-destination">
-        <span class="dk-transport-time">${esc(formatTime(t.destination_time))}</span>
         <span class="dk-transport-city">${esc(t.destination_city)}</span>
         <span class="dk-transport-code">${esc(t.destination_code ?? '')}</span>
+        <span class="dk-transport-time">${esc(formatTime(t.destination_time))}</span>
       </div>
     </div>
   `;

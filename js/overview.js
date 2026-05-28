@@ -1692,6 +1692,60 @@ export function initDesktopReminders() {
   });
 }
 
+/* ── Weather widget ───────────────────────────────────────── */
+
+const WEATHER_COORDS = {
+  beijing:   [39.9042, 116.4074],
+  xian:      [34.3416, 108.9398],
+  chengdu:   [30.5728, 104.0668],
+  chongqing: [29.5630, 106.5516],
+  shanghai:  [31.2304, 121.4737],
+};
+
+/* WMO weather code → SVG icon (Lucide-style, 20×20) */
+function weatherIcon(code) {
+  const c = Number(code);
+  // Clear sky
+  if (c === 0) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+  // Partly cloudy
+  if (c >= 1 && c <= 3) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>`;
+  // Fog
+  if (c >= 45 && c <= 48) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M9 21h6"/><path d="M11 23h2"/></svg>`;
+  // Rain
+  if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="8" y1="23" x2="8" y2="23"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="16" y1="19" x2="16" y2="21"/></svg>`;
+  // Snow
+  if (c >= 71 && c <= 77) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><path d="M8 16h.01"/><path d="M8 20h.01"/><path d="M12 18h.01"/><path d="M12 22h.01"/><path d="M16 16h.01"/><path d="M16 20h.01"/></svg>`;
+  // Thunderstorm
+  if (c >= 95 && c <= 99) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M13 10 9 18h5l-1 4 5-8h-5l1-4Z"/></svg>`;
+  // Default: cloud
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>`;
+}
+
+/* Module-level weather widget element (shared between carousel + mode toggle) */
+let weatherWidgetEl = null;
+
+async function fetchAndUpdateWeather(cityKey) {
+  if (!weatherWidgetEl) return;
+  const coords = WEATHER_COORDS[cityKey];
+  if (!coords) return;
+  const [lat, lon] = coords;
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=auto`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('weather fetch failed');
+    const json = await res.json();
+    const temp = Math.round(json?.current?.temperature_2m ?? 0);
+    const code = json?.current?.weathercode ?? 0;
+
+    weatherWidgetEl.querySelector('.dk-weather-icon').innerHTML = weatherIcon(code);
+    weatherWidgetEl.querySelector('.dk-weather-temp').textContent = `${temp}°C`;
+    weatherWidgetEl.classList.add('is-visible');
+  } catch (_) {
+    /* Silent fail — hide widget */
+    weatherWidgetEl.classList.remove('is-visible');
+  }
+}
+
 /* ── Hero carousel ─────────────────────────────────────────── */
 
 const CAROUSEL_CITIES = [
@@ -1826,6 +1880,16 @@ export async function initCarousel() {
   const slides = carouselEl.querySelectorAll('.dk-carousel-slide');
   const dots   = dotsEl.querySelectorAll('.dk-carousel-dot');
 
+  /* ── Weather widget (Travel mode only, bottom-right of hero) ── */
+  weatherWidgetEl = document.createElement('div');
+  weatherWidgetEl.className = 'dk-weather-widget';
+  weatherWidgetEl.setAttribute('aria-hidden', 'true');
+  weatherWidgetEl.innerHTML = `
+    <span class="dk-weather-icon"></span>
+    <span class="dk-weather-temp"></span>
+  `;
+  hero.appendChild(weatherWidgetEl);
+
   function goTo(index) {
     slides[currentIndex].classList.remove('is-active');
     slides[currentIndex].setAttribute('aria-hidden', 'true');
@@ -1836,6 +1900,12 @@ export async function initCarousel() {
     slides[currentIndex].classList.add('is-active');
     slides[currentIndex].setAttribute('aria-hidden', 'false');
     dots[currentIndex].classList.add('is-active');
+
+    /* Fetch weather for the new city if we're in travel mode */
+    const layout = document.querySelector('.desktop-layout');
+    if (layout && layout.classList.contains('mode-travel')) {
+      fetchAndUpdateWeather(cities[currentIndex].key);
+    }
   }
 
   let timer = null;
@@ -1851,6 +1921,12 @@ export async function initCarousel() {
   dots.forEach((dot, i) => {
     dot.addEventListener('click', () => { goTo(i); resetTimer(); });
   });
+
+  /* If already in travel mode on init, fetch weather for current slide */
+  const layout = document.querySelector('.desktop-layout');
+  if (layout && layout.classList.contains('mode-travel')) {
+    fetchAndUpdateWeather(cities[currentIndex].key);
+  }
 
   resetTimer();
 }
@@ -1883,6 +1959,18 @@ export function initDesktopToggle() {
       const isTravel = btn.textContent.trim() === 'Travel';
       layout.classList.toggle('mode-travel', isTravel);
       localStorage.setItem('dashboardMode', isTravel ? 'travel' : 'planning');
+
+      /* Show weather when switching to Travel; hide for Planning */
+      if (weatherWidgetEl) {
+        if (!isTravel) {
+          weatherWidgetEl.classList.remove('is-visible');
+        } else {
+          /* Fetch for whichever carousel slide is currently active */
+          const activeSlide = document.querySelector('.dk-carousel-slide.is-active');
+          const cityKey     = activeSlide?.dataset?.city;
+          if (cityKey) fetchAndUpdateWeather(cityKey);
+        }
+      }
     });
   });
 }
@@ -2876,28 +2964,81 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
   refreshFn(cityKeyStr, dateStr);
 }
 
+/* ── Daily stats cache (for day summary km lookup) ─────────── */
+
+let dailyStatsCache = null; /* { [dateStr]: { steps, km } } */
+
+async function loadDailyStatsCache() {
+  try {
+    const { data, error } = await supabase
+      .from('daily_stats')
+      .select('date, steps, km');
+    if (error) throw error;
+    const map = {};
+    (data ?? []).forEach(r => { map[r.date] = r; });
+    dailyStatsCache = map;
+  } catch (_) {
+    dailyStatsCache = {};
+  }
+}
+
 /* ── Main itinerary init ───────────────────────────────────── */
 
 export function initItinerary() {
-  const listEl    = document.getElementById('dk-itin-city-list');
-  const panelEl   = document.getElementById('dk-itin-panel');
-  const labelEl   = document.getElementById('dk-itin-panel-label');
+  const listEl     = document.getElementById('dk-itin-city-list');
+  const panelEl    = document.getElementById('dk-itin-panel');
+  const labelEl    = document.getElementById('dk-itin-panel-label');
+  const summaryEl  = document.getElementById('dk-itin-panel-summary');
   const timelineEl = document.getElementById('dk-itin-timeline');
 
   if (!listEl || !panelEl) return;
 
   const cities = STATIC_CITIES;
 
+  /* Kick off daily_stats load in the background */
+  loadDailyStatsCache().then(() => {
+    /* If a panel is already showing, refresh its summary */
+    if (summaryEl && summaryEl.dataset.date) {
+      const key     = summaryEl.dataset.cityKey;
+      const dateStr = summaryEl.dataset.date;
+      renderPanelSummary(summaryEl, key, dateStr);
+    }
+  });
+
   /* Track selected city and the active day per city */
   let selectedCityKey  = cityKey(cities[0].city);  /* Beijing on load */
   const activeDates    = {};
   cities.forEach(c => { activeDates[cityKey(c.city)] = c.date_start; });
+
+  function renderPanelSummary(el, key, dateStr) {
+    if (!el) return;
+    /* Count all activities for this day */
+    const groups = (STATIC_ACTIVITIES[key] ?? {})[dateStr] ?? [];
+    const total  = groups.reduce((acc, g) => acc + (g.items?.length ?? 0), 0);
+
+    /* Look up km from cache */
+    const kmVal = dailyStatsCache?.[dateStr]?.km ?? null;
+
+    /* Store for potential cache-ready refresh */
+    el.dataset.date    = dateStr;
+    el.dataset.cityKey = key;
+
+    if (total === 0 && kmVal == null) {
+      el.textContent = '';
+      return;
+    }
+
+    const actLabel = `${total} activit${total === 1 ? 'y' : 'ies'}`;
+    const kmLabel  = kmVal != null ? `<span class="summary-sep">·</span>${kmVal} km` : '';
+    el.innerHTML   = actLabel + kmLabel;
+  }
 
   function updatePanel(key, dateStr) {
     const city = cities.find(c => cityKey(c.city) === key);
     if (!city) return;
     fadePanel(panelEl, () => {
       labelEl.textContent  = itinFormatDateLabel(dateStr, city.city);
+      renderPanelSummary(summaryEl, key, dateStr);
       timelineEl.innerHTML = renderActivityTimeline(key, dateStr);
       initTimelineSortable(timelineEl, key, dateStr);
     });
@@ -2992,6 +3133,7 @@ export function initItinerary() {
   const firstCity = cities[0];
   const firstDate = activeDates[selectedCityKey];
   labelEl.textContent  = itinFormatDateLabel(firstDate, firstCity.city);
+  renderPanelSummary(summaryEl, selectedCityKey, firstDate);
   timelineEl.innerHTML = renderActivityTimeline(selectedCityKey, firstDate);
   initTimelineSortable(timelineEl, selectedCityKey, firstDate);
 

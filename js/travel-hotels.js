@@ -34,6 +34,28 @@ function nightCount(checkIn, checkOut) {
   return Math.round((b - a) / 86400000);
 }
 
+async function getReferenceDate() {
+  try {
+    const { data } = await supabase
+      .from('trip_config')
+      .select('key, value')
+      .in('key', ['demo_mode', 'demo_reference_date']);
+    const get = k => data?.find(r => r.key === k)?.value ?? null;
+    if (get('demo_mode') === 'true' && get('demo_reference_date')) {
+      return get('demo_reference_date');
+    }
+  } catch (_) { /* ignore */ }
+  return new Date().toISOString().split('T')[0];
+}
+
+/* ── Determine badge for a hotel ──────────────────────────── */
+
+function hotelBadge(hotel, today, nextHotelId) {
+  if (today >= hotel.check_in && today <= hotel.check_out) return 'Current stay';
+  if (hotel.id === nextHotelId) return 'Next stay';
+  return null;
+}
+
 /* ── Rating icons (diamonds / stars) ──────────────────────── */
 
 function ratingHTML(hotel) {
@@ -56,13 +78,17 @@ function ratingHTML(hotel) {
 
 /* ── Render single slide ───────────────────────────────────── */
 
-function renderSlide(hotel, index, total) {
+function renderSlide(hotel, index, total, badge) {
   const nights = nightCount(hotel.check_in, hotel.check_out);
   const dateRange = `${formatCheckDate(hotel.check_in)} – ${formatCheckDate(hotel.check_out)} · ${nights} night${nights !== 1 ? 's' : ''}`;
 
   const photoHTML = hotel.photo_url
     ? `<img src="${esc(hotel.photo_url)}" alt="${esc(hotel.name)}" class="dk-hotel-photo-img" loading="lazy">`
     : `<div class="dk-hotel-photo-placeholder" aria-hidden="true"></div>`;
+
+  const badgeHTML = badge
+    ? `<span class="dk-hotel-badge">${esc(badge)}</span>`
+    : '';
 
   const hotelLinkHTML = hotel.hotel_url
     ? `<a href="${esc(hotel.hotel_url)}" target="_blank" rel="noopener noreferrer" class="dk-hotel-link">View hotel →</a>`
@@ -74,7 +100,7 @@ function renderSlide(hotel, index, total) {
 
   return `
     <div class="dk-hotel-slide" role="group" aria-label="${esc(hotel.name)}, ${index + 1} of ${total}" aria-hidden="${index !== 0}">
-      <div class="dk-hotel-photo">${photoHTML}</div>
+      <div class="dk-hotel-photo">${photoHTML}${badgeHTML}</div>
       <div class="dk-hotel-info">
         <span class="dk-hotel-name">${esc(hotel.name)}</span>
         ${ratingHTML(hotel)}
@@ -88,8 +114,15 @@ function renderSlide(hotel, index, total) {
 
 /* ── Render carousel shell + slides ───────────────────────── */
 
-function renderCarousel(hotels) {
-  const slidesHTML = hotels.map((h, i) => renderSlide(h, i, hotels.length)).join('');
+function renderCarousel(hotels, today) {
+  // Determine which hotel is "next upcoming" (first with check_in > today)
+  const nextHotel = hotels.find(h => h.check_in > today) ?? null;
+  const nextHotelId = nextHotel?.id ?? null;
+
+  const slidesHTML = hotels.map((h, i) => {
+    const badge = hotelBadge(h, today, nextHotelId);
+    return renderSlide(h, i, hotels.length, badge);
+  }).join('');
   const dotsHTML   = hotels.length > 1
     ? `<div class="dk-hotel-dots" role="tablist" aria-label="Hotel slides">
         ${hotels.map((_, i) => `
@@ -187,11 +220,13 @@ export async function initTravelHotels() {
   body.innerHTML = `<span class="dk-transport-loading">Loading…</span>`;
 
   let hotels;
+  let today;
   try {
-    hotels = await loadHotels();
+    [hotels, today] = await Promise.all([loadHotels(), getReferenceDate()]);
   } catch (err) {
     console.warn('[travel-hotels] load failed:', err);
     hotels = loadFromStorage('hotels_list') ?? [];
+    today  = new Date().toISOString().split('T')[0];
   }
 
   if (hotels.length === 0) {
@@ -199,6 +234,6 @@ export async function initTravelHotels() {
     return;
   }
 
-  body.innerHTML = renderCarousel(hotels);
+  body.innerHTML = renderCarousel(hotels, today);
   initCarouselControls(card, hotels.length);
 }
