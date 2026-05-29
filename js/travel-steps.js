@@ -1,29 +1,28 @@
 /* ============================================================
-   TRAVEL-STEPS.JS — Daily steps chart (Travel mode only)
-   Data source: Supabase `daily_stats` table (date, steps, km).
-   Falls back to hardcoded steps data if Supabase unavailable.
+   TRAVEL-STEPS.JS — Daily steps + Km walked charts (Travel mode)
+   Two separate cards with horizontal scroll.
+   Data source: Supabase `daily_stats` (date, steps, km).
+   Falls back to hardcoded data if Supabase unavailable.
    ============================================================ */
 
 import { supabase } from './supabase.js';
 
-/* ── Fallback step data (Jun 6 → Jul 5 2026, km null) ──────── */
+/* ── Fallback data: Jun 6–25 only (20 days) ────────────────── */
 
 function getFallbackData() {
   return [
-    /* Jun 6–17: realistic placeholder data (4000–22000 steps) */
-    { date: '2026-06-06', steps: 12800, km: null },
-    { date: '2026-06-07', steps: 18400, km: null },
-    { date: '2026-06-08', steps: 21200, km: null },
-    { date: '2026-06-09', steps: 15600, km: null },
-    { date: '2026-06-10', steps: 9800,  km: null },
-    { date: '2026-06-11', steps: 14300, km: null },
-    { date: '2026-06-12', steps: 7600,  km: null },
-    { date: '2026-06-13', steps: 16900, km: null },
-    { date: '2026-06-14', steps: 19700, km: null },
-    { date: '2026-06-15', steps: 22000, km: null },
-    { date: '2026-06-16', steps: 17500, km: null },
-    { date: '2026-06-17', steps: 13200, km: null },
-    /* Jun 18–Jul 5: no data yet — line stops at Jun 17 */
+    { date: '2026-06-06', steps: 12800, km: 10.2 },
+    { date: '2026-06-07', steps: 18400, km: 14.7 },
+    { date: '2026-06-08', steps: 21200, km: 17.0 },
+    { date: '2026-06-09', steps: 15600, km: 12.5 },
+    { date: '2026-06-10', steps: 9800,  km: 7.8  },
+    { date: '2026-06-11', steps: 14300, km: 11.4 },
+    { date: '2026-06-12', steps: 7600,  km: 6.1  },
+    { date: '2026-06-13', steps: 16900, km: 13.5 },
+    { date: '2026-06-14', steps: 19700, km: 15.8 },
+    { date: '2026-06-15', steps: 22000, km: 17.6 },
+    { date: '2026-06-16', steps: 17500, km: 14.0 },
+    { date: '2026-06-17', steps: 13200, km: 10.6 },
     { date: '2026-06-18', steps: null,  km: null },
     { date: '2026-06-19', steps: null,  km: null },
     { date: '2026-06-20', steps: null,  km: null },
@@ -32,42 +31,31 @@ function getFallbackData() {
     { date: '2026-06-23', steps: null,  km: null },
     { date: '2026-06-24', steps: null,  km: null },
     { date: '2026-06-25', steps: null,  km: null },
-    { date: '2026-06-26', steps: null,  km: null },
-    { date: '2026-06-27', steps: null,  km: null },
-    { date: '2026-06-28', steps: null,  km: null },
-    { date: '2026-06-29', steps: null,  km: null },
-    { date: '2026-06-30', steps: null,  km: null },
-    { date: '2026-07-01', steps: null,  km: null },
-    { date: '2026-07-02', steps: null,  km: null },
-    { date: '2026-07-03', steps: null,  km: null },
-    { date: '2026-07-04', steps: null,  km: null },
-    { date: '2026-07-05', steps: null,  km: null },
   ];
 }
 
-/* ── Load from Supabase ────────────────────────────────────── */
+/* ── Load from Supabase (Jun 6–25 window only) ─────────────── */
 
 async function loadDailyStats() {
   const { data, error } = await supabase
     .from('daily_stats')
     .select('date, steps, km')
+    .gte('date', '2026-06-06')
+    .lte('date', '2026-06-25')
     .order('date', { ascending: true });
   if (error) throw error;
 
-  // Merge Supabase rows into the full 30-day fallback skeleton.
-  // Dates where the fallback says null (Jun 18+) stay null — Supabase rows
-  // for future dates don't override, keeping the "no data yet" visual intent.
   const rowMap = {};
   (data ?? []).forEach(r => { rowMap[r.date] = r; });
 
   return getFallbackData().map(d => ({
     date:  d.date,
     steps: d.steps != null ? (rowMap[d.date]?.steps ?? d.steps) : null,
-    km:    d.steps != null ? (rowMap[d.date]?.km    ?? null)     : null,
+    km:    rowMap[d.date]?.km ?? d.km ?? null,
   }));
 }
 
-/* ── Get demo reference date ──────────────────────────────── */
+/* ── Demo reference date ───────────────────────────────────── */
 
 async function getReferenceDate() {
   try {
@@ -83,7 +71,7 @@ async function getReferenceDate() {
   return new Date().toISOString().split('T')[0];
 }
 
-/* ── Date formatter: "Sat, Jun 6" ─────────────────────────── */
+/* ── Date formatter for tooltip: "Sat, Jun 6" ─────────────── */
 
 function fmtDate(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -93,95 +81,67 @@ function fmtDate(dateStr) {
   return `${weekday}, ${month} ${d}`;
 }
 
-/* ── Legend ────────────────────────────────────────────────── */
+/* ── Draw a single-metric chart ────────────────────────────── */
 
-function renderLegend(legendEl, showKm) {
-  legendEl.innerHTML = `
-    <span class="dk-steps-legend-item">
-      <span class="dk-steps-legend-dot" style="background:#ee6146"></span>
-      Steps
-    </span>
-    ${showKm ? `
-    <span class="dk-steps-legend-item">
-      <span class="dk-steps-legend-dot" style="background:#dfbc5e"></span>
-      Km walked
-    </span>` : ''}
-  `;
-}
+function drawSingleChart(canvas, data, metric, hexColor, todayStr) {
+  const dpr = window.devicePixelRatio || 1;
 
-/* ── Draw chart ────────────────────────────────────────────── */
+  const PAD_L = 44;  /* left: Y-axis labels */
+  const PAD_T = 20;  /* top: "Today" label */
+  const PAD_R = 16;  /* right */
+  const PAD_B = 32;  /* bottom: X-axis labels */
 
-function drawChart(canvas, data, todayStr) {
-  const dpr  = window.devicePixelRatio || 1;
+  const N         = data.length;       /* 20 days */
+  const DAY_PX    = 56;                /* fixed pixels per day → 1120px total */
+  const FIXED_W   = N * DAY_PX;
+  const cssH      = canvas.parentElement.clientHeight || 200;
 
-  const PAD_L  = 40;   // left: steps Y-axis labels
-  const PAD_T  = 20;
-  const PAD_B  = 32;
-
-  const hasKm   = data.some(d => d.km != null);
-  const PAD_R   = hasKm ? 40 : 16;  // right: km Y-axis labels if shown
-
-  // Measure container width
-  const container = canvas.parentElement;
-  const cssW = container.clientWidth || 800;
-  const cssH = container.clientHeight || 180;
-
-  canvas.style.width  = cssW + 'px';
+  canvas.style.width  = FIXED_W + 'px';
   canvas.style.height = cssH + 'px';
-  canvas.width        = cssW * dpr;
+  canvas.width        = FIXED_W * dpr;
   canvas.height       = cssH * dpr;
 
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
 
-  const chartW  = cssW - PAD_L - PAD_R;
-  const chartH  = cssH - PAD_T - PAD_B;
-  const DAY_W   = chartW / data.length;
+  const chartW = FIXED_W - PAD_L - PAD_R;
+  const chartH = cssH - PAD_T - PAD_B;
+  const DAY_W  = chartW / N;
 
-  const maxSteps  = 25000;
-  const yTicksSteps = [0, 5000, 10000, 15000, 20000];
-  const maxKm       = 20;
-  const yTicksKm    = [0, 5, 10, 15, 20];
-  const TERRACOTTA  = '#ee6146';
-  const WARM_GOLD   = '#dfbc5e';
-  const BORDER      = '#E8E8E8';
-  const TEXT_SEC    = '#6B6B80'; /* #6B6B80 on white = ~4.6:1 — passes WCAG AA */
-  /* 11px: minimum allowed exception for chart axis labels under space constraint (30 labels across full width) */
-  const FONT        = '11px "Plus Jakarta Sans", system-ui, sans-serif';
+  const isSteps = metric === 'steps';
+  const maxVal  = isSteps ? 25000 : 20;
+  const yTicks  = isSteps ? [0, 5000, 10000, 15000, 20000] : [0, 5, 10, 15, 20];
 
-  /* ── Grid lines (from steps ticks) ── */
+  const BORDER   = '#E8E8E8';
+  const TEXT_SEC = '#6B6B80'; /* #6B6B80 on white ≈ 4.6:1 — WCAG AA */
+  /* 12px axis labels — sufficient at 56px per column */
+  const FONT = '12px "Plus Jakarta Sans", system-ui, sans-serif';
+
+  /* ── Grid lines ── */
   ctx.strokeStyle = BORDER;
   ctx.lineWidth   = 1;
-  yTicksSteps.forEach(tick => {
-    const y = PAD_T + chartH - (tick / maxSteps) * chartH;
+  yTicks.forEach(tick => {
+    const y = PAD_T + chartH - (tick / maxVal) * chartH;
     ctx.beginPath();
     ctx.moveTo(PAD_L, y);
     ctx.lineTo(PAD_L + chartW, y);
     ctx.stroke();
   });
 
-  /* ── Left Y-axis labels (steps) ── */
+  /* ── Y-axis labels (left) ── */
   ctx.fillStyle    = TEXT_SEC;
   ctx.font         = FONT;
   ctx.textAlign    = 'right';
   ctx.textBaseline = 'middle';
-  yTicksSteps.forEach(tick => {
-    const y     = PAD_T + chartH - (tick / maxSteps) * chartH;
-    const label = tick === 0 ? '0' : (tick / 1000) + 'k';
+  yTicks.forEach(tick => {
+    const y     = PAD_T + chartH - (tick / maxVal) * chartH;
+    const label = isSteps
+      ? (tick === 0 ? '0' : (tick / 1000) + 'k')
+      : String(tick);
     ctx.fillText(label, PAD_L - 6, y);
   });
 
-  /* ── Right Y-axis labels (km) ── */
-  if (hasKm) {
-    ctx.textAlign = 'left';
-    yTicksKm.forEach(tick => {
-      const y     = PAD_T + chartH - (tick / maxKm) * chartH;
-      const label = String(tick);
-      ctx.fillText(label, PAD_L + chartW + 6, y);
-    });
-  }
-
-  /* ── X-axis labels (all 30 days — "Sa 6", "Su 7" format) ── */
+  /* ── X-axis labels: "Sa 6", "Su 7" etc., all 20 days ── */
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'top';
   data.forEach((d, i) => {
@@ -199,7 +159,6 @@ function drawChart(canvas, data, todayStr) {
   if (todayIdx >= 0) {
     const todayX = PAD_L + todayIdx * DAY_W + DAY_W / 2;
 
-    // Dashed vertical line
     ctx.save();
     ctx.setLineDash([4, 4]);
     ctx.strokeStyle = BORDER;
@@ -211,7 +170,6 @@ function drawChart(canvas, data, todayStr) {
     ctx.setLineDash([]);
     ctx.restore();
 
-    // "Today" label above line
     ctx.fillStyle    = TEXT_SEC;
     ctx.font         = '11px "Plus Jakarta Sans", system-ui, sans-serif';
     ctx.textAlign    = 'center';
@@ -219,20 +177,13 @@ function drawChart(canvas, data, todayStr) {
     ctx.fillText('Today', todayX, PAD_T - 2);
   }
 
-  /* ── Build point coords — null steps produce null y (no point plotted) ── */
-  const ptsSteps = data.map((d, i) => ({
+  /* ── Build point coords ── */
+  const pts = data.map((d, i) => ({
     x: PAD_L + i * DAY_W + DAY_W / 2,
-    y: d.steps != null ? PAD_T + chartH - (d.steps / maxSteps) * chartH : null,
+    y: d[metric] != null ? PAD_T + chartH - (d[metric] / maxVal) * chartH : null,
   }));
 
-  const ptsKm = hasKm ? data.map((d, i) => ({
-    x: PAD_L + i * DAY_W + DAY_W / 2,
-    y: d.km != null
-      ? PAD_T + chartH - (d.km / maxKm) * chartH
-      : null,
-  })) : null;
-
-  /* ── Helper: hex color → rgba string ── */
+  /* ── Helper: hex → rgba ── */
   function hexRgba(hex, alpha) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -240,18 +191,13 @@ function drawChart(canvas, data, todayStr) {
     return `rgba(${r},${g},${b},${alpha})`;
   }
 
-  /* ── Helper: draw smooth filled area + line ── */
-  function drawLine(pts, hexColor) {
-    // Filter to only non-null points (km may have gaps)
-    const validPts = pts.filter(p => p.y != null);
-    if (validPts.length < 2) return;
-
-    // Gradient fill (0.20 opacity at top → 0 at bottom)
+  /* ── Filled area + smooth line ── */
+  const validPts = pts.filter(p => p.y != null);
+  if (validPts.length >= 2) {
     const grad = ctx.createLinearGradient(0, PAD_T, 0, PAD_T + chartH);
-    grad.addColorStop(0, hexRgba(hexColor, 0.20));
+    grad.addColorStop(0, hexRgba(hexColor, 0.15));
     grad.addColorStop(1, hexRgba(hexColor, 0));
 
-    // Fill path
     ctx.beginPath();
     ctx.moveTo(validPts[0].x, PAD_T + chartH);
     validPts.forEach(p => ctx.lineTo(p.x, p.y));
@@ -260,7 +206,6 @@ function drawChart(canvas, data, todayStr) {
     ctx.fillStyle = grad;
     ctx.fill();
 
-    // Smooth line
     ctx.beginPath();
     ctx.moveTo(validPts[0].x, validPts[0].y);
     for (let i = 1; i < validPts.length - 1; i++) {
@@ -274,37 +219,21 @@ function drawChart(canvas, data, todayStr) {
     ctx.stroke();
   }
 
-  // Draw km line first (behind steps)
-  if (hasKm && ptsKm) {
-    drawLine(ptsKm, WARM_GOLD);
-  }
-  // Draw steps line on top
-  drawLine(ptsSteps, TERRACOTTA);
-
-  /* ── Today active dots ── */
-  if (todayIdx >= 0) {
-    const sp = ptsSteps[todayIdx];
+  /* ── Today active dot ── */
+  if (todayIdx >= 0 && pts[todayIdx].y != null) {
     ctx.beginPath();
-    ctx.arc(sp.x, sp.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = TERRACOTTA;
+    ctx.arc(pts[todayIdx].x, pts[todayIdx].y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = hexColor;
     ctx.fill();
-
-    if (hasKm && ptsKm && ptsKm[todayIdx].y != null) {
-      const kp = ptsKm[todayIdx];
-      ctx.beginPath();
-      ctx.arc(kp.x, kp.y, 6, 0, Math.PI * 2);
-      ctx.fillStyle = WARM_GOLD;
-      ctx.fill();
-    }
   }
 
-  return { ptsSteps, ptsKm, DAY_W };
+  return pts;
 }
 
 /* ── Tooltip ───────────────────────────────────────────────── */
 
-function attachTooltip(canvas, data, ptsSteps, ptsKm) {
-  const tooltip = canvas.parentElement.querySelector('.steps-tooltip');
+function attachTooltip(canvas, scrollEl, data, pts, metric, unitLabel) {
+  const tooltip = scrollEl.querySelector(metric === 'steps' ? '.steps-tooltip' : '.km-tooltip');
   if (!tooltip) return;
 
   function onMove(e) {
@@ -314,26 +243,27 @@ function attachTooltip(canvas, data, ptsSteps, ptsKm) {
 
     let nearest = 0;
     let minDist  = Infinity;
-    ptsSteps.forEach((p, i) => {
+    pts.forEach((p, i) => {
       const dist = Math.abs(p.x - mx);
       if (dist < minDist) { minDist = dist; nearest = i; }
     });
 
-    if (minDist > 40) { tooltip.style.opacity = '0'; return; }
+    if (minDist > 40 || pts[nearest].y == null) { tooltip.style.opacity = '0'; return; }
 
     const d   = data[nearest];
-    const p   = ptsSteps[nearest];
-    const containerRect = canvas.parentElement.getBoundingClientRect();
+    const p   = pts[nearest];
+    const containerRect = scrollEl.getBoundingClientRect();
     const left = rect.left - containerRect.left + p.x;
     const top  = rect.top  - containerRect.top  + p.y - 44;
 
-    const stepsLabel = (d.steps ?? 0).toLocaleString('en-US') + ' steps';
-    const kmLabel    = d.km != null ? ` · ${d.km} km` : '';
+    const val = metric === 'steps'
+      ? (d.steps ?? 0).toLocaleString('en-US') + ' steps'
+      : (d.km ?? 0) + ' km';
 
     tooltip.style.left    = left + 'px';
     tooltip.style.top     = top  + 'px';
     tooltip.style.opacity = '1';
-    tooltip.textContent   = `${fmtDate(d.date)} · ${stepsLabel}${kmLabel}`;
+    tooltip.textContent   = `${fmtDate(d.date)} · ${val}`;
   }
 
   function onLeave() { tooltip.style.opacity = '0'; }
@@ -344,11 +274,11 @@ function attachTooltip(canvas, data, ptsSteps, ptsKm) {
   canvas.addEventListener('touchend', onLeave);
 }
 
-/* ── Hover dots overlay ────────────────────────────────────── */
+/* ── Hover dot overlay ─────────────────────────────────────── */
 
-function attachHoverDots(canvas, ptsSteps, ptsKm) {
-  const dotSteps = canvas.parentElement.querySelector('.steps-dot');
-  const dotKm    = canvas.parentElement.querySelector('.steps-dot-km');
+function attachHoverDot(canvas, scrollEl, pts, dotClass) {
+  const dot = scrollEl.querySelector('.' + dotClass);
+  if (!dot) return;
 
   function onMove(e) {
     const rect    = canvas.getBoundingClientRect();
@@ -357,39 +287,21 @@ function attachHoverDots(canvas, ptsSteps, ptsKm) {
 
     let nearest = 0;
     let minDist  = Infinity;
-    ptsSteps.forEach((p, i) => {
+    pts.forEach((p, i) => {
       const dist = Math.abs(p.x - mx);
       if (dist < minDist) { minDist = dist; nearest = i; }
     });
 
-    if (minDist > 40) {
-      if (dotSteps) dotSteps.style.opacity = '0';
-      if (dotKm)    dotKm.style.opacity    = '0';
-      return;
-    }
+    if (minDist > 40 || pts[nearest].y == null) { dot.style.opacity = '0'; return; }
 
-    const containerRect = canvas.parentElement.getBoundingClientRect();
-    const sp = ptsSteps[nearest];
-    if (dotSteps) {
-      dotSteps.style.left    = (rect.left - containerRect.left + sp.x - 6) + 'px';
-      dotSteps.style.top     = (rect.top  - containerRect.top  + sp.y - 6) + 'px';
-      dotSteps.style.opacity = '1';
-    }
-
-    if (dotKm && ptsKm && ptsKm[nearest]?.y != null) {
-      const kp = ptsKm[nearest];
-      dotKm.style.left    = (rect.left - containerRect.left + kp.x - 6) + 'px';
-      dotKm.style.top     = (rect.top  - containerRect.top  + kp.y - 6) + 'px';
-      dotKm.style.opacity = '1';
-    } else if (dotKm) {
-      dotKm.style.opacity = '0';
-    }
+    const containerRect = scrollEl.getBoundingClientRect();
+    const p = pts[nearest];
+    dot.style.left    = (rect.left - containerRect.left + p.x - 6) + 'px';
+    dot.style.top     = (rect.top  - containerRect.top  + p.y - 6) + 'px';
+    dot.style.opacity = '1';
   }
 
-  function onLeave() {
-    if (dotSteps) dotSteps.style.opacity = '0';
-    if (dotKm)    dotKm.style.opacity    = '0';
-  }
+  function onLeave() { dot.style.opacity = '0'; }
 
   canvas.addEventListener('mousemove', onMove);
   canvas.addEventListener('touchmove', onMove, { passive: true });
@@ -397,62 +309,104 @@ function attachHoverDots(canvas, ptsSteps, ptsKm) {
   canvas.addEventListener('touchend', onLeave);
 }
 
+/* ── Scroll indicators ─────────────────────────────────────── */
+
+function attachScrollIndicators(scrollEl, card) {
+  const fade  = card.querySelector('.dk-scroll-fade');
+  const arrow = card.querySelector('.dk-scroll-arrow');
+  if (!fade && !arrow) return;
+
+  function update() {
+    const atEnd = scrollEl.scrollLeft + scrollEl.clientWidth >= scrollEl.scrollWidth - 2;
+    if (fade)  fade.classList.toggle('is-hidden', atEnd);
+    if (arrow) arrow.classList.toggle('is-hidden', atEnd);
+  }
+
+  scrollEl.addEventListener('scroll', update, { passive: true });
+  setTimeout(update, 0);
+}
+
+/* ── Height sync to calendar card ─────────────────────────── */
+
+function syncHeightWithCalendar(cards) {
+  const calCard = document.querySelector('.dk-calendar.dk-card');
+  if (!calCard) return;
+  const calH = calCard.getBoundingClientRect().height;
+  if (calH > 0) {
+    cards.forEach(c => {
+      if (c) {
+        c.style.minHeight = calH + 'px';
+        c.style.height    = calH + 'px';
+      }
+    });
+  }
+}
+
+/* ── Render one chart card ─────────────────────────────────── */
+
+function renderChart(canvasId, scrollClass, metric, hexColor, data, todayStr) {
+  const canvas    = document.getElementById(canvasId);
+  const scrollEl  = document.querySelector('.' + scrollClass);
+  const card      = scrollEl?.closest('.dk-card');
+  if (!canvas || !scrollEl || !card) return;
+
+  function render() {
+    const pts = drawSingleChart(canvas, data, metric, hexColor, todayStr);
+    attachTooltip(canvas, scrollEl, data, pts, metric);
+    attachHoverDot(canvas, scrollEl, pts, metric === 'steps' ? 'steps-dot' : 'km-dot');
+  }
+
+  setTimeout(render, 0);
+  attachScrollIndicators(scrollEl, card);
+
+  return card;
+}
+
 /* ── Public init ───────────────────────────────────────────── */
 
 export async function initTravelSteps() {
-  const canvas = document.getElementById('steps-canvas');
-  if (!canvas) return;
+  const stepsCanvas = document.getElementById('steps-canvas');
+  const kmCanvas    = document.getElementById('km-canvas');
+  if (!stepsCanvas && !kmCanvas) return;
 
-  const legendEl = document.getElementById('dk-steps-legend');
-
-  // Load data + today reference in parallel
   let data;
   let today;
   try {
-    [data, today] = await Promise.all([
-      loadDailyStats(),
-      getReferenceDate(),
-    ]);
+    [data, today] = await Promise.all([loadDailyStats(), getReferenceDate()]);
   } catch (_) {
     data  = getFallbackData();
     today = new Date().toISOString().split('T')[0];
   }
 
-  const hasKm = data.some(d => d.km != null);
+  const stepsCard = renderChart('steps-canvas', 'dk-steps-scroll', 'steps', '#ee6146', data, today);
+  const kmCard    = renderChart('km-canvas',    'dk-km-scroll',    'km',    '#dfbc5e', data, today);
 
-  // Render legend
-  if (legendEl) renderLegend(legendEl, hasKm);
-
-  function render() {
-    const { ptsSteps, ptsKm } = drawChart(canvas, data, today);
-    attachTooltip(canvas, data, ptsSteps, ptsKm);
-    attachHoverDots(canvas, ptsSteps, ptsKm);
-  }
-
-  // Defer first draw until element has layout
-  requestAnimationFrame(() => {
-    render();
-  });
-
-  // Sync steps card height to match calendar card
-  function syncHeightWithCalendar() {
-    const stepsCard = document.querySelector('.dk-steps.dk-card');
-    const calCard   = document.querySelector('.dk-calendar.dk-card');
-    if (!stepsCard || !calCard) return;
-    const calH = calCard.getBoundingClientRect().height;
-    if (calH > 0) {
-      stepsCard.style.minHeight = calH + 'px';
-      stepsCard.style.height    = calH + 'px';
+  function syncAndRedraw() {
+    syncHeightWithCalendar([stepsCard, kmCard]);
+    /* Redraw after height change so canvas fills correctly */
+    if (stepsCanvas) {
+      const pts = drawSingleChart(stepsCanvas, data, 'steps', '#ee6146', today);
+      const sScroll = document.querySelector('.dk-steps-scroll');
+      if (sScroll) {
+        attachTooltip(stepsCanvas, sScroll, data, pts, 'steps');
+        attachHoverDot(stepsCanvas, sScroll, pts, 'steps-dot');
+      }
+    }
+    if (kmCanvas) {
+      const pts = drawSingleChart(kmCanvas, data, 'km', '#dfbc5e', today);
+      const kScroll = document.querySelector('.dk-km-scroll');
+      if (kScroll) {
+        attachTooltip(kmCanvas, kScroll, data, pts, 'km');
+        attachHoverDot(kmCanvas, kScroll, pts, 'km-dot');
+      }
     }
   }
 
-  // First sync after initial render, then on every resize
-  requestAnimationFrame(syncHeightWithCalendar);
+  setTimeout(syncAndRedraw, 0);
 
-  // Redraw on resize
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { render(); syncHeightWithCalendar(); }, 150);
+    resizeTimer = setTimeout(syncAndRedraw, 150);
   });
 }

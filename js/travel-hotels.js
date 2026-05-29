@@ -62,12 +62,12 @@ function ratingHTML(hotel) {
   const count = hotel.diamonds ?? hotel.stars ?? 0;
   if (count === 0) return '';
   const icon = hotel.diamonds != null
-    ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="var(--terracotta)"
-        stroke="var(--terracotta)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    ? `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#dfbc5e"
+        stroke="#dfbc5e" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.57a2.41 2.41 0 0 0 3.41 0l7.57-7.57a2.41 2.41 0 0 0 0-3.41L13.7 2.71a2.41 2.41 0 0 0-3.41 0z"/>
       </svg>`
-    : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="var(--terracotta)"
-        stroke="var(--terracotta)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    : `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#dfbc5e"
+        stroke="#dfbc5e" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
       </svg>`;
 
@@ -102,8 +102,10 @@ function renderSlide(hotel, index, total, badge) {
     <div class="dk-hotel-slide" role="group" aria-label="${esc(hotel.name)}, ${index + 1} of ${total}" aria-hidden="${index !== 0}">
       <div class="dk-hotel-photo">${photoHTML}${badgeHTML}</div>
       <div class="dk-hotel-info">
-        <span class="dk-hotel-name">${esc(hotel.name)}</span>
-        ${ratingHTML(hotel)}
+        <div class="dk-hotel-name-row">
+          <span class="dk-hotel-name">${esc(hotel.name)}</span>
+          ${ratingHTML(hotel)}
+        </div>
         <span class="dk-hotel-dates">${esc(dateRange)}</span>
         <span class="dk-hotel-address">${esc(hotel.address)}</span>
         ${(hotelLinkHTML || bookingLinkHTML) ? `<div class="dk-hotel-links">${hotelLinkHTML}${bookingLinkHTML}</div>` : ''}

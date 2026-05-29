@@ -149,19 +149,42 @@
           <button class="dk-view-all" id="dk-packing-see-all">View all →</button>
         </section>
 
-        <!-- Travel mode: Daily Steps (col 1, row 2) -->
-        <section class="dk-card dk-steps" aria-labelledby="dk-steps-title">
-          <div class="dk-card-header">
-            <h2 class="dk-card-title" id="dk-steps-title">Daily steps</h2>
-          </div>
-          <div class="dk-steps-scroll" role="img" aria-label="Daily step count chart">
-            <canvas id="steps-canvas"></canvas>
-            <div class="steps-tooltip" aria-hidden="true"></div>
-            <div class="steps-dot" aria-hidden="true"></div>
-            <div class="steps-dot-km" aria-hidden="true"></div>
-          </div>
-          <div class="dk-steps-legend" id="dk-steps-legend" aria-hidden="true"></div>
-        </section>
+        <!-- Travel mode: Daily Steps + Km walked (row 3, two equal cards) -->
+        <div class="dk-steps-km-row">
+          <section class="dk-card dk-steps" aria-labelledby="dk-steps-title">
+            <div class="dk-card-header">
+              <h2 class="dk-card-title" id="dk-steps-title">Daily steps</h2>
+            </div>
+            <div class="dk-chart-wrap">
+              <div class="dk-steps-scroll" role="img" aria-label="Daily step count chart">
+                <canvas id="steps-canvas"></canvas>
+                <div class="steps-tooltip" aria-hidden="true"></div>
+                <div class="steps-dot" aria-hidden="true"></div>
+              </div>
+              <div class="dk-scroll-fade" aria-hidden="true"></div>
+              <div class="dk-scroll-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </section>
+
+          <section class="dk-card dk-km" aria-labelledby="dk-km-title">
+            <div class="dk-card-header">
+              <h2 class="dk-card-title" id="dk-km-title">Km walked</h2>
+            </div>
+            <div class="dk-chart-wrap">
+              <div class="dk-km-scroll" role="img" aria-label="Kilometres walked chart">
+                <canvas id="km-canvas"></canvas>
+                <div class="km-tooltip" aria-hidden="true"></div>
+                <div class="km-dot" aria-hidden="true"></div>
+              </div>
+              <div class="dk-scroll-fade" aria-hidden="true"></div>
+              <div class="dk-scroll-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </section>
+        </div>
 
         <!-- Travel mode: Next Transport (col 3, row 2) -->
         <section class="dk-card dk-transport" aria-labelledby="dk-transport-title">

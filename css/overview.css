@@ -1883,15 +1883,17 @@
      Row 3: Daily Steps (full width, all 3 cols)
      Rows 4–5: Itinerary (cols 1–2) | Calendar (col 3, row 4) | Next Tour (col 3, row 5)
      Bookings + Packing: hidden                                ── */
-  .mode-travel .dk-bookings  { display: none; }
-  .mode-travel .dk-packing   { display: none; }
-  .mode-travel .dk-hotels    { grid-column: 1; grid-row: 2; display: flex; }
-  .mode-travel .dk-transport { grid-column: 2; grid-row: 2; display: flex; }
-  .mode-travel .dk-reminders { grid-column: 3; grid-row: 2; }
-  .mode-travel .dk-steps     { grid-column: 1 / -1; grid-row: 3; display: flex; }
-  .mode-travel .dk-itinerary { grid-column: 1 / 3; grid-row: 4 / 6; }
-  .mode-travel .dk-calendar  { grid-column: 3; grid-row: 4; }
-  .mode-travel .dk-next-up   { grid-column: 3; grid-row: 5; }
+  .mode-travel .dk-bookings      { display: none; }
+  .mode-travel .dk-packing       { display: none; }
+  .mode-travel .dk-hotels        { grid-column: 1; grid-row: 2; display: flex; }
+  .mode-travel .dk-transport     { grid-column: 2; grid-row: 2; display: flex; }
+  .mode-travel .dk-reminders     { grid-column: 3; grid-row: 2; }
+  .mode-travel .dk-steps-km-row  { grid-column: 1 / -1; grid-row: 3; display: flex; gap: 16px; }
+  .mode-travel .dk-steps         { display: flex; }
+  .mode-travel .dk-km            { display: flex; }
+  .mode-travel .dk-itinerary     { grid-column: 1 / 3; grid-row: 4 / 6; }
+  .mode-travel .dk-calendar      { grid-column: 3; grid-row: 4; }
+  .mode-travel .dk-next-up       { grid-column: 3; grid-row: 5; }
 
 
   /* ── Unified Itinerary component ────────────────────────── */
