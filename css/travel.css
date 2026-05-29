@@ -136,7 +136,7 @@
     opacity: 0;
   }
 
-  /* Chevron arrow indicator — same style as card header "+" button */
+  /* Chevron arrow — clickable, swaps direction based on scroll position */
   .dk-scroll-arrow {
     position: absolute;
     right: 12px;
@@ -151,13 +151,61 @@
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
-    pointer-events: none;
-    transition: opacity 200ms ease;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: opacity 200ms ease, background 0.15s ease;
     z-index: 6;
+  }
+
+  .dk-scroll-arrow:hover {
+    background: #E0E0E0;
+    color: var(--text-primary);
   }
 
   .dk-scroll-arrow.is-hidden {
     opacity: 0;
+    pointer-events: none;
+  }
+
+  /* When showing left arrow (at end of scroll) */
+  .dk-scroll-arrow.is-left {
+    right: auto;
+    left: 12px;
+  }
+
+  /* ── Y-axis + chart row wrapper ─────────────────────────────── */
+
+  .dk-chart-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+  }
+
+  /* Fixed Y-axis label column — outside scroll container */
+  .dk-yaxis {
+    width: 44px;
+    flex-shrink: 0;
+    position: relative;
+    /* Height matched to scroll container via JS */
+  }
+
+  .dk-yaxis-label {
+    position: absolute;
+    right: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--font-family, system-ui);
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  /* Scroll container inside the row (no left padding for Y axis — it's separate) */
+  .dk-chart-row .dk-steps-scroll,
+  .dk-chart-row .dk-km-scroll {
+    flex: 1;
+    min-width: 0;
   }
 
   /* ─────────────────────────────────────────────────────────── */
@@ -198,39 +246,51 @@
   }
 
   .dk-transport-badge {
-    font-size: 10px;
-    font-weight: 600;
-    color: var(--text-secondary);
-    background: #F5F4EF;
-    border-radius: 999px;
-    padding: 4px 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    flex-shrink: 0;
+    display: none;
   }
 
-  /* Transport number: 14px, 600, text-primary */
-  .dk-transport-number {
-    font-size: 14px;
-    font-weight: 600;
+  /* Line 1: provider · number */
+  .dk-transport-meta-line1 {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .dk-transport-provider-name {
+    font-size: 13px;
+    font-weight: 500;
     color: var(--text-primary);
+    white-space: nowrap;
   }
 
-  /* Line 2: provider · date (4px below line 1) */
+  .dk-transport-meta-sep {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    margin: 0 6px;
+  }
+
+  .dk-transport-number {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  /* Line 2: calendar icon + date */
   .dk-transport-meta-line2 {
     display: flex;
     align-items: center;
     gap: 4px;
     margin-top: 4px;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-secondary);
     flex-wrap: nowrap;
   }
 
-  .dk-transport-provider-name,
-  .dk-transport-meta-sep,
   .dk-transport-meta-date {
-    font-size: 13px;
+    font-size: 12px;
     color: var(--text-secondary);
     white-space: nowrap;
   }
@@ -259,7 +319,7 @@
   }
 
   .dk-transport-city-v {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--text-primary);
     text-align: center;
@@ -275,7 +335,7 @@
   }
 
   .dk-transport-time-v {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
     text-align: center;
@@ -283,20 +343,24 @@
     line-height: 1.2;
   }
 
-  /* Connection row: dashes flanking the icon + duration */
+  /* Connection column: vertical dashed segments above and below the icon */
   .dk-transport-connection {
     display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 8px;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
   }
 
-  /* 40px dashed lines — margin-top aligns them with the 20px icon center */
+  /* Vertical dashed segment — one above icon, one below */
+  .dk-transport-v-seg {
+    width: 0;
+    height: 20px;
+    border-left: 1px dashed var(--border);
+  }
+
+  /* Hide the old horizontal dash (kept in DOM for safety, hidden visually) */
   .dk-transport-dash-h {
-    width: 40px;
-    flex-shrink: 0;
-    border-top: 1px dashed var(--border);
-    margin-top: 10px; /* 20px icon / 2 = 10px → aligns dash with icon vertical center */
+    display: none;
   }
 
   .dk-transport-icon-center {
@@ -336,14 +400,9 @@
     color: var(--text-secondary);
   }
 
-  /* Secondary info row — centered, 16px above card edge (from padding-bottom: 16px on card) */
+  /* Secondary info row — removed per design spec */
   .dk-transport-secondary-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    font-size: 13px;
-    color: var(--text-secondary);
+    display: none;
   }
 
   /* ─────────────────────────────────────────────────────────── */
@@ -397,6 +456,8 @@
   .dk-hotel-prev:disabled,
   .dk-hotel-next:disabled {
     cursor: default;
+    opacity: 0.35;
+    pointer-events: none;
   }
 
   /* Viewport clips slides */
@@ -422,6 +483,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-height: 0;
   }
 
   .dk-hotel-photo {
@@ -469,8 +531,9 @@
   .dk-hotel-info {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* increased from 4px — each element group has 8px breathing room */
-    padding: 0 2px 32px; /* padding-bottom: 32px matches Reminders card bottom padding */
+    flex: 1;
+    gap: 8px;
+    padding: 12px 0 0;
   }
 
   /* Name and diamonds on same line, 16px gap */
@@ -480,10 +543,10 @@
     gap: 16px;
   }
 
-  /* Hotel name: increased 4px from 16px → 20px */
+  /* Hotel name: strictly smaller than section title (20px) */
   .dk-hotel-name {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 700;
     color: var(--text-primary);
     line-height: 1.25;
   }
@@ -497,17 +560,17 @@
   }
 
   .dk-hotel-dates {
-    font-size: 13px; /* increased from 12px */
+    font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.4;
+    white-space: normal;
   }
 
   .dk-hotel-address {
-    font-size: 13px; /* increased from 12px */
+    font-size: 14px;
     color: var(--text-secondary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow: visible;
     line-height: 1.4;
   }
 
@@ -516,6 +579,8 @@
     align-items: center;
     gap: 24px;
     flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 20px;
   }
 
   /* Matches .dk-view-all: 16px, 500, action colour.

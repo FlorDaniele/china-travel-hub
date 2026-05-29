@@ -94,23 +94,21 @@ function secondaryNote(t) {
 }
 
 function renderTransport(t) {
-  const typeBadge = t.type === 'flight' ? 'FLIGHT' : 'TRAIN';
-
-  // Info icon (Lucide) for secondary row
-  const infoIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+  const calIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
   </svg>`;
 
   return `
     <div class="dk-transport-meta">
       <div class="dk-transport-meta-line1">
-        <span class="dk-transport-badge">${esc(typeBadge)}</span>
+        <span class="dk-transport-provider-name">${esc(t.provider ?? '')}</span>
+        <span class="dk-transport-meta-sep" aria-hidden="true">·</span>
         <span class="dk-transport-number">${esc(t.transport_number ?? '')}</span>
       </div>
       <div class="dk-transport-meta-line2">
-        <span class="dk-transport-provider-name">${esc(t.provider ?? '')}</span>
-        <span class="dk-transport-meta-sep" aria-hidden="true">·</span>
+        ${calIcon}
         <span class="dk-transport-meta-date">${esc(formatDepartureDate(t.departure_date))}</span>
       </div>
       <hr class="dk-transport-divider" aria-hidden="true">
@@ -124,12 +122,12 @@ function renderTransport(t) {
       </div>
 
       <div class="dk-transport-connection" aria-hidden="true">
-        <span class="dk-transport-dash-h"></span>
+        <div class="dk-transport-v-seg"></div>
         <div class="dk-transport-icon-center">
           <span class="dk-transport-icon-wrap">${transportIcon(t.type)}</span>
           <span class="dk-transport-duration-v">${esc(t.duration ?? '')}</span>
         </div>
-        <span class="dk-transport-dash-h"></span>
+        <div class="dk-transport-v-seg"></div>
       </div>
 
       <div class="dk-transport-endpoint">
@@ -137,11 +135,6 @@ function renderTransport(t) {
         <span class="dk-transport-code-v">${esc(t.destination_code ?? '')}</span>
         <span class="dk-transport-time-v">${esc(formatTime(t.destination_time))}</span>
       </div>
-    </div>
-
-    <div class="dk-transport-secondary-row">
-      ${infoIcon}
-      <span>${esc(secondaryNote(t))}</span>
     </div>
   `;
 }
