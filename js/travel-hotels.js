@@ -123,14 +123,7 @@ function renderCarousel(hotels, today) {
     const badge = hotelBadge(h, today, nextHotelId);
     return renderSlide(h, i, hotels.length, badge);
   }).join('');
-  const dotsHTML   = hotels.length > 1
-    ? `<div class="dk-hotel-dots" role="tablist" aria-label="Hotel slides">
-        ${hotels.map((_, i) => `
-          <button class="dk-hotel-dot${i === 0 ? ' is-active' : ''}"
-            role="tab" aria-selected="${i === 0}" aria-label="Slide ${i + 1}"></button>
-        `).join('')}
-      </div>`
-    : '';
+  const dotsHTML = ''; /* Navigation handled by prev/next arrows only — dots removed per design spec */
 
   return `
     <div class="dk-hotel-viewport">

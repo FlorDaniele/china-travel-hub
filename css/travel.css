@@ -122,6 +122,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between; /* distribute header-group, route, secondary-info evenly */
     gap: 0;
   }
 
@@ -177,11 +178,11 @@
     text-overflow: ellipsis;
   }
 
-  /* Horizontal divider between header and route */
+  /* Horizontal divider between header and route — 16px margin for breathing room */
   .dk-transport-divider {
     border: none;
     border-top: 1px solid var(--border);
-    margin: 12px 0;
+    margin: 16px 0;
   }
 
   /* Route layout: origin / line / destination */
@@ -206,9 +207,9 @@
     align-items: flex-end;
   }
 
-  /* City name: largest, heaviest — most important info */
+  /* City name: most important, but must not exceed the card title (20px) */
   .dk-transport-city {
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.15;
@@ -226,9 +227,9 @@
     line-height: 1.3;
   }
 
-  /* Departure/arrival time: second most important */
+  /* Departure/arrival time: second level — 14px, clearly below city name */
   .dk-transport-time {
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
     line-height: 1.2;
@@ -282,6 +283,16 @@
 
   .dk-transport-empty-text {
     font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* Secondary info row — contextual note below the route block */
+  .dk-transport-secondary-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 12px;
     color: var(--text-secondary);
   }
 
@@ -444,26 +455,27 @@
   .dk-hotel-links {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 24px; /* 24px gap so the two links read as distinct elements */
     flex-wrap: wrap;
     margin-top: 4px;
   }
 
+  /* Matches .dk-view-all exactly: same font-size, weight, and action colour */
   .dk-hotel-link {
-    font-size: 12px;
+    font-size: 16px;
     font-weight: 500;
-    color: var(--terracotta);
+    color: var(--action);
     text-decoration: none;
-    transition: text-decoration 0.1s ease;
+    transition: color 0.15s ease;
     white-space: nowrap;
   }
 
   .dk-hotel-link:hover {
-    text-decoration: underline;
+    color: var(--terracotta);
   }
 
   .dk-hotel-link:focus-visible {
-    outline: 2px solid var(--terracotta);
+    outline: 2px solid var(--action);
     outline-offset: 2px;
     border-radius: 2px;
   }

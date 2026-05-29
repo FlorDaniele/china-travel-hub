@@ -10,6 +10,7 @@ import { supabase } from './supabase.js';
 
 function getFallbackData() {
   return [
+    /* Jun 6–17: realistic placeholder data (4000–22000 steps) */
     { date: '2026-06-06', steps: 12800, km: null },
     { date: '2026-06-07', steps: 18400, km: null },
     { date: '2026-06-08', steps: 21200, km: null },
@@ -22,24 +23,25 @@ function getFallbackData() {
     { date: '2026-06-15', steps: 22000, km: null },
     { date: '2026-06-16', steps: 17500, km: null },
     { date: '2026-06-17', steps: 13200, km: null },
-    { date: '2026-06-18', steps: 11400, km: null },
-    { date: '2026-06-19', steps: 8900,  km: null },
-    { date: '2026-06-20', steps: 15800, km: null },
-    { date: '2026-06-21', steps: 20100, km: null },
-    { date: '2026-06-22', steps: 18600, km: null },
-    { date: '2026-06-23', steps: 14700, km: null },
-    { date: '2026-06-24', steps: 11900, km: null },
-    { date: '2026-06-25', steps: 9300,  km: null },
-    { date: '2026-06-26', steps: 13500, km: null },
-    { date: '2026-06-27', steps: 17800, km: null },
-    { date: '2026-06-28', steps: 16400, km: null },
-    { date: '2026-06-29', steps: 12100, km: null },
-    { date: '2026-06-30', steps: 10600, km: null },
-    { date: '2026-07-01', steps: 15200, km: null },
-    { date: '2026-07-02', steps: 19000, km: null },
-    { date: '2026-07-03', steps: 21800, km: null },
-    { date: '2026-07-04', steps: 16300, km: null },
-    { date: '2026-07-05', steps: 8400,  km: null },
+    /* Jun 18–Jul 5: no data yet — line stops at Jun 17 */
+    { date: '2026-06-18', steps: null,  km: null },
+    { date: '2026-06-19', steps: null,  km: null },
+    { date: '2026-06-20', steps: null,  km: null },
+    { date: '2026-06-21', steps: null,  km: null },
+    { date: '2026-06-22', steps: null,  km: null },
+    { date: '2026-06-23', steps: null,  km: null },
+    { date: '2026-06-24', steps: null,  km: null },
+    { date: '2026-06-25', steps: null,  km: null },
+    { date: '2026-06-26', steps: null,  km: null },
+    { date: '2026-06-27', steps: null,  km: null },
+    { date: '2026-06-28', steps: null,  km: null },
+    { date: '2026-06-29', steps: null,  km: null },
+    { date: '2026-06-30', steps: null,  km: null },
+    { date: '2026-07-01', steps: null,  km: null },
+    { date: '2026-07-02', steps: null,  km: null },
+    { date: '2026-07-03', steps: null,  km: null },
+    { date: '2026-07-04', steps: null,  km: null },
+    { date: '2026-07-05', steps: null,  km: null },
   ];
 }
 
@@ -52,15 +54,16 @@ async function loadDailyStats() {
     .order('date', { ascending: true });
   if (error) throw error;
 
-  // Merge Supabase rows into the full 30-day fallback skeleton
-  // (Supabase may only have partial rows; fallback fills remaining days)
+  // Merge Supabase rows into the full 30-day fallback skeleton.
+  // Dates where the fallback says null (Jun 18+) stay null — Supabase rows
+  // for future dates don't override, keeping the "no data yet" visual intent.
   const rowMap = {};
   (data ?? []).forEach(r => { rowMap[r.date] = r; });
 
   return getFallbackData().map(d => ({
     date:  d.date,
-    steps: rowMap[d.date]?.steps ?? d.steps,
-    km:    rowMap[d.date]?.km    ?? null,
+    steps: d.steps != null ? (rowMap[d.date]?.steps ?? d.steps) : null,
+    km:    d.steps != null ? (rowMap[d.date]?.km    ?? null)     : null,
   }));
 }
 
@@ -142,7 +145,8 @@ function drawChart(canvas, data, todayStr) {
   const TERRACOTTA  = '#ee6146';
   const WARM_GOLD   = '#dfbc5e';
   const BORDER      = '#E8E8E8';
-  const TEXT_SEC    = '#6B6B80';
+  const TEXT_SEC    = '#6B6B80'; /* #6B6B80 on white = ~4.6:1 — passes WCAG AA */
+  /* 11px: minimum allowed exception for chart axis labels under space constraint (30 labels across full width) */
   const FONT        = '11px "Plus Jakarta Sans", system-ui, sans-serif';
 
   /* ── Grid lines (from steps ticks) ── */
@@ -177,17 +181,16 @@ function drawChart(canvas, data, todayStr) {
     });
   }
 
-  /* ── X-axis labels (every 5 days) ── */
+  /* ── X-axis labels (all 30 days — "Sa 6", "Su 7" format) ── */
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'top';
   data.forEach((d, i) => {
-    if (i % 5 !== 0) return;
     const x = PAD_L + i * DAY_W + DAY_W / 2;
     const y = PAD_T + chartH + 6;
     const [, m, day] = d.date.split('-').map(Number);
-    const label = new Date(2026, m - 1, day)
-      .toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    ctx.fillText(label, x, y);
+    const dt = new Date(2026, m - 1, day);
+    const weekday = dt.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2);
+    ctx.fillText(`${weekday} ${day}`, x, y);
   });
 
   /* ── Today indicator ── */
@@ -216,10 +219,10 @@ function drawChart(canvas, data, todayStr) {
     ctx.fillText('Today', todayX, PAD_T - 2);
   }
 
-  /* ── Build point coords ── */
+  /* ── Build point coords — null steps produce null y (no point plotted) ── */
   const ptsSteps = data.map((d, i) => ({
     x: PAD_L + i * DAY_W + DAY_W / 2,
-    y: PAD_T + chartH - ((d.steps ?? 0) / maxSteps) * chartH,
+    y: d.steps != null ? PAD_T + chartH - (d.steps / maxSteps) * chartH : null,
   }));
 
   const ptsKm = hasKm ? data.map((d, i) => ({
@@ -431,10 +434,25 @@ export async function initTravelSteps() {
     render();
   });
 
+  // Sync steps card height to match calendar card
+  function syncHeightWithCalendar() {
+    const stepsCard = document.querySelector('.dk-steps.dk-card');
+    const calCard   = document.querySelector('.dk-calendar.dk-card');
+    if (!stepsCard || !calCard) return;
+    const calH = calCard.getBoundingClientRect().height;
+    if (calH > 0) {
+      stepsCard.style.minHeight = calH + 'px';
+      stepsCard.style.height    = calH + 'px';
+    }
+  }
+
+  // First sync after initial render, then on every resize
+  requestAnimationFrame(syncHeightWithCalendar);
+
   // Redraw on resize
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(render, 150);
+    resizeTimer = setTimeout(() => { render(); syncHeightWithCalendar(); }, 150);
   });
 }
