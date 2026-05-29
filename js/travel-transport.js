@@ -114,6 +114,7 @@ function renderTransport(t) {
       <hr class="dk-transport-divider" aria-hidden="true">
     </div>
 
+    <div class="dk-transport-route-wrap">
     <div class="dk-transport-route-v">
       <div class="dk-transport-endpoint">
         <span class="dk-transport-city-v">${esc(t.origin_city)}</span>
@@ -135,6 +136,7 @@ function renderTransport(t) {
         <span class="dk-transport-code-v">${esc(t.destination_code ?? '')}</span>
         <span class="dk-transport-time-v">${esc(formatTime(t.destination_time))}</span>
       </div>
+    </div>
     </div>
   `;
 }

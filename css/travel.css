@@ -221,8 +221,17 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 0;
+  }
+
+  /* Fills remaining vertical space and centers the route block within it */
+  .dk-transport-route-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
   }
 
   .dk-transport-loading {
@@ -353,9 +362,16 @@
 
   /* Vertical dashed segment — one above icon, one below */
   .dk-transport-v-seg {
-    width: 0;
-    height: 20px;
-    border-left: 1px dashed var(--border);
+    width: 2px;
+    height: 32px;
+    flex-shrink: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      #BBBBBB 0px,
+      #BBBBBB 3px,
+      transparent 3px,
+      transparent 7px
+    );
   }
 
   /* Hide the old horizontal dash (kept in DOM for safety, hidden visually) */
