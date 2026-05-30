@@ -346,27 +346,18 @@
   }
 
   /* City name — small secondary label */
+  /* City name (with optional code in parens) — primary line of each endpoint */
   .dk-transport-city-v {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--text-secondary);
-    text-align: center;
-    line-height: 1.2;
-  }
-
-  /* Airport/station code — largest text in the card */
-  .dk-transport-code-v {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
     text-align: center;
-    margin-top: 2px;
     line-height: 1.2;
   }
 
   .dk-transport-time-v {
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
     color: var(--text-primary);
     text-align: center;
     margin-top: 4px;
@@ -471,52 +462,62 @@
     display: none;
   }
 
+  /* Bottom carousel arrows — centered below card content */
+  .dk-transport-nav-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 16px;
+    flex-shrink: 0;
+  }
+
+  .dk-transport-prev:disabled,
+  .dk-transport-next:disabled {
+    cursor: default;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Edit button (pencil, inline with transport number) */
+  .dk-transport-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    vertical-align: middle;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .dk-transport-edit-btn:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   /* ─────────────────────────────────────────────────────────── */
   /* HOTELS CAROUSEL                                              */
   /* ─────────────────────────────────────────────────────────── */
 
-  /* Header navigation arrows */
-  .dk-hotel-nav {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .dk-hotel-prev,
-  .dk-hotel-next {
+  /* Bottom carousel arrows — centered below card content */
+  .dk-hotel-nav-bottom {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #F0F0F0;
-    border: 1px solid var(--border);
-    color: var(--action);
-    cursor: pointer;
-    transition: background 0.15s ease, opacity 0.15s ease;
+    gap: 8px;
+    padding-top: 16px;
     flex-shrink: 0;
-    /* Expand click area */
-    position: relative;
   }
 
-  .dk-hotel-prev::after,
-  .dk-hotel-next::after {
-    content: '';
-    position: absolute;
-    inset: -6px;
-    border-radius: 50%;
-  }
-
-  .dk-hotel-prev:hover:not(:disabled),
-  .dk-hotel-next:hover:not(:disabled) {
-    background: #E0E0E0;
-  }
-
-  .dk-hotel-prev:focus-visible,
-  .dk-hotel-next:focus-visible {
-    outline: 2px solid var(--terracotta);
-    outline-offset: 3px;
+  /* Hotel carousel arrows — layout only; appearance comes from .dk-icon-btn */
+  .dk-hotel-prev,
+  .dk-hotel-next {
+    flex-shrink: 0;
   }
 
   .dk-hotel-prev:disabled,
@@ -709,6 +710,91 @@
   .dk-hotel-dot:focus-visible {
     outline: 2px solid var(--terracotta);
     outline-offset: 3px;
+  }
+
+  /* ── Hotel edit button (pencil, inline with hotel name) ──── */
+
+  .dk-hotel-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    vertical-align: middle;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .dk-hotel-edit-btn:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ── Delete button in hotel edit modal ───────────────────── */
+
+  .ht-modal-delete-wrap {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .ht-modal-delete-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .ht-modal-delete-btn:hover {
+    color: var(--text-primary);
+  }
+
+  .ht-modal-confirm-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .ht-modal-confirm-row.hidden {
+    display: none;
+  }
+
+  .ht-modal-confirm-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ht-modal-confirm-yes {
+    background: none;
+    border: 1px solid var(--text-secondary);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .ht-modal-confirm-yes:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary);
+    border-color: var(--text-primary);
   }
 
 } /* end @media desktop */

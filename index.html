@@ -151,7 +151,7 @@
             <div class="dk-card-header">
               <h2 class="dk-card-title" id="dk-steps-title">Daily steps</h2>
               <button class="dk-icon-btn dk-icon-btn--action" id="dk-steps-add" aria-label="Add steps" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
               </button>
             </div>
             <div class="dk-chart-wrap">
@@ -171,7 +171,7 @@
             <div class="dk-card-header">
               <h2 class="dk-card-title" id="dk-km-title">Km walked</h2>
               <button class="dk-icon-btn dk-icon-btn--action" id="dk-km-add" aria-label="Add km" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
               </button>
             </div>
             <div class="dk-chart-wrap">
@@ -191,7 +191,10 @@
         <!-- Travel mode: Next Transport (col 3, row 2) -->
         <section class="dk-card dk-transport" aria-labelledby="dk-transport-title">
           <div class="dk-card-header">
-            <h2 class="dk-card-title" id="dk-transport-title">Next transport</h2>
+            <h2 class="dk-card-title" id="dk-transport-title">Transport</h2>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-transport-add" aria-label="Add transport">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
           </div>
           <div class="dk-transport-body">
             <span class="dk-transport-loading">Loading…</span>
@@ -202,14 +205,9 @@
         <section class="dk-card dk-hotels" aria-labelledby="dk-hotels-title">
           <div class="dk-card-header">
             <h2 class="dk-card-title" id="dk-hotels-title">Hotels</h2>
-            <div class="dk-hotel-nav">
-              <button class="dk-hotel-prev" aria-label="Previous hotel" disabled>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
-              </button>
-              <button class="dk-hotel-next" aria-label="Next hotel">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-            </div>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-hotels-add" aria-label="Add hotel">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
           </div>
           <div class="dk-hotels-body">
             <span class="dk-transport-loading">Loading…</span>
