@@ -1035,13 +1035,17 @@
     font-size: 11px;
   }
 
-  /* Transport nav arrows: centered below card, 44px touch targets */
+  /* Transport nav arrows: moved to title row (matches desktop) */
   .dk-transport-nav-bottom {
+    display: none;
+  }
+
+  /* Title-row nav arrows — visible on mobile, 44px touch targets via dk-icon-btn */
+  .dk-transport-nav-header,
+  .dk-hotel-nav-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding-top: 12px;
+    gap: 4px;
     flex-shrink: 0;
   }
 
