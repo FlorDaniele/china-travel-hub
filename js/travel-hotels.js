@@ -136,17 +136,10 @@ function renderCarousel(hotels, today) {
     return renderSlide(h, i, hotels.length, badge);
   }).join('');
 
-  const navHTML = hotels.length > 1 ? `
-    <div class="dk-hotel-nav-bottom">
-      <button class="dk-icon-btn dk-icon-btn--action dk-hotel-prev" aria-label="Previous hotel" disabled>${chevronLeft}</button>
-      <button class="dk-icon-btn dk-icon-btn--action dk-hotel-next" aria-label="Next hotel">${chevronRight}</button>
-    </div>` : '';
-
   return `
     <div class="dk-hotel-viewport">
       <div class="dk-hotel-track">${slidesHTML}</div>
     </div>
-    ${navHTML}
   `;
 }
 
@@ -170,10 +163,28 @@ function renderEmpty() {
 function initCarouselControls(card, total) {
   if (total <= 1) return;
 
-  const track   = card.querySelector('.dk-hotel-track');
-  const prevBtn = card.querySelector('.dk-hotel-prev');
-  const nextBtn = card.querySelector('.dk-hotel-next');
-  let   current = 0;
+  const track = card.querySelector('.dk-hotel-track');
+  let current = 0;
+
+  /* Inject nav arrows into the card header (remove stale group on refresh) */
+  const header = card.querySelector('.dk-card-header');
+  header?.querySelector('.dk-hotel-nav-header')?.remove();
+  const navGroup = document.createElement('div');
+  navGroup.className = 'dk-hotel-nav-header';
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'dk-icon-btn dk-icon-btn--action dk-hotel-prev';
+  prevBtn.setAttribute('aria-label', 'Previous hotel');
+  prevBtn.innerHTML = chevronLeft;
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'dk-icon-btn dk-icon-btn--action dk-hotel-next';
+  nextBtn.setAttribute('aria-label', 'Next hotel');
+  nextBtn.innerHTML = chevronRight;
+  navGroup.appendChild(prevBtn);
+  navGroup.appendChild(nextBtn);
+  if (header) {
+    const addBtn = header.querySelector('#dk-hotels-add');
+    header.insertBefore(navGroup, addBtn ?? null);
+  }
 
   function goTo(index) {
     current = Math.max(0, Math.min(index, total - 1));
@@ -183,12 +194,12 @@ function initCarouselControls(card, total) {
       slide.setAttribute('aria-hidden', String(i !== current));
     });
 
-    if (prevBtn) prevBtn.disabled = current === 0;
-    if (nextBtn) nextBtn.disabled = current === total - 1;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
   }
 
-  if (prevBtn) prevBtn.addEventListener('click', () => goTo(current - 1));
-  if (nextBtn) nextBtn.addEventListener('click', () => goTo(current + 1));
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
 
   goTo(0);
 }

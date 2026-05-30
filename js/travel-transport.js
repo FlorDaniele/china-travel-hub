@@ -113,12 +113,6 @@ function renderTransport(t, index, total) {
     ? `<span class="dk-transport-seat" data-id="${esc(String(t.id))}" data-field="seat" data-value="${seatVal !== null ? esc(seatVal) : ''}" title="Click to edit seat">${seatDisplay}</span>`
     : '';
 
-  const navHTML = total > 1 ? `
-    <div class="dk-transport-nav-bottom">
-      <button class="dk-icon-btn dk-icon-btn--action dk-transport-prev" aria-label="Previous transport" ${index === 0 ? 'disabled' : ''}>${chevronLeft}</button>
-      <button class="dk-icon-btn dk-icon-btn--action dk-transport-next" aria-label="Next transport" ${index === total - 1 ? 'disabled' : ''}>${chevronRight}</button>
-    </div>` : '';
-
   return `
     <div class="dk-transport-meta">
       <div class="dk-transport-meta-line1">
@@ -160,8 +154,6 @@ function renderTransport(t, index, total) {
         </div>
       </div>
     </div>
-
-    ${navHTML}
   `;
 }
 
@@ -183,22 +175,48 @@ function initCarousel(card, body, transports) {
   let current = 0;
   const total = transports.length;
 
+  /* Inject nav arrows into the card header once (if multiple transports) */
+  let prevBtn = null;
+  let nextBtn = null;
+  if (total > 1) {
+    const header = card.querySelector('.dk-card-header');
+    header?.querySelector('.dk-transport-nav-header')?.remove();
+    if (header) {
+      const navGroup = document.createElement('div');
+      navGroup.className = 'dk-transport-nav-header';
+      prevBtn = document.createElement('button');
+      prevBtn.className = 'dk-icon-btn dk-icon-btn--action dk-transport-prev';
+      prevBtn.setAttribute('aria-label', 'Previous transport');
+      prevBtn.innerHTML = chevronLeft;
+      nextBtn = document.createElement('button');
+      nextBtn.className = 'dk-icon-btn dk-icon-btn--action dk-transport-next';
+      nextBtn.setAttribute('aria-label', 'Next transport');
+      nextBtn.innerHTML = chevronRight;
+      navGroup.appendChild(prevBtn);
+      navGroup.appendChild(nextBtn);
+      /* Insert after the h2 title, before the add button */
+      const addBtn = header.querySelector('#dk-transport-add');
+      header.insertBefore(navGroup, addBtn ?? null);
+      prevBtn.addEventListener('click', () => goTo(current - 1));
+      nextBtn.addEventListener('click', () => goTo(current + 1));
+    }
+  }
+
+  function updateNavState() {
+    if (prevBtn) prevBtn.disabled = current === 0;
+    if (nextBtn) nextBtn.disabled = current === total - 1;
+  }
+
   function goTo(index) {
     current = Math.max(0, Math.min(index, total - 1));
     body.innerHTML = renderTransport(transports[current], current, total);
     if (typeof lucide !== 'undefined') lucide.createIcons();
-    attachListeners();
-  }
-
-  function attachListeners() {
-    const prev = card.querySelector('.dk-transport-prev');
-    const next = card.querySelector('.dk-transport-next');
-    if (prev) prev.addEventListener('click', () => goTo(current - 1));
-    if (next) next.addEventListener('click', () => goTo(current + 1));
+    updateNavState();
     wireEditButtons(card, body, transports, goTo);
   }
 
-  attachListeners();
+  updateNavState();
+  wireEditButtons(card, body, transports, goTo);
 }
 
 /* ── Inline seat editing ───────────────────────────────────── */

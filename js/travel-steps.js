@@ -209,9 +209,15 @@ function drawSingleChart(canvas, data, metric, hexColor, todayStr, cssH, skipYAx
     grad.addColorStop(1, hexRgba(hexColor, 0));
 
     ctx.beginPath();
-    ctx.moveTo(validPts[0].x, PAD_T + chartH);
-    validPts.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.moveTo(validPts[0].x, validPts[0].y);
+    for (let i = 1; i < validPts.length - 1; i++) {
+      const mx = (validPts[i].x + validPts[i + 1].x) / 2;
+      const my = (validPts[i].y + validPts[i + 1].y) / 2;
+      ctx.quadraticCurveTo(validPts[i].x, validPts[i].y, mx, my);
+    }
+    ctx.lineTo(validPts[validPts.length - 1].x, validPts[validPts.length - 1].y);
     ctx.lineTo(validPts[validPts.length - 1].x, PAD_T + chartH);
+    ctx.lineTo(validPts[0].x, PAD_T + chartH);
     ctx.closePath();
     ctx.fillStyle = grad;
     ctx.fill();

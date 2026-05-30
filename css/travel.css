@@ -367,7 +367,7 @@
   /* Terminal and seat lines — below time, only rendered when not null */
   .dk-transport-terminal,
   .dk-transport-seat {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--text-secondary);
     text-align: center;
@@ -381,7 +381,7 @@
 
   /* Inline seat edit input */
   .dk-transport-seat-input {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--text-secondary);
     text-align: center;
@@ -462,13 +462,19 @@
     display: none;
   }
 
-  /* Bottom carousel arrows — centered below card content */
+  /* Bottom carousel arrows — centered below card content (legacy, unused) */
   .dk-transport-nav-bottom {
+    display: none;
+  }
+
+  /* Title-row nav arrows */
+  .dk-transport-nav-header,
+  .dk-hotel-nav-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding-top: 16px;
+    gap: 4px;
+    margin-left: 16px;
+    margin-right: auto;
     flex-shrink: 0;
   }
 
@@ -504,14 +510,9 @@
   /* HOTELS CAROUSEL                                              */
   /* ─────────────────────────────────────────────────────────── */
 
-  /* Bottom carousel arrows — centered below card content */
+  /* Bottom carousel arrows — centered below card content (legacy, unused) */
   .dk-hotel-nav-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding-top: 16px;
-    flex-shrink: 0;
+    display: none;
   }
 
   /* Hotel carousel arrows — layout only; appearance comes from .dk-icon-btn */
@@ -1016,11 +1017,11 @@
 
   .dk-transport-terminal,
   .dk-transport-seat {
-    font-size: 16px;
+    font-size: 12px;
   }
 
   .dk-transport-seat-input {
-    font-size: 16px; /* prevent iOS auto-zoom */
+    font-size: 12px; /* prevent iOS auto-zoom */
     min-height: 44px;
     display: inline-flex;
     align-items: center;
