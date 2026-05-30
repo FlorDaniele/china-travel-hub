@@ -2507,13 +2507,13 @@
 }
 
 /* ============================================================
-   PHONE LAYOUT — max-width: 479px
-   Single-column mobile layout. Additive only — desktop (≥480px)
-   is completely untouched. All desktop JS runs regardless of
-   viewport, so .desktop-layout sections are fully initialised.
+   MOBILE LAYOUT — max-width: 767px
+   Single-column layout for all viewports below the desktop
+   grid (1024px). Covers phones (390px), wide phones (480px),
+   and tablets (up to 767px).
    ============================================================ */
 
-@media (max-width: 479px) {
+@media (max-width: 767px) {
 
   /* ── Show desktop layout as single column ───────────────── */
 
@@ -3786,6 +3786,201 @@
     display: flex;
     align-items: center;
     margin-top: 2px;
+  }
+
+  /* ── Hotels: carousel nav at bottom ────────────────────────── */
+
+  .dk-hotel-nav-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0 4px;
+  }
+
+  .dk-hotel-prev,
+  .dk-hotel-next {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .dk-hotel-prev:disabled,
+  .dk-hotel-next:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .dk-hotel-prev:not(:disabled):hover,
+  .dk-hotel-next:not(:disabled):hover {
+    background: #E0E0E0;
+    color: var(--text-primary);
+  }
+
+  .dk-hotel-prev:focus-visible,
+  .dk-hotel-next:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+  }
+
+  /* ── Hotels: pencil edit button — 44px touch target ───────── */
+
+  .dk-hotel-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 10px;
+    margin-left: 2px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    vertical-align: middle;
+    flex-shrink: 0;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 4px;
+  }
+
+  .dk-hotel-edit-btn:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Hotels body: full-width viewport + track */
+  .dk-hotels-body {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .dk-hotel-viewport {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .dk-hotel-track {
+    display: flex;
+    transition: transform 300ms ease;
+  }
+
+  .dk-hotel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Photo: 16:9 on mobile */
+  .dk-hotel-photo {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border-radius: 8px 8px 0 0;
+    overflow: hidden;
+  }
+
+  .dk-hotel-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .dk-hotel-info {
+    padding: 12px 0 4px;
+  }
+
+  .dk-hotel-name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .dk-hotel-name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dk-hotel-dates,
+  .dk-hotel-address {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .dk-hotel-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  .dk-hotel-link {
+    font-size: 13px;
+    color: var(--action);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+  }
+
+  /* Dots indicator */
+  .dk-hotel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px 0 0;
+  }
+
+  .dk-hotel-dot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+  }
+
+  .dk-hotel-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.15s ease;
+  }
+
+  .dk-hotel-dot.is-active::after {
+    background: var(--terracotta);
+    width: 8px;
+    height: 8px;
   }
 
 }

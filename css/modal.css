@@ -546,11 +546,89 @@
   }
 }
 
-/* ── Mobile: constrain height and enable internal scroll ──── */
+/* ── Mobile: full-screen bottom sheet ─────────────────────── */
 
-@media (max-width: 479px) {
+@media (max-width: 767px) {
+
+  /* Override centered desktop positioning */
   .modal-card {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border-radius: 20px 20px 0 0;
+    padding: 0 16px calc(env(safe-area-inset-bottom, 0px) + 24px);
     max-height: 90dvh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Slide-up animation: closed = off bottom of screen */
+    transform: translateY(100%);
+    opacity: 1; /* opacity handled by overlay; card always opaque */
+    transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  .modal-card.is-open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Drag handle — centered pill above the header */
+  .modal-card::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px auto 0;
+  }
+
+  /* Header: top padding reduced (drag handle gives visual space) */
+  .modal-header {
+    padding-top: 16px;
+    padding-right: 44px; /* room for close btn */
+    margin-bottom: 12px;
+  }
+
+  /* Close button repositioned for sheet layout */
+  .modal-close-btn {
+    top: 12px;
+    right: 12px;
+  }
+
+  /* Inputs: 16px prevents iOS Safari auto-zoom */
+  .modal-input,
+  .modal-select,
+  .modal-date {
+    font-size: 16px;
+  }
+
+  /* Action row: stack full-width buttons */
+  .modal-actions {
+    flex-direction: column-reverse;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .modal-btn-primary,
+  .modal-btn-secondary {
+    width: 100%;
+    justify-content: center;
+    min-height: 48px;
+    order: unset;
+  }
+
+  /* Pill selectors: equal-width, fill the row */
+  .modal-pill-group {
+    flex-wrap: nowrap;
+  }
+
+  .modal-pill {
+    flex: 1;
+    justify-content: center;
   }
 }

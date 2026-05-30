@@ -798,3 +798,375 @@
   }
 
 } /* end @media desktop */
+
+/* ============================================================
+   MOBILE LAYOUT — max-width: 767px
+   Travel tab cards: single-column stacked.
+   Covers phones (390px), wide phones (480px), tablets (≤767px).
+   ============================================================ */
+
+@media (max-width: 767px) {
+
+  /* ── Show travel cards in travel mode ──────────────────────── */
+
+  .mode-travel .dk-steps,
+  .mode-travel .dk-transport,
+  .mode-travel .dk-hotels,
+  .mode-travel .dk-km {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Steps + Km row: stack vertically instead of side-by-side */
+  .mode-travel .dk-steps-km-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Each chart card: full width */
+  .dk-steps-km-row .dk-steps,
+  .dk-steps-km-row .dk-km {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* ── B1: Daily Steps + Km Walked ───────────────────────────── */
+
+  .dk-chart-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .dk-chart-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+  }
+
+  .dk-yaxis {
+    width: 44px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .dk-yaxis-label {
+    position: absolute;
+    right: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  .dk-chart-row .dk-steps-scroll,
+  .dk-chart-row .dk-km-scroll {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dk-steps-scroll,
+  .dk-km-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    min-height: 160px;
+  }
+
+  .dk-steps-scroll::-webkit-scrollbar,
+  .dk-km-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Right-fade gradient — visible on mobile */
+  .dk-scroll-fade {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to left, #ffffff 0%, transparent 100%);
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    z-index: 5;
+  }
+
+  .dk-scroll-fade.is-hidden {
+    opacity: 0;
+  }
+
+  /* Scroll arrow: 44px touch target */
+  .dk-scroll-arrow {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    z-index: 6;
+    transition: opacity 200ms ease, background 0.15s ease;
+  }
+
+  .dk-scroll-arrow.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dk-scroll-arrow.is-left {
+    right: auto;
+    left: 8px;
+  }
+
+  /* ── B2: Transport card ────────────────────────────────────── */
+
+  .dk-transport.dk-card {
+    padding: 16px 16px 12px;
+  }
+
+  .dk-transport-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    gap: 0;
+  }
+
+  .dk-transport-route-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Meta line 1: provider + number + logo */
+  .dk-transport-meta-line1 {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  /* Allow provider+number to wrap below logo on very tight screens */
+  .dk-transport-logo {
+    margin-left: auto;
+    width: 72px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .dk-transport-logo img {
+    max-height: 20px;
+    width: auto;
+  }
+
+  .dk-transport-provider-name,
+  .dk-transport-number {
+    font-size: 13px;
+  }
+
+  .dk-transport-meta-sep {
+    font-size: 13px;
+    margin: 0 4px;
+  }
+
+  .dk-transport-meta-line2 {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .dk-transport-meta-date {
+    font-size: 11px;
+  }
+
+  .dk-transport-divider {
+    margin: 12px 0;
+  }
+
+  /* Route block: city names 14px, times 18px */
+  .dk-transport-route-v {
+    gap: 12px;
+  }
+
+  .dk-transport-city-v {
+    font-size: 14px;
+  }
+
+  .dk-transport-time-v {
+    font-size: 18px;
+    margin-top: 3px;
+  }
+
+  .dk-transport-terminal,
+  .dk-transport-seat {
+    font-size: 11px;
+  }
+
+  .dk-transport-seat-input {
+    font-size: 16px; /* prevent iOS auto-zoom */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .dk-transport-connection {
+    gap: 12px;
+  }
+
+  .dk-transport-duration-v {
+    font-size: 11px;
+  }
+
+  /* Transport nav arrows: centered below card, 44px touch targets */
+  .dk-transport-nav-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding-top: 12px;
+    flex-shrink: 0;
+  }
+
+  /* Edit button: 44px touch target */
+  .dk-transport-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-left: 2px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 4px;
+  }
+
+  /* Empty state */
+  .dk-transport-empty {
+    padding: 24px 0;
+  }
+
+  /* ── B4: Next Tour card ────────────────────────────────────── */
+
+  .dk-next-up {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dk-next-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-next-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* 16:9 image at top of card */
+  .dk-next-photo {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--warm-gold-light);
+    flex-shrink: 0;
+  }
+
+  .dk-next-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    display: block;
+    border-radius: 0;
+  }
+
+  .dk-next-body {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dk-next-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .dk-next-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* View booking link: 44px min touch target */
+  .dk-next-booking-link {
+    font-size: 13px;
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  /* ── B5: Calendar card ─────────────────────────────────────── */
+
+  .dk-calendar {
+    width: 100%;
+  }
+
+  /* Calendar header nav: 44px touch target */
+  .dk-cal-nav {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Cell height: ~36px minimum; 7 cols × (390-32)/7 ≈ 51px each */
+  .dk-cal-day {
+    height: 36px;
+    font-size: 11px;
+  }
+
+  /* Legend: 2 columns on narrow screens */
+  .dk-cal-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-top: 8px;
+  }
+
+  .dk-legend-item {
+    font-size: 12px;
+  }
+
+}
