@@ -59,14 +59,21 @@ function trapFocus(e) {
 
 /**
  * @param {object}   opts
- * @param {string}   opts.id       — prefix for child IDs (e.g. 'bk-modal')
- * @param {string}   opts.title    — heading shown in modal header
- * @param {string}   opts.bodyHTML — inner HTML for the content area
- * @param {Function} opts.onSave   — called when Guardar is clicked
+ * @param {string}   opts.id        — prefix for child IDs (e.g. 'bk-modal')
+ * @param {string}   opts.title     — heading shown in modal header
+ * @param {string}   opts.bodyHTML  — inner HTML for the content area
+ * @param {Function} opts.onSave    — called when Guardar is clicked
+ * @param {string}   [opts.maxHeight] — override CSS max-height (e.g. 'min(90vh,600px)')
  */
-export function openModal({ id, title, bodyHTML, onSave }) {
+export function openModal({ id, title, bodyHTML, onSave, maxHeight }) {
   ensureDOM();
   _trigger = document.activeElement;
+
+  if (maxHeight) {
+    _card.style.maxHeight = maxHeight;
+  } else {
+    _card.style.maxHeight = '';
+  }
 
   const titleId = `${id}-title`;
   _card.setAttribute('aria-labelledby', titleId);

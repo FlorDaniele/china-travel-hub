@@ -367,7 +367,7 @@
   /* Terminal and seat lines — below time, only rendered when not null */
   .dk-transport-terminal,
   .dk-transport-seat {
-    font-size: 11px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--text-secondary);
     text-align: center;
@@ -381,7 +381,7 @@
 
   /* Inline seat edit input */
   .dk-transport-seat-input {
-    font-size: 11px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--text-secondary);
     text-align: center;
@@ -412,7 +412,7 @@
     width: 0;
     height: 22px;
     flex-shrink: 0;
-    border-left: 1px dashed var(--border);
+    border-left: 1px dashed #BBBBBB;
   }
 
   /* Hide the old horizontal dash (kept in DOM for safety, hidden visually) */
@@ -603,11 +603,11 @@
     padding: 12px 0 0;
   }
 
-  /* Name and diamonds on same line, 16px gap */
+  /* Name, diamonds, and pencil — tight inline group, 8px gap */
   .dk-hotel-name-row {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
   }
 
   /* Hotel name: strictly smaller than section title (20px) */
@@ -720,7 +720,7 @@
     background: none;
     border: none;
     padding: 0;
-    margin-left: 6px;
+    margin-left: 0;
     color: var(--text-secondary);
     cursor: pointer;
     vertical-align: middle;
@@ -1016,7 +1016,7 @@
 
   .dk-transport-terminal,
   .dk-transport-seat {
-    font-size: 11px;
+    font-size: 16px;
   }
 
   .dk-transport-seat-input {

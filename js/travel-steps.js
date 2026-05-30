@@ -588,7 +588,6 @@ function openStepsModal(today, onSaved) {
       <label class="modal-label" for="st-steps-val">Steps</label>
       <input type="number" id="st-steps-val" class="modal-input" placeholder="e.g. 12450"
         min="0" max="99999" step="1" inputmode="numeric">
-      <div class="modal-counter" id="st-steps-counter" aria-live="polite">0 / 99999</div>
       <div class="modal-error" id="st-steps-err" role="alert"></div>
     </div>
   `;
@@ -597,12 +596,9 @@ function openStepsModal(today, onSaved) {
 
   const cal = initCalendar('st', today);
 
-  const stepsInput   = document.getElementById('st-steps-val');
-  const stepsCounter = document.getElementById('st-steps-counter');
+  const stepsInput = document.getElementById('st-steps-val');
 
   stepsInput?.addEventListener('input', () => {
-    const v = stepsInput.value;
-    stepsCounter.textContent = `${v || 0} / 99999`;
     document.getElementById('st-steps-err').textContent = '';
   });
 
@@ -655,7 +651,6 @@ function openKmModal(today, onSaved) {
       <label class="modal-label" for="km2-km-val">Km walked</label>
       <input type="number" id="km2-km-val" class="modal-input" placeholder="e.g. 8.5"
         min="0" max="99.9" step="0.1" inputmode="decimal">
-      <div class="modal-counter" id="km2-km-counter" aria-live="polite">0 / 99.9</div>
       <div class="modal-error" id="km2-km-err" role="alert"></div>
     </div>
   `;
@@ -664,12 +659,9 @@ function openKmModal(today, onSaved) {
 
   const cal = initCalendar('km2', today);
 
-  const kmInput   = document.getElementById('km2-km-val');
-  const kmCounter = document.getElementById('km2-km-counter');
+  const kmInput = document.getElementById('km2-km-val');
 
   kmInput?.addEventListener('input', () => {
-    const v = kmInput.value;
-    kmCounter.textContent = `${v || 0} / 99.9`;
     document.getElementById('km2-km-err').textContent = '';
   });
 

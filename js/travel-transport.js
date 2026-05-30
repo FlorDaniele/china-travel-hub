@@ -280,13 +280,57 @@ async function refreshTransports(card, body) {
   initCarousel(card, body, transports);
 }
 
+/* ── Timezone-aware duration calculation ───────────────────── */
+
+const AIRPORT_TZ = {
+  CDG: 'Europe/Paris', ORY: 'Europe/Paris',
+  PEK: 'Asia/Shanghai', PKX: 'Asia/Shanghai',
+  PVG: 'Asia/Shanghai', SHA: 'Asia/Shanghai',
+  NRT: 'Asia/Tokyo',   HND: 'Asia/Tokyo',
+  CAN: 'Asia/Shanghai', CTU: 'Asia/Shanghai',
+  XIY: 'Asia/Shanghai', KMG: 'Asia/Shanghai',
+};
+
+function airportToTZ(code) {
+  return AIRPORT_TZ[(code ?? '').trim().toUpperCase()] ?? null;
+}
+
+function localToUTCMs(dateStr, timeStr, tz) {
+  const isoStr  = `${dateStr}T${timeStr}:00`;
+  const tempDate = new Date(isoStr + 'Z');
+  const formatted = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit',
+    hour12: false,
+  }).format(tempDate);
+  const tzDate = new Date(formatted.replace(', ', 'T') + 'Z');
+  return tempDate.getTime() + (tempDate.getTime() - tzDate.getTime());
+}
+
+function calcFlightDuration(depDate, depTime, depCode, arrDate, arrTime, arrCode) {
+  if (!depDate || !depTime || !arrDate || !arrTime) return null;
+  const depTZ = airportToTZ(depCode);
+  const arrTZ = airportToTZ(arrCode);
+  const warn  = (!depTZ || !arrTZ) ? ' ⚠ timezone unknown' : '';
+  try {
+    const depUTC = localToUTCMs(depDate, depTime, depTZ ?? 'UTC');
+    const arrUTC = localToUTCMs(arrDate, arrTime, arrTZ ?? 'UTC');
+    const diffMs = arrUTC - depUTC;
+    if (diffMs <= 0) return null;
+    const h = Math.floor(diffMs / 3600000);
+    const m = Math.round((diffMs % 3600000) / 60000);
+    return `${h}h ${m}m${warn}`;
+  } catch (_) { return null; }
+}
+
 /* ── Transport modal ───────────────────────────────────────── */
 
 function buildTransportModalBody(t) {
-  const v      = field => esc(t?.[field] ?? '');
+  const v        = field => esc(t?.[field] ?? '');
   const isFlight = !t || t.type === 'flight';
-  const fHide  = isFlight ? '' : 'style="display:none"';
-  const tHide  = isFlight ? 'style="display:none"' : '';
+  const fHide    = isFlight ? '' : 'style="display:none"';
+  const tHide    = isFlight ? 'style="display:none"' : '';
 
   return `
     <div class="modal-field">
@@ -300,42 +344,71 @@ function buildTransportModalBody(t) {
       <label class="modal-label" for="tr-number">Transport number</label>
       <input type="text" id="tr-number" class="modal-input" placeholder="AF0202 / G87" value="${v('transport_number')}">
     </div>
-    <div class="modal-field">
-      <label class="modal-label" for="tr-date">Departure date <span style="color:var(--terracotta)">*</span></label>
-      <input type="date" id="tr-date" class="modal-date" value="${v('departure_date')}">
-      <div class="modal-error" id="tr-date-err" role="alert"></div>
+
+    <!-- Departure date + time on same row -->
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label" for="tr-date">Departure date <span style="color:var(--terracotta)">*</span></label>
+        <input type="date" id="tr-date" class="modal-date" value="${v('departure_date')}">
+        <div class="modal-error" id="tr-date-err" role="alert"></div>
+      </div>
+      <div class="modal-field modal-field--time">
+        <label class="modal-label" for="tr-origin-time">Time <span style="color:var(--terracotta)">*</span></label>
+        <input type="time" id="tr-origin-time" class="modal-input" value="${formatTime(v('origin_time'))}">
+        <div class="modal-error" id="tr-time-err" role="alert"></div>
+      </div>
     </div>
+
     <div class="modal-field">
       <label class="modal-label" for="tr-origin-city">Origin city <span style="color:var(--terracotta)">*</span></label>
       <input type="text" id="tr-origin-city" class="modal-input" placeholder="Paris / Beijing" value="${v('origin_city')}">
       <div class="modal-error" id="tr-origin-err" role="alert"></div>
     </div>
     <div class="modal-field tr-flight-only" ${fHide}>
-      <label class="modal-label" for="tr-origin-code">Origin code</label>
+      <label class="modal-label" for="tr-origin-code">Code</label>
       <input type="text" id="tr-origin-code" class="modal-input" placeholder="CDG" value="${v('origin_code')}">
     </div>
-    <div class="modal-field">
-      <label class="modal-label" for="tr-origin-time">Departure time <span style="color:var(--terracotta)">*</span></label>
-      <input type="time" id="tr-origin-time" class="modal-input" value="${formatTime(v('origin_time'))}">
-      <div class="modal-error" id="tr-time-err" role="alert"></div>
-    </div>
+
     <div class="modal-field">
       <label class="modal-label" for="tr-dest-city">Destination city <span style="color:var(--terracotta)">*</span></label>
       <input type="text" id="tr-dest-city" class="modal-input" placeholder="Beijing / Xi'an" value="${v('destination_city')}">
       <div class="modal-error" id="tr-dest-err" role="alert"></div>
     </div>
     <div class="modal-field tr-flight-only" ${fHide}>
-      <label class="modal-label" for="tr-dest-code">Destination code</label>
+      <label class="modal-label" for="tr-dest-code">Code</label>
       <input type="text" id="tr-dest-code" class="modal-input" placeholder="PEK" value="${v('destination_code')}">
     </div>
-    <div class="modal-field">
-      <label class="modal-label" for="tr-dest-time">Arrival time <span style="color:var(--terracotta)">*</span></label>
-      <input type="time" id="tr-dest-time" class="modal-input" value="${formatTime(v('destination_time'))}">
+
+    <!-- Flight: arrival date + time on same row -->
+    <div class="modal-row tr-flight-only" ${fHide}>
+      <div class="modal-field">
+        <label class="modal-label" for="tr-arr-date">Arrival date</label>
+        <input type="date" id="tr-arr-date" class="modal-date" value="${v('arrival_date')}">
+      </div>
+      <div class="modal-field modal-field--time">
+        <label class="modal-label" for="tr-dest-time-f">Arrival time</label>
+        <input type="time" id="tr-dest-time-f" class="modal-input" value="${formatTime(v('destination_time'))}">
+      </div>
     </div>
-    <div class="modal-field">
+
+    <!-- Train: arrival time only (no arrival date) -->
+    <div class="modal-field tr-train-only" ${tHide}>
+      <label class="modal-label" for="tr-dest-time-t">Arrival time <span style="color:var(--terracotta)">*</span></label>
+      <input type="time" id="tr-dest-time-t" class="modal-input" value="${formatTime(v('destination_time'))}">
+    </div>
+
+    <!-- Flight auto-calculated duration (read-only) -->
+    <div class="modal-field tr-flight-only" id="tr-duration-wrap" ${fHide}>
+      <span class="modal-label" style="color:var(--text-secondary);font-weight:400">Duration</span>
+      <span id="tr-duration-display" style="font-size:14px;color:var(--text-secondary)">—</span>
+    </div>
+
+    <!-- Train manual duration -->
+    <div class="modal-field tr-train-only" ${tHide}>
       <label class="modal-label" for="tr-duration">Duration <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
       <input type="text" id="tr-duration" class="modal-input" placeholder="10h 40m" value="${v('duration')}">
     </div>
+
     <div class="modal-field tr-flight-only" ${fHide}>
       <label class="modal-label" for="tr-provider">Airline</label>
       <input type="text" id="tr-provider" class="modal-input" placeholder="Air France" value="${isFlight ? v('provider') : ''}">
@@ -359,6 +432,19 @@ function buildTransportModalBody(t) {
   `;
 }
 
+function updateDurationDisplay() {
+  const el = document.getElementById('tr-duration-display');
+  if (!el) return;
+  const depDate = document.getElementById('tr-date')?.value;
+  const depTime = document.getElementById('tr-origin-time')?.value;
+  const depCode = document.getElementById('tr-origin-code')?.value?.trim();
+  const arrDate = document.getElementById('tr-arr-date')?.value;
+  const arrTime = document.getElementById('tr-dest-time-f')?.value;
+  const arrCode = document.getElementById('tr-dest-code')?.value?.trim();
+  const result  = calcFlightDuration(depDate, depTime, depCode, arrDate, arrTime, arrCode);
+  el.textContent = result ?? '—';
+}
+
 function wireTransportTypePills() {
   const pills = [...document.querySelectorAll('#tr-type-lbl ~ .modal-pill-group .modal-pill')];
   pills.forEach(p => {
@@ -368,14 +454,46 @@ function wireTransportTypePills() {
       const isFlight = p.dataset.value === 'flight';
       document.querySelectorAll('.tr-flight-only').forEach(el => el.style.display = isFlight ? '' : 'none');
       document.querySelectorAll('.tr-train-only').forEach(el  => el.style.display = isFlight ? 'none' : '');
+      /* Sync arrival time between the two type-specific inputs */
+      if (isFlight) {
+        const v = document.getElementById('tr-dest-time-t')?.value;
+        if (v) document.getElementById('tr-dest-time-f').value = v;
+      } else {
+        const v = document.getElementById('tr-dest-time-f')?.value;
+        if (v) document.getElementById('tr-dest-time-t').value = v;
+      }
+      updateDurationDisplay();
     });
   });
 }
 
+function wireTransportDurationCalc() {
+  ['tr-date', 'tr-origin-time', 'tr-origin-code', 'tr-arr-date', 'tr-dest-time-f', 'tr-dest-code'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updateDurationDisplay);
+    document.getElementById(id)?.addEventListener('change', updateDurationDisplay);
+  });
+  updateDurationDisplay();
+}
+
 function collectTransportValues() {
   const typePill = document.querySelector('#tr-type-lbl ~ .modal-pill-group .modal-pill[aria-checked="true"]');
+  const type     = typePill?.dataset.value ?? 'flight';
+  const isFlight = type === 'flight';
+
+  /* For flights, duration is auto-calculated; for trains it's manual */
+  const autoDuration = isFlight
+    ? calcFlightDuration(
+        document.getElementById('tr-date')?.value,
+        document.getElementById('tr-origin-time')?.value,
+        document.getElementById('tr-origin-code')?.value?.trim(),
+        document.getElementById('tr-arr-date')?.value,
+        document.getElementById('tr-dest-time-f')?.value,
+        document.getElementById('tr-dest-code')?.value?.trim(),
+      )
+    : null;
+
   return {
-    type:                 typePill?.dataset.value ?? 'flight',
+    type,
     transport_number:     document.getElementById('tr-number')?.value.trim() || null,
     departure_date:       document.getElementById('tr-date')?.value || null,
     origin_city:          document.getElementById('tr-origin-city')?.value.trim() || null,
@@ -383,8 +501,11 @@ function collectTransportValues() {
     origin_time:          document.getElementById('tr-origin-time')?.value || null,
     destination_city:     document.getElementById('tr-dest-city')?.value.trim() || null,
     destination_code:     document.getElementById('tr-dest-code')?.value.trim() || null,
-    destination_time:     document.getElementById('tr-dest-time')?.value || null,
-    duration:             document.getElementById('tr-duration')?.value.trim() || null,
+    destination_time:     isFlight
+      ? (document.getElementById('tr-dest-time-f')?.value || null)
+      : (document.getElementById('tr-dest-time-t')?.value || null),
+    arrival_date:         isFlight ? (document.getElementById('tr-arr-date')?.value || null) : null,
+    duration:             isFlight ? autoDuration : (document.getElementById('tr-duration')?.value.trim() || null),
     provider:             document.getElementById('tr-provider')?.value.trim() || null,
     terminal_origin:      document.getElementById('tr-terminal-origin')?.value.trim() || null,
     terminal_destination: document.getElementById('tr-terminal-dest')?.value.trim() || null,
@@ -446,9 +567,10 @@ function openTransportModal(existing, onSaved) {
   const isEdit = !!existing;
 
   openModal({
-    id:       'tr-modal',
-    title:    isEdit ? 'Edit transport' : 'Add transport',
-    bodyHTML: buildTransportModalBody(existing),
+    id:        'tr-modal',
+    title:     isEdit ? 'Edit transport' : 'Add transport',
+    maxHeight: 'min(90vh, 680px)',
+    bodyHTML:  buildTransportModalBody(existing),
     onSave:   async () => {
       if (!validateTransportModal()) return;
       const payload = collectTransportValues();
@@ -485,6 +607,7 @@ function openTransportModal(existing, onSaved) {
   });
 
   wireTransportTypePills();
+  wireTransportDurationCalc();
   if (isEdit) injectTransportDeleteButton(existing.id, onSaved);
 }
 

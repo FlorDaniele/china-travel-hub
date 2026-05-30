@@ -229,7 +229,7 @@ function buildModalBody(hotel) {
   const co  = hotel?.check_out ?? '';
   const nights = (ci && co && co > ci) ? `${nightCount(ci, co)} night${nightCount(ci, co) !== 1 ? 's' : ''}` : '—';
 
-  const diamondPills = [1, 2, 3, 4, 5].map(n =>
+  const diamondPills = [2, 3, 4, 5].map(n =>
     `<button class="modal-pill" type="button" role="radio" aria-checked="${n === d ? 'true' : 'false'}" data-value="${n}">${n} ✦</button>`
   ).join('');
 
@@ -243,14 +243,17 @@ function buildModalBody(hotel) {
       <span class="modal-label" id="ht-modal-diamonds-lbl">Diamonds</span>
       <div class="modal-pill-group" role="radiogroup" aria-labelledby="ht-modal-diamonds-lbl">${diamondPills}</div>
     </div>
-    <div class="modal-field">
-      <label class="modal-label" for="ht-modal-checkin">Check-in <span style="color:var(--terracotta)">*</span></label>
-      <input type="date" id="ht-modal-checkin" class="modal-date" value="${v('check_in')}">
-      <div class="modal-error" id="ht-modal-dates-err" role="alert"></div>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label" for="ht-modal-checkout">Check-out <span style="color:var(--terracotta)">*</span></label>
-      <input type="date" id="ht-modal-checkout" class="modal-date" value="${v('check_out')}">
+    <!-- Check-in + check-out on same row (2b) -->
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label" for="ht-modal-checkin">Check-in <span style="color:var(--terracotta)">*</span></label>
+        <input type="date" id="ht-modal-checkin" class="modal-date" value="${v('check_in')}">
+        <div class="modal-error" id="ht-modal-dates-err" role="alert"></div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="ht-modal-checkout">Check-out <span style="color:var(--terracotta)">*</span></label>
+        <input type="date" id="ht-modal-checkout" class="modal-date" value="${v('check_out')}">
+      </div>
     </div>
     <div class="modal-field">
       <span class="modal-label" aria-hidden="true">Nights</span>
@@ -372,9 +375,10 @@ function openHotelModal(existingHotel, onSaved) {
   const title  = isEdit ? 'Edit hotel' : 'Add hotel';
 
   openModal({
-    id:       'ht-modal',
+    id:        'ht-modal',
     title,
-    bodyHTML: buildModalBody(existingHotel),
+    maxHeight: 'min(90vh, 600px)',
+    bodyHTML:  buildModalBody(existingHotel),
     onSave:   async () => {
       if (!validateModal()) return;
       const { name, checkin, checkout, address, photo, hotelUrl, bookUrl, diamonds } = collectModalValues();
