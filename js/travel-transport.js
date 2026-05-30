@@ -461,7 +461,7 @@ function openTransportModal(existing, onSaved) {
 
       const p = (payload.provider ?? '').toLowerCase();
       if (p.includes('air france'))        payload.logo_path = 'assets/logos/air-france.svg';
-      else if (p.includes('china eastern')) payload.logo_path = 'assets/logos/china-eastern.svg';
+      else if (p.includes('air china'))    payload.logo_path = 'assets/logos/air-china.svg';
       else if (p.includes('china railway')) payload.logo_path = 'assets/logos/china-railway.svg';
       else                                  payload.logo_path = null;
 
