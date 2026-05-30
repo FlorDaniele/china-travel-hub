@@ -68,19 +68,8 @@ async function loadNextTransport(today) {
 /* ── Render helpers ────────────────────────────────────────── */
 
 function transportIcon(type) {
-  if (type === 'flight') {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-      stroke="var(--terracotta)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 4 19 2c-2-2-4-1-5.5.5L10 6 1.8 4.2l-2 2 5.8 3.5L3.8 12 2 11l-2 2 4 4 4-4-1-1.8 1.5-1.5 3.5 5.8z"/>
-    </svg>`;
-  }
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-    stroke="var(--terracotta)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <rect x="4" y="3" width="16" height="16" rx="2"/>
-    <path d="M4 11h16"/><path d="M12 3v8"/>
-    <path d="m8 19-2 3"/><path d="m16 19 2 3"/>
-    <path d="M8 15h0"/><path d="M16 15h0"/>
-  </svg>`;
+  const lucideIcon = type === 'flight' ? 'plane' : 'train-front';
+  return `<i data-lucide="${lucideIcon}" style="width:20px;height:20px;stroke:var(--terracotta);stroke-width:2;" aria-hidden="true"></i>`;
 }
 
 /* ── Contextual secondary note ─────────────────────────────── */
@@ -100,12 +89,32 @@ function renderTransport(t) {
     <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
   </svg>`;
 
+  const logoHTML = t.logo_path
+    ? `<div class="dk-transport-logo">
+        <img src="${esc(t.logo_path)}" alt="${esc(t.provider ?? '')} logo"
+          onerror="this.parentElement.style.display='none'">
+       </div>`
+    : '';
+
+  const originTerminal  = t.terminal_origin      ? `<span class="dk-transport-terminal">${esc(t.terminal_origin)}</span>` : '';
+  const destTerminal    = t.terminal_destination  ? `<span class="dk-transport-terminal">${esc(t.terminal_destination)}</span>` : '';
+
+  const seatVal = t.seat ?? null;
+  const seatDisplay = seatVal !== null ? `Seat: ${esc(seatVal)}` : 'Seat: TBD';
+  const originSeat = `<span class="dk-transport-seat" data-id="${esc(String(t.id))}" data-field="seat" data-value="${seatVal !== null ? esc(seatVal) : ''}" title="Click to edit seat">${seatDisplay}</span>`;
+
+  const seatConnVal = t.seat_connection ?? null;
+  const connSeatHTML = seatConnVal !== null
+    ? `<span class="dk-transport-seat" data-id="${esc(String(t.id))}" data-field="seat_connection" data-value="${esc(seatConnVal)}" title="Click to edit seat">Seat: ${esc(seatConnVal)}</span>`
+    : '';
+
   return `
     <div class="dk-transport-meta">
       <div class="dk-transport-meta-line1">
         <span class="dk-transport-provider-name">${esc(t.provider ?? '')}</span>
         <span class="dk-transport-meta-sep" aria-hidden="true">·</span>
         <span class="dk-transport-number">${esc(t.transport_number ?? '')}</span>
+        ${logoHTML}
       </div>
       <div class="dk-transport-meta-line2">
         ${calIcon}
@@ -120,6 +129,8 @@ function renderTransport(t) {
         <span class="dk-transport-city-v">${esc(t.origin_city)}</span>
         <span class="dk-transport-code-v">${esc(t.origin_code ?? '')}</span>
         <span class="dk-transport-time-v">${esc(formatTime(t.origin_time))}</span>
+        ${originTerminal}
+        ${originSeat}
       </div>
 
       <div class="dk-transport-connection" aria-hidden="true">
@@ -135,6 +146,8 @@ function renderTransport(t) {
         <span class="dk-transport-city-v">${esc(t.destination_city)}</span>
         <span class="dk-transport-code-v">${esc(t.destination_code ?? '')}</span>
         <span class="dk-transport-time-v">${esc(formatTime(t.destination_time))}</span>
+        ${destTerminal}
+        ${connSeatHTML}
       </div>
     </div>
     </div>
@@ -175,4 +188,47 @@ export async function initTravelTransport() {
   }
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  /* ── Inline seat editing ─────────────────────────────────── */
+  card.addEventListener('click', e => {
+    const span = e.target.closest('.dk-transport-seat');
+    if (!span || span.querySelector('input')) return;
+
+    const id    = span.dataset.id;
+    const field = span.dataset.field;
+    const prev  = span.dataset.value; // raw DB value (empty string = null/TBD in DB)
+    const displayVal = (prev === '' || prev === 'TBD') ? '' : prev;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'dk-transport-seat-input';
+    input.value = displayVal;
+    input.placeholder = 'e.g. 24A';
+    span.innerHTML = 'Seat: ';
+    span.appendChild(input);
+    input.focus();
+    input.select();
+
+    async function save() {
+      const val = input.value.trim() || null;
+      span.dataset.value = val ?? '';
+      span.textContent = val ? `Seat: ${val}` : 'Seat: TBD';
+
+      try {
+        await supabase.from('transports').update({ [field]: val }).eq('id', id);
+      } catch (err) {
+        console.warn('[travel-transport] seat save failed:', err);
+      }
+    }
+
+    function cancel() {
+      span.textContent = prev !== '' ? `Seat: ${prev}` : 'Seat: TBD';
+    }
+
+    input.addEventListener('blur', save);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+      if (e.key === 'Escape') { input.removeEventListener('blur', save); cancel(); }
+    });
+  });
 }

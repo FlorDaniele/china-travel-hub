@@ -837,20 +837,24 @@
     letter-spacing: 0.01em;
   }
 
-  /* Mode toggle pill — top-right inside hero */
+  /* Mode toggle pill — floating fixed, bottom-center of viewport */
   .dk-mode-toggle {
-    position: absolute;
-    top: 16px;
-    right: 16px;
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 999px;
     padding: 3px;
     gap: 2px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 4px 16px rgba(56, 56, 46, 0.15);
+    z-index: 500;
+    max-width: 240px;
   }
 
   .dk-mode-btn {
@@ -865,6 +869,7 @@
     background: transparent;
     transition: background 0.15s ease, color 0.15s ease;
     font-family: inherit;
+    white-space: nowrap;
   }
 
   .dk-mode-btn.active,
@@ -874,12 +879,12 @@
   }
 
   .dk-mode-btn:hover:not(.active):not([aria-pressed="true"]) {
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
   }
 
   .dk-mode-btn:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid var(--terracotta);
     outline-offset: 2px;
     border-radius: 999px;
   }
