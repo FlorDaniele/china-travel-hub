@@ -290,8 +290,8 @@
   /* Logo container — right-aligned in meta line 1 */
   .dk-transport-logo {
     margin-left: auto;
-    width: 132px;
-    height: 36px;
+    width: 80px;
+    height: 22px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -300,7 +300,7 @@
   }
 
   .dk-transport-logo img {
-    max-height: 36px;
+    max-height: 22px;
     width: auto;
     display: block;
   }
@@ -410,7 +410,7 @@
   /* Vertical dashed segment — one above icon, one below */
   .dk-transport-v-seg {
     width: 0;
-    height: 32px;
+    height: 22px;
     flex-shrink: 0;
     border-left: 1px dashed var(--border);
   }
