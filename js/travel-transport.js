@@ -340,94 +340,114 @@ function buildTransportModalBody(t) {
         <button class="modal-pill" type="button" role="radio" aria-checked="${isFlight ? 'false' : 'true'}" data-value="train">Train</button>
       </div>
     </div>
-    <div class="modal-field">
-      <label class="modal-label" for="tr-number">Transport number</label>
-      <input type="text" id="tr-number" class="modal-input" placeholder="AF0202 / G87" value="${v('transport_number')}">
+
+    <!-- Flight: Airline + Flight number on same row -->
+    <div class="modal-row tr-flight-only" ${fHide}>
+      <div class="modal-field">
+        <label class="modal-label" for="tr-airline">Airline</label>
+        <input type="text" id="tr-airline" class="modal-input" placeholder="Air France" value="${isFlight ? v('provider') : ''}">
+      </div>
+      <div class="modal-field modal-field--transport-number">
+        <label class="modal-label" for="tr-flight-number">Flight number</label>
+        <input type="text" id="tr-flight-number" class="modal-input" placeholder="AF0202" value="${isFlight ? v('transport_number') : ''}">
+      </div>
+    </div>
+    <!-- Train: number + operator standalone -->
+    <div class="modal-field tr-train-only" ${tHide}>
+      <label class="modal-label" for="tr-train-number">Train number</label>
+      <input type="text" id="tr-train-number" class="modal-input" placeholder="G87" value="${!isFlight ? v('transport_number') : ''}">
     </div>
 
     <!-- Departure date + time on same row -->
     <div class="modal-row">
-      <div class="modal-field">
+      <div class="modal-field modal-field--date">
         <label class="modal-label" for="tr-date">Departure date <span style="color:var(--terracotta)">*</span></label>
         <input type="date" id="tr-date" class="modal-date" value="${v('departure_date')}">
         <div class="modal-error" id="tr-date-err" role="alert"></div>
       </div>
-      <div class="modal-field modal-field--time">
+      <div class="modal-field">
         <label class="modal-label" for="tr-origin-time">Time <span style="color:var(--terracotta)">*</span></label>
         <input type="time" id="tr-origin-time" class="modal-input" value="${formatTime(v('origin_time'))}">
         <div class="modal-error" id="tr-time-err" role="alert"></div>
       </div>
     </div>
 
-    <div class="modal-field">
-      <label class="modal-label" for="tr-origin-city">Origin city <span style="color:var(--terracotta)">*</span></label>
-      <input type="text" id="tr-origin-city" class="modal-input" placeholder="Paris / Beijing" value="${v('origin_city')}">
-      <div class="modal-error" id="tr-origin-err" role="alert"></div>
-    </div>
-    <div class="modal-field tr-flight-only" ${fHide}>
-      <label class="modal-label" for="tr-origin-code">Code</label>
-      <input type="text" id="tr-origin-code" class="modal-input" placeholder="CDG" value="${v('origin_code')}">
-    </div>
-
-    <div class="modal-field">
-      <label class="modal-label" for="tr-dest-city">Destination city <span style="color:var(--terracotta)">*</span></label>
-      <input type="text" id="tr-dest-city" class="modal-input" placeholder="Beijing / Xi'an" value="${v('destination_city')}">
-      <div class="modal-error" id="tr-dest-err" role="alert"></div>
-    </div>
-    <div class="modal-field tr-flight-only" ${fHide}>
-      <label class="modal-label" for="tr-dest-code">Code</label>
-      <input type="text" id="tr-dest-code" class="modal-input" placeholder="PEK" value="${v('destination_code')}">
+    <!-- Origin city + Airport code: row (code hidden for trains) -->
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label" for="tr-origin-city">Origin city <span style="color:var(--terracotta)">*</span></label>
+        <input type="text" id="tr-origin-city" class="modal-input" placeholder="Paris / Beijing" value="${v('origin_city')}">
+        <div class="modal-error" id="tr-origin-err" role="alert"></div>
+      </div>
+      <div class="modal-field modal-field--airport-code tr-flight-only" ${fHide}>
+        <label class="modal-label" for="tr-origin-code">Code</label>
+        <input type="text" id="tr-origin-code" class="modal-input modal-input--airport-code" placeholder="CDG" maxlength="3" value="${v('origin_code')}">
+      </div>
     </div>
 
-    <!-- Flight: arrival date + time on same row -->
+    <!-- Terminal origin + Seat on same row (flight only) -->
     <div class="modal-row tr-flight-only" ${fHide}>
       <div class="modal-field">
-        <label class="modal-label" for="tr-arr-date">Arrival date</label>
-        <input type="date" id="tr-arr-date" class="modal-date" value="${v('arrival_date')}">
+        <label class="modal-label" for="tr-terminal-origin">Terminal <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
+        <input type="text" id="tr-terminal-origin" class="modal-input" placeholder="Terminal 2E" value="${v('terminal_origin')}">
       </div>
-      <div class="modal-field modal-field--time">
-        <label class="modal-label" for="tr-dest-time-f">Arrival time</label>
-        <input type="time" id="tr-dest-time-f" class="modal-input" value="${formatTime(v('destination_time'))}">
+      <div class="modal-field modal-field--seat">
+        <label class="modal-label" for="tr-seat">Seat <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
+        <input type="text" id="tr-seat" class="modal-input modal-input--seat" placeholder="24A" maxlength="4" value="${v('seat')}">
       </div>
     </div>
 
-    <!-- Train: arrival time only (no arrival date) -->
-    <div class="modal-field tr-train-only" ${tHide}>
-      <label class="modal-label" for="tr-dest-time-t">Arrival time <span style="color:var(--terracotta)">*</span></label>
-      <input type="time" id="tr-dest-time-t" class="modal-input" value="${formatTime(v('destination_time'))}">
-    </div>
-
-    <!-- Flight auto-calculated duration (read-only) -->
+    <!-- Auto-calculated duration (flight only, read-only) -->
     <div class="modal-field tr-flight-only" id="tr-duration-wrap" ${fHide}>
       <span class="modal-label" style="color:var(--text-secondary);font-weight:400">Duration</span>
       <span id="tr-duration-display" style="font-size:14px;color:var(--text-secondary)">—</span>
     </div>
 
-    <!-- Train manual duration -->
-    <div class="modal-field tr-train-only" ${tHide}>
-      <label class="modal-label" for="tr-duration">Duration <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
-      <input type="text" id="tr-duration" class="modal-input" placeholder="10h 40m" value="${v('duration')}">
+    <!-- Arrival date + time on same row (flight only) -->
+    <div class="modal-row tr-flight-only" ${fHide}>
+      <div class="modal-field modal-field--date">
+        <label class="modal-label" for="tr-arr-date">Arrival date</label>
+        <input type="date" id="tr-arr-date" class="modal-date" value="${v('arrival_date')}">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label" for="tr-dest-time-f">Arrival time</label>
+        <input type="time" id="tr-dest-time-f" class="modal-input" value="${formatTime(v('destination_time'))}">
+      </div>
     </div>
 
-    <div class="modal-field tr-flight-only" ${fHide}>
-      <label class="modal-label" for="tr-provider">Airline</label>
-      <input type="text" id="tr-provider" class="modal-input" placeholder="Air France" value="${isFlight ? v('provider') : ''}">
-    </div>
+    <!-- Train: arrival time only -->
     <div class="modal-field tr-train-only" ${tHide}>
-      <label class="modal-label" for="tr-provider">Operator</label>
-      <input type="text" id="tr-provider" class="modal-input" placeholder="China Railway" value="${!isFlight ? v('provider') : 'China Railway'}">
+      <label class="modal-label" for="tr-dest-time-t">Arrival time <span style="color:var(--terracotta)">*</span></label>
+      <input type="time" id="tr-dest-time-t" class="modal-input" value="${formatTime(v('destination_time'))}">
     </div>
-    <div class="modal-field tr-flight-only" ${fHide}>
-      <label class="modal-label" for="tr-terminal-origin">Terminal origin <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
-      <input type="text" id="tr-terminal-origin" class="modal-input" placeholder="Terminal 2E" value="${v('terminal_origin')}">
+
+    <!-- Destination city + Airport code: row (code hidden for trains) -->
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label" for="tr-dest-city">Destination city <span style="color:var(--terracotta)">*</span></label>
+        <input type="text" id="tr-dest-city" class="modal-input" placeholder="Beijing / Xi'an" value="${v('destination_city')}">
+        <div class="modal-error" id="tr-dest-err" role="alert"></div>
+      </div>
+      <div class="modal-field modal-field--airport-code tr-flight-only" ${fHide}>
+        <label class="modal-label" for="tr-dest-code">Code</label>
+        <input type="text" id="tr-dest-code" class="modal-input modal-input--airport-code" placeholder="PEK" maxlength="3" value="${v('destination_code')}">
+      </div>
     </div>
+
+    <!-- Terminal destination (flight only, full width) -->
     <div class="modal-field tr-flight-only" ${fHide}>
       <label class="modal-label" for="tr-terminal-dest">Terminal destination <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
       <input type="text" id="tr-terminal-dest" class="modal-input" placeholder="Terminal 2" value="${v('terminal_destination')}">
     </div>
-    <div class="modal-field tr-flight-only" ${fHide}>
-      <label class="modal-label" for="tr-seat">Seat <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
-      <input type="text" id="tr-seat" class="modal-input" placeholder="TBD" value="${v('seat')}">
+
+    <!-- Train: operator + manual duration -->
+    <div class="modal-field tr-train-only" ${tHide}>
+      <label class="modal-label" for="tr-operator">Operator</label>
+      <input type="text" id="tr-operator" class="modal-input" placeholder="China Railway" value="${!isFlight ? v('provider') : 'China Railway'}">
+    </div>
+    <div class="modal-field tr-train-only" ${tHide}>
+      <label class="modal-label" for="tr-duration">Duration <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>
+      <input type="text" id="tr-duration" class="modal-input" placeholder="10h 40m" value="${v('duration')}">
     </div>
   `;
 }
@@ -494,7 +514,9 @@ function collectTransportValues() {
 
   return {
     type,
-    transport_number:     document.getElementById('tr-number')?.value.trim() || null,
+    transport_number:     isFlight
+      ? (document.getElementById('tr-flight-number')?.value.trim() || null)
+      : (document.getElementById('tr-train-number')?.value.trim() || null),
     departure_date:       document.getElementById('tr-date')?.value || null,
     origin_city:          document.getElementById('tr-origin-city')?.value.trim() || null,
     origin_code:          document.getElementById('tr-origin-code')?.value.trim() || null,
@@ -506,7 +528,9 @@ function collectTransportValues() {
       : (document.getElementById('tr-dest-time-t')?.value || null),
     arrival_date:         isFlight ? (document.getElementById('tr-arr-date')?.value || null) : null,
     duration:             isFlight ? autoDuration : (document.getElementById('tr-duration')?.value.trim() || null),
-    provider:             document.getElementById('tr-provider')?.value.trim() || null,
+    provider:             isFlight
+      ? (document.getElementById('tr-airline')?.value.trim() || null)
+      : (document.getElementById('tr-operator')?.value.trim() || null),
     terminal_origin:      document.getElementById('tr-terminal-origin')?.value.trim() || null,
     terminal_destination: document.getElementById('tr-terminal-dest')?.value.trim() || null,
     seat:                 document.getElementById('tr-seat')?.value.trim() || null,

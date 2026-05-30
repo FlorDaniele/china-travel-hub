@@ -225,9 +225,6 @@ function updateNightsDisplay() {
 function buildModalBody(hotel) {
   const v   = (field) => esc(hotel?.[field] ?? '');
   const d   = hotel?.diamonds ?? 0;
-  const ci  = hotel?.check_in  ?? '';
-  const co  = hotel?.check_out ?? '';
-  const nights = (ci && co && co > ci) ? `${nightCount(ci, co)} night${nightCount(ci, co) !== 1 ? 's' : ''}` : '—';
 
   const diamondPills = [2, 3, 4, 5].map(n =>
     `<button class="modal-pill" type="button" role="radio" aria-checked="${n === d ? 'true' : 'false'}" data-value="${n}">${n} ✦</button>`
@@ -240,10 +237,14 @@ function buildModalBody(hotel) {
       <div class="modal-error" id="ht-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
+      <label class="modal-label" for="ht-modal-address">Address</label>
+      <input type="text" id="ht-modal-address" class="modal-input" placeholder="No. 12 Jianhua South Road, Beijing" value="${v('address')}">
+    </div>
+    <div class="modal-field">
       <span class="modal-label" id="ht-modal-diamonds-lbl">Diamonds</span>
       <div class="modal-pill-group" role="radiogroup" aria-labelledby="ht-modal-diamonds-lbl">${diamondPills}</div>
     </div>
-    <!-- Check-in + check-out on same row (2b) -->
+    <!-- Check-in + check-out on same row -->
     <div class="modal-row">
       <div class="modal-field">
         <label class="modal-label" for="ht-modal-checkin">Check-in <span style="color:var(--terracotta)">*</span></label>
@@ -254,14 +255,6 @@ function buildModalBody(hotel) {
         <label class="modal-label" for="ht-modal-checkout">Check-out <span style="color:var(--terracotta)">*</span></label>
         <input type="date" id="ht-modal-checkout" class="modal-date" value="${v('check_out')}">
       </div>
-    </div>
-    <div class="modal-field">
-      <span class="modal-label" aria-hidden="true">Nights</span>
-      <span id="ht-modal-nights" style="font-size:14px;color:var(--text-secondary)">${nights}</span>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label" for="ht-modal-address">Address</label>
-      <input type="text" id="ht-modal-address" class="modal-input" placeholder="No. 12 Jianhua South Road, Beijing" value="${v('address')}">
     </div>
     <div class="modal-field">
       <label class="modal-label" for="ht-modal-photo">Photo URL <span style="color:var(--text-secondary);font-weight:400">(optional)</span></label>

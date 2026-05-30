@@ -135,6 +135,39 @@
   margin-bottom: 0;
 }
 
+/* ── Date field: ~20% narrower so time fills more space ─────── */
+
+.modal-field--date {
+  flex: 0 0 52%;
+}
+
+/* ── Airport code: compact fixed-width slot ─────────────────── */
+
+.modal-field--airport-code {
+  flex: 0 0 auto;
+}
+
+.modal-input--airport-code {
+  width: 72px;
+  text-transform: uppercase;
+}
+
+/* ── Seat: compact fixed-width slot ─────────────────────────── */
+
+.modal-field--seat {
+  flex: 0 0 auto;
+}
+
+.modal-input--seat {
+  width: 72px;
+}
+
+/* ── Flight number: ~40% of airline + number row ────────────── */
+
+.modal-field--transport-number {
+  flex: 0 0 40%;
+}
+
 /* ── Form field ────────────────────────────────────────────── */
 
 .modal-field {
