@@ -757,36 +757,20 @@ function renderDesktopBookingChecklist(bookings) {
   if (!listEl) return;
 
   const pending = bookings.filter(b => b.status !== 'booked' && b.status !== 'done');
-  const total   = pending.length;
+  const total   = bookings.length;
 
-  if (viewAllBtn) viewAllBtn.style.display = total > 6 ? '' : 'none';
+  if (viewAllBtn) viewAllBtn.style.display = total >= 6 ? '' : 'none';
 
-  if (total === 0) {
+  if (pending.length === 0) {
     listEl.innerHTML = `<li class="dk-booking-check-item">
       <span class="dk-booking-item-label" style="color:var(--text-secondary)">All bookings confirmed ✓</span>
     </li>`;
     return;
   }
 
-  // Cap at 6: up to 2 per type, fill remaining slots from overflow
-  const byType = {
-    hotel: pending.filter(b => b.type === 'hotel'),
-    train: pending.filter(b => b.type === 'train'),
-    tour:  pending.filter(b => b.type === 'tour'),
-  };
-  const visible = [
-    ...byType.hotel.slice(0, 2),
-    ...byType.train.slice(0, 2),
-    ...byType.tour.slice(0, 2),
-  ];
-  if (visible.length < 6) {
-    const overflow = [
-      ...byType.hotel.slice(2),
-      ...byType.train.slice(2),
-      ...byType.tour.slice(2),
-    ];
-    visible.push(...overflow.slice(0, 6 - visible.length));
-  }
+  // CASE A (total < 6): show all pending
+  // CASE B (total ≥ 6): cap at 5 pending items, "View all →" shown above
+  const visible = total >= 6 ? pending.slice(0, 5) : pending;
 
   listEl.innerHTML = visible.map(b => {
     const id        = `bk-dyn-${esc(String(b.id))}`;
