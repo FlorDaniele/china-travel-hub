@@ -750,7 +750,7 @@
     width: 18px;
     height: 18px;
     min-width: 18px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid var(--border-ui);
     border-radius: 4px;
     background: var(--surface);
     cursor: pointer;
@@ -895,7 +895,7 @@
   .dk-booking-summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-ui);
     border-radius: var(--radius-sm);
     background: transparent;
     margin-bottom: 20px;
@@ -911,7 +911,7 @@
 
   /* Right border on first two cols creates the dividers */
   .dk-booking-summary-col:not(:last-child) {
-    border-right: 1px solid var(--border);
+    border-right: 1px solid var(--border-ui);
   }
 
   .dk-booking-summary-label {
@@ -978,7 +978,7 @@
     width: 18px;
     height: 18px;
     min-width: 18px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid var(--border-ui);
     border-radius: 4px;
     background: var(--surface);
     cursor: pointer;
@@ -1410,7 +1410,7 @@
     align-items: center;
     gap: 8px;
     background: #FAFAFA;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-ui);
     border-radius: 8px;
     padding: 12px 10px;
     min-height: 44px;
@@ -2529,7 +2529,7 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding-bottom: 16px;
+    padding: 0 20px calc(80px + env(safe-area-inset-bottom)) 20px;
   }
 
   /* Hide the mobile JS-rendered fallback content */
@@ -2541,9 +2541,14 @@
   /* ── Card base ──────────────────────────────────────────── */
 
   .dk-card {
-    margin: 0 16px;
-    padding: 16px;
-    border-radius: 12px;
+    margin: 0;
+    padding: 24px;
+    border-radius: 16px;
+    background: var(--surface);
+    box-shadow: 0 2px 8px rgba(69, 69, 50, 0.07);
+    margin-bottom: 0; /* gap on .desktop-layout handles spacing */
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .dk-card-header {
@@ -2583,21 +2588,49 @@
   }
 
   /* ── Shared icon button ─────────────────────────────────── */
+  /* 24px visual circle, 48px transparent tap area via ::before */
 
   .dk-icon-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    min-width: 44px;
-    min-height: 44px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
     border-radius: 50%;
-    background: #F0F0F0;
+    background: transparent;
     color: var(--text-secondary);
     border: none;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
+    position: relative;
+    /* Desktop ::after hit area override — disabled on mobile */
+  }
+
+  /* Visual circle via ::before */
+  .dk-icon-btn::before {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: background 0.15s ease;
+    z-index: 0;
+  }
+
+  /* Ensure SVG renders above the ::before circle */
+  .dk-icon-btn > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .dk-icon-btn:hover::before {
+    background: #E0E0E0;
   }
 
   .dk-icon-btn--action {
@@ -2606,7 +2639,8 @@
 
   .dk-icon-btn:focus-visible {
     outline: 2px solid var(--terracotta);
-    outline-offset: 3px;
+    outline-offset: -12px;
+    border-radius: 50%;
   }
 
   /* ── View all link ──────────────────────────────────────── */
@@ -2642,7 +2676,7 @@
     width: 18px;
     height: 18px;
     min-width: 18px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid var(--border-ui);
     border-radius: 4px;
     background: var(--surface);
     cursor: pointer;
@@ -2683,7 +2717,13 @@
     height: auto;
     border-radius: 0;
     box-shadow: none;
-    margin: 0;
+    /* Full-bleed: break out of the 20px container padding */
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
+    /* Reset the dk-card overrides for hero */
+    padding: 0;
+    background: transparent;
   }
 
   .dk-carousel {
@@ -2724,10 +2764,10 @@
     pointer-events: none;
   }
 
-  /* Countdown: scaled down for small screens */
+  /* Countdown: clear of dots at very bottom */
   .dk-slide-content {
     position: absolute;
-    bottom: 16px;
+    bottom: 32px;
     left: 16px;
     display: flex;
     flex-direction: column;
@@ -2750,14 +2790,14 @@
     letter-spacing: 0.01em;
   }
 
-  /* Carousel dots */
+  /* Carousel dots — sit below the countdown text at very bottom of hero */
   .dk-carousel-dots {
     position: absolute;
-    bottom: 12px;
+    bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 6px;
+    gap: 8px;
     z-index: 10;
   }
 
@@ -2794,52 +2834,56 @@
     border-radius: 50%;
   }
 
-  /* ── Mode toggle: smaller text, stays top-right of hero ─── */
+  /* ── Mode toggle: fixed floating pill at bottom of viewport ── */
 
   .dk-mode-toggle {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+    position: fixed;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 999px;
-    padding: 2px;
+    padding: 3px;
     gap: 2px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    z-index: 5;
+    box-shadow: 0 4px 16px rgba(56, 56, 46, 0.15);
+    z-index: 500;
+    max-width: 240px;
+    /* Prevent wrapping */
+    white-space: nowrap;
   }
 
   .dk-mode-btn {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    padding: 5px 12px;
+    padding: 7px 20px;
     min-height: 44px;
     border-radius: 999px;
     border: none;
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
     background: transparent;
     transition: background 0.15s ease, color 0.15s ease;
     font-family: inherit;
   }
 
-  /* Active: dark text on terracotta — contrast ≈5.2:1 at 12px (WCAG AA) */
   .dk-mode-btn.active,
   .dk-mode-btn[aria-pressed="true"] {
     background: var(--terracotta);
-    color: #1a1a1a;
-  }
-
-  .dk-mode-btn:hover:not(.active):not([aria-pressed="true"]) {
-    background: rgba(255, 255, 255, 0.12);
     color: #ffffff;
   }
 
+  .dk-mode-btn:hover:not(.active):not([aria-pressed="true"]) {
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-primary);
+  }
+
   .dk-mode-btn:focus-visible {
-    outline: 2px solid #ffffff;
+    outline: 2px solid var(--terracotta);
     outline-offset: 2px;
     border-radius: 999px;
   }
@@ -2850,22 +2894,22 @@
   .dk-booking-summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-ui);
     border-radius: var(--radius-sm);
     background: transparent;
     margin-bottom: 14px;
   }
 
   .dk-booking-summary-col {
-    padding: 10px 6px;
+    padding: 12px 6px;
     text-align: center;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 8px;
   }
 
   .dk-booking-summary-col:not(:last-child) {
-    border-right: 1px solid var(--border);
+    border-right: 1px solid var(--border-ui);
   }
 
   .dk-booking-summary-label {
@@ -2923,7 +2967,7 @@
     width: 18px;
     height: 18px;
     min-width: 18px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid var(--border-ui);
     border-radius: 4px;
     background: var(--surface);
     cursor: pointer;
@@ -2956,7 +3000,7 @@
   }
 
   .dk-booking-item-label {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--text-primary);
     line-height: 1.4;
@@ -2990,7 +3034,7 @@
   }
 
   .dk-reminder-title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 400;
     color: var(--text-primary);
     line-height: 1.4;
@@ -3000,6 +3044,7 @@
     font-size: 12px;
     font-weight: 400;
     line-height: 1.2;
+    margin-top: 4px;
   }
 
   .dk-due-overdue { color: var(--due-overdue); }
@@ -3380,7 +3425,7 @@
     align-items: center;
     gap: 8px;
     background: #FAFAFA;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-ui);
     border-radius: 8px;
     padding: 10px 8px;
     min-height: 44px;
@@ -3404,7 +3449,7 @@
   }
 
   .dk-activity-title {
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
     white-space: nowrap;
@@ -3415,7 +3460,7 @@
 
   .dk-activity-title-input {
     width: 100%;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--text-primary);
     background: transparent;
@@ -3655,11 +3700,19 @@
 
   /* ── Calendar card ──────────────────────────────────────── */
 
+  .dk-calendar {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
   .dk-cal-grid {
     width: 100%;
+    max-width: 100%;
     border-collapse: separate;
     border-spacing: 2px;
+    table-layout: fixed;
     margin-bottom: 8px;
+    overflow-x: hidden;
   }
 
   .dk-cal-grid thead th {
@@ -3692,17 +3745,17 @@
   .dk-cal-empty { background: transparent; }
 
   .dk-cal-legend {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 4px 10px;
-    margin-top: 6px;
+    margin-top: 8px;
   }
 
   .dk-legend-item {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
+    font-size: 13px;
     color: var(--text-secondary);
   }
 

@@ -61,6 +61,9 @@
   --action-hover: #3D7268;   /* 5.38:1 on white — AA  */
   --action-light: #EAF2F1;   /* tinted bg for hover fills, focus rings */
 
+  /* UI stroke — 15% darker luminosity than --border (#E8E8E8 L:91% → L:76%) */
+  --border-ui: #C2C2C2;
+
   /* Shadows — warm cream-toned, no black */
   --shadow-sm:  0 2px 8px rgba(69, 69, 50, 0.07);
   --shadow-md:  0 4px 16px rgba(69, 69, 50, 0.09);
@@ -613,7 +616,7 @@ a {
   width: 18px;
   height: 18px;
   min-width: 18px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--border-ui);
   border-radius: 4px;
   background: var(--surface);
   cursor: pointer;
