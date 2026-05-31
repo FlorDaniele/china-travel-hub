@@ -4038,3 +4038,23 @@
 
 }
 /* end @media (max-width: 479px) */
+
+/* ============================================================
+   TOGGLE SIZE OVERRIDE — desktop only (≥ 768px)
+   All values are current desktop × 1.2, rounded to nearest 4px.
+   This block comes last so it wins over the min-width: 1024px block.
+   ============================================================ */
+
+@media (min-width: 768px) {
+  .dk-mode-toggle {
+    padding: 4px;
+    gap: 4px;
+    max-width: 288px;
+  }
+
+  .dk-mode-btn {
+    font-size: 20px;
+    padding: 8px 24px;
+    min-height: 44px;
+  }
+}
