@@ -1,0 +1,1177 @@
+/* ============================================================
+   TRAVEL.CSS — Travel mode cards: Daily Steps, Next Transport, Hotels
+   Desktop only (≥ 1024px). All selectors scoped to .dk-steps,
+   .dk-transport, .dk-hotels to avoid collisions.
+   ============================================================ */
+
+/* ── Base: hidden until travel mode ───────────────────────── */
+
+.dk-steps,
+.dk-transport,
+.dk-hotels,
+.dk-km,
+.dk-steps-km-row {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+
+  /* ── Shared: flex card column ─────────────────────────────── */
+
+  .dk-steps,
+  .dk-transport,
+  .dk-hotels,
+  .dk-km {
+    display: none; /* still hidden in planning mode */
+    flex-direction: column;
+  }
+
+  .dk-steps-km-row {
+    display: none; /* still hidden in planning mode */
+  }
+
+  /* Shown in travel mode via overview.css .mode-travel rules */
+  .mode-travel .dk-steps,
+  .mode-travel .dk-transport,
+  .mode-travel .dk-hotels,
+  .mode-travel .dk-km {
+    display: flex;
+  }
+
+  .mode-travel .dk-steps-km-row {
+    display: flex;
+    gap: 16px;
+  }
+
+  /* Equal-width chart cards inside the flex row */
+  .dk-steps-km-row .dk-steps,
+  .dk-steps-km-row .dk-km {
+    flex: 1;
+    min-width: 0; /* prevents flex item from overflowing */
+  }
+
+  /* ─────────────────────────────────────────────────────────── */
+  /* DAILY STEPS + KM WALKED (two equal scrollable cards)        */
+  /* ─────────────────────────────────────────────────────────── */
+
+  /* Chart wrap: clips the scrollable area and positions indicators */
+  .dk-chart-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Scrollable chart container — hides scrollbar, native scroll */
+  .dk-steps-scroll,
+  .dk-km-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;       /* Firefox */
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    height: 100%;
+    min-height: 180px;
+  }
+
+  .dk-steps-scroll::-webkit-scrollbar,
+  .dk-km-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Canvas width set by JS to fixed pixel width (20 days × 56px = 1120px) */
+  #steps-canvas,
+  #km-canvas {
+    display: block;
+    /* width and height set by JS */
+  }
+
+  /* Floating tooltips */
+  .steps-tooltip,
+  .km-tooltip {
+    position: absolute;
+    background: #ffffff;
+    box-shadow: 0px 4px 16px rgba(56, 56, 46, 0.15);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: var(--text-primary);
+    pointer-events: none;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    z-index: 10;
+  }
+
+  /* Active hover dots */
+  .steps-dot,
+  .km-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s ease;
+    z-index: 9;
+  }
+
+  .steps-dot { background: var(--terracotta); }
+  .km-dot    { background: #dfbc5e; }
+
+  /* Right-edge fade gradient — disappears when scrolled to end */
+  .dk-scroll-fade {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 48px;
+    background: linear-gradient(to left, #ffffff 0%, transparent 100%);
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    z-index: 5;
+  }
+
+  .dk-scroll-fade.is-hidden {
+    opacity: 0;
+  }
+
+  /* Chevron arrow — clickable, swaps direction based on scroll position */
+  .dk-scroll-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    pointer-events: auto;
+    cursor: pointer;
+    transition: opacity 200ms ease, background 0.15s ease;
+    z-index: 6;
+  }
+
+  .dk-scroll-arrow:hover {
+    background: #E0E0E0;
+    color: var(--text-primary);
+  }
+
+  .dk-scroll-arrow.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* When showing left arrow (at end of scroll) */
+  .dk-scroll-arrow.is-left {
+    right: auto;
+    left: 12px;
+  }
+
+  /* ── Y-axis + chart row wrapper ─────────────────────────────── */
+
+  .dk-chart-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+  }
+
+  /* Fixed Y-axis label column — outside scroll container */
+  .dk-yaxis {
+    width: 44px;
+    flex-shrink: 0;
+    position: relative;
+    /* Height matched to scroll container via JS */
+  }
+
+  .dk-yaxis-label {
+    position: absolute;
+    right: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--font-family, system-ui);
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  /* Scroll container inside the row (no left padding for Y axis — it's separate) */
+  .dk-chart-row .dk-steps-scroll,
+  .dk-chart-row .dk-km-scroll {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* ─────────────────────────────────────────────────────────── */
+  /* NEXT TRANSPORT                                               */
+  /* ─────────────────────────────────────────────────────────── */
+
+  /* 24px padding all sides, 16px bottom so secondary note is 16px from card edge */
+  .dk-transport.dk-card {
+    padding: 24px 24px 16px 24px;
+  }
+
+  .dk-transport-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    gap: 0;
+  }
+
+  /* Fills remaining vertical space and centers the route block within it */
+  .dk-transport-route-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dk-transport-loading {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* ── Top metadata block ── */
+
+  .dk-transport-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Line 1: badge + transport number */
+  .dk-transport-meta-line1 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dk-transport-badge {
+    display: none;
+  }
+
+  /* Line 1: provider · number */
+  .dk-transport-meta-line1 {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .dk-transport-provider-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .dk-transport-meta-sep {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    margin: 0 6px;
+  }
+
+  .dk-transport-number {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  /* Logo container — right-aligned in meta line 1 */
+  .dk-transport-logo {
+    margin-left: auto;
+    width: 80px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .dk-transport-logo img {
+    max-height: 22px;
+    width: auto;
+    display: block;
+  }
+
+  /* Line 2: calendar icon + date */
+  .dk-transport-meta-line2 {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-wrap: nowrap;
+  }
+
+  .dk-transport-meta-date {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Divider between metadata and route block */
+  .dk-transport-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  /* ── Vertical centered route block ── */
+
+  .dk-transport-route-v {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* Origin / Destination endpoint — centered column */
+  .dk-transport-endpoint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* City name — small secondary label */
+  /* City name (with optional code in parens) — primary line of each endpoint */
+  .dk-transport-city-v {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .dk-transport-time-v {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    margin-top: 4px;
+    line-height: 1.2;
+  }
+
+  /* Terminal and seat lines — below time, only rendered when not null */
+  .dk-transport-terminal,
+  .dk-transport-seat {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+
+  .dk-transport-seat {
+    cursor: text;
+  }
+
+  /* Inline seat edit input */
+  .dk-transport-seat-input {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-align: center;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--terracotta);
+    outline: none;
+    min-width: 48px;
+    width: auto;
+    font-family: inherit;
+    padding: 0;
+    margin-top: 2px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Connection column: vertical dashed segments above and below the icon */
+  .dk-transport-connection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* Vertical dashed segment — one above icon, one below */
+  .dk-transport-v-seg {
+    width: 0;
+    height: 22px;
+    flex-shrink: 0;
+    border-left: 1px dashed #BBBBBB;
+  }
+
+  /* Hide the old horizontal dash (kept in DOM for safety, hidden visually) */
+  .dk-transport-dash-h {
+    display: none;
+  }
+
+  .dk-transport-icon-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .dk-transport-icon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dk-transport-duration-v {
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  /* Empty state */
+  .dk-transport-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 32px 0;
+    flex: 1;
+  }
+
+  .dk-transport-empty-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  /* Secondary info row — removed per design spec */
+  .dk-transport-secondary-row {
+    display: none;
+  }
+
+  /* Bottom carousel arrows — centered below card content (legacy, unused) */
+  .dk-transport-nav-bottom {
+    display: none;
+  }
+
+  /* Title-row nav arrows */
+  .dk-transport-nav-header,
+  .dk-hotel-nav-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 4px;
+    margin-right: auto;
+    flex-shrink: 0;
+  }
+
+  .dk-transport-prev:disabled,
+  .dk-transport-next:disabled {
+    cursor: default;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Edit button (pencil, inline with transport number) */
+  .dk-transport-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    vertical-align: middle;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .dk-transport-edit-btn:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ─────────────────────────────────────────────────────────── */
+  /* HOTELS CAROUSEL                                              */
+  /* ─────────────────────────────────────────────────────────── */
+
+  /* Bottom carousel arrows — centered below card content (legacy, unused) */
+  .dk-hotel-nav-bottom {
+    display: none;
+  }
+
+  /* Hotel carousel arrows — layout only; appearance comes from .dk-icon-btn */
+  .dk-hotel-prev,
+  .dk-hotel-next {
+    flex-shrink: 0;
+  }
+
+  .dk-hotel-prev:disabled,
+  .dk-hotel-next:disabled {
+    cursor: default;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+
+  /* Viewport clips slides */
+  .dk-hotels-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dk-hotel-viewport {
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .dk-hotel-track {
+    display: flex;
+    transition: transform 250ms ease;
+  }
+
+  .dk-hotel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  .dk-hotel-photo {
+    position: relative; /* needed for badge positioning */
+    width: 100%;
+    height: 192px; /* increased from 160px: 160 + 32px bottom padding added to info */
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--warm-gold-light);
+    flex-shrink: 0;
+  }
+
+  /* Context badge: Current stay / Next stay */
+  .dk-hotel-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 4px 8px;
+    border-radius: 100px;
+    background: rgba(238, 97, 70, 0.12);
+    color: var(--terracotta);
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .dk-hotel-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .dk-hotel-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--warm-gold-light);
+  }
+
+  .dk-hotel-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 8px;
+    padding: 12px 0 0;
+  }
+
+  /* Name, diamonds, and pencil — tight inline group, 8px gap */
+  .dk-hotel-name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Hotel name: strictly smaller than section title (20px) */
+  .dk-hotel-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
+  }
+
+  /* Rating diamonds inline — margin-top removed since name-row handles alignment */
+  .dk-hotel-rating {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .dk-hotel-dates {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    white-space: normal;
+  }
+
+  .dk-hotel-address {
+    font-size: 14px;
+    color: var(--text-secondary);
+    white-space: normal;
+    overflow: visible;
+    line-height: 1.4;
+  }
+
+  .dk-hotel-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 20px;
+  }
+
+  /* Matches .dk-view-all: 16px, 500, action colour.
+     Note: --action (#2E5C54) on white = 7.45:1 — WCAG AAA. */
+  .dk-hotel-link {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--action);
+    text-decoration: none;
+    transition: color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .dk-hotel-link:hover {
+    color: var(--terracotta);
+  }
+
+  .dk-hotel-link:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Dot indicator */
+  .dk-hotel-dots {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    flex-shrink: 0;
+  }
+
+  .dk-hotel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.15s ease, width 0.15s ease;
+    /* Expand hit area */
+    position: relative;
+  }
+
+  .dk-hotel-dot::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+  }
+
+  .dk-hotel-dot.is-active {
+    width: 8px;
+    height: 8px;
+    background: var(--terracotta);
+  }
+
+  .dk-hotel-dot:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 3px;
+  }
+
+  /* ── Hotel edit button (pencil, inline with hotel name) ──── */
+
+  .dk-hotel-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+    vertical-align: middle;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .dk-hotel-edit-btn:focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* ── Delete button in hotel edit modal ───────────────────── */
+
+  .ht-modal-delete-wrap {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .ht-modal-delete-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .ht-modal-delete-btn:hover {
+    color: var(--text-primary);
+  }
+
+  .ht-modal-confirm-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .ht-modal-confirm-row.hidden {
+    display: none;
+  }
+
+  .ht-modal-confirm-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ht-modal-confirm-yes {
+    background: none;
+    border: 1px solid var(--text-secondary);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .ht-modal-confirm-yes:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary);
+    border-color: var(--text-primary);
+  }
+
+} /* end @media desktop */
+
+/* ============================================================
+   MOBILE LAYOUT — max-width: 767px
+   Travel tab cards: single-column stacked.
+   Covers phones (390px), wide phones (480px), tablets (≤767px).
+   ============================================================ */
+
+@media (max-width: 767px) {
+
+  /* ── Show travel cards in travel mode ──────────────────────── */
+
+  .mode-travel .dk-steps,
+  .mode-travel .dk-transport,
+  .mode-travel .dk-hotels,
+  .mode-travel .dk-km {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Steps + Km row: stack vertically instead of side-by-side */
+  .mode-travel .dk-steps-km-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Each chart card: full width */
+  .dk-steps-km-row .dk-steps,
+  .dk-steps-km-row .dk-km {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* ── B1: Daily Steps + Km Walked ───────────────────────────── */
+
+  .dk-chart-wrap {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .dk-chart-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    min-height: 0;
+    gap: 0;
+  }
+
+  .dk-yaxis {
+    width: 44px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .dk-yaxis-label {
+    position: absolute;
+    right: 6px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    transform: translateY(-50%);
+    white-space: nowrap;
+  }
+
+  .dk-chart-row .dk-steps-scroll,
+  .dk-chart-row .dk-km-scroll {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dk-steps-scroll,
+  .dk-km-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    min-height: 160px;
+  }
+
+  .dk-steps-scroll::-webkit-scrollbar,
+  .dk-km-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Right-fade gradient — visible on mobile */
+  .dk-scroll-fade {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(to left, #ffffff 0%, transparent 100%);
+    pointer-events: none;
+    transition: opacity 200ms ease;
+    z-index: 5;
+  }
+
+  .dk-scroll-fade.is-hidden {
+    opacity: 0;
+  }
+
+  /* Scroll arrow: 44px touch target */
+  .dk-scroll-arrow {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    background: #F0F0F0;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    z-index: 6;
+    transition: opacity 200ms ease, background 0.15s ease;
+  }
+
+  .dk-scroll-arrow.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .dk-scroll-arrow.is-left {
+    right: auto;
+    left: 8px;
+  }
+
+  /* ── B2: Transport card ────────────────────────────────────── */
+
+  .dk-transport.dk-card {
+    padding: 16px 16px 12px;
+  }
+
+  .dk-transport-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    gap: 0;
+  }
+
+  .dk-transport-route-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Meta line 1: provider + number + logo */
+  .dk-transport-meta-line1 {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+
+  /* Allow provider+number to wrap below logo on very tight screens */
+  .dk-transport-logo {
+    margin-left: auto;
+    width: 72px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .dk-transport-logo img {
+    max-height: 20px;
+    width: auto;
+  }
+
+  .dk-transport-provider-name,
+  .dk-transport-number {
+    font-size: 13px;
+  }
+
+  .dk-transport-meta-sep {
+    font-size: 13px;
+    margin: 0 4px;
+  }
+
+  .dk-transport-meta-line2 {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .dk-transport-meta-date {
+    font-size: 11px;
+  }
+
+  .dk-transport-divider {
+    margin: 12px 0;
+  }
+
+  /* Route block: city names 14px, times 18px */
+  .dk-transport-route-v {
+    gap: 12px;
+  }
+
+  .dk-transport-city-v {
+    font-size: 14px;
+  }
+
+  .dk-transport-time-v {
+    font-size: 18px;
+    margin-top: 3px;
+  }
+
+  .dk-transport-terminal,
+  .dk-transport-seat {
+    font-size: 12px;
+  }
+
+  .dk-transport-seat-input {
+    font-size: 12px; /* prevent iOS auto-zoom */
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .dk-transport-connection {
+    gap: 12px;
+  }
+
+  .dk-transport-duration-v {
+    font-size: 11px;
+  }
+
+  /* Transport nav arrows: moved to title row (matches desktop) */
+  .dk-transport-nav-bottom {
+    display: none;
+  }
+
+  /* Title-row nav arrows — visible on mobile, 44px touch targets via dk-icon-btn */
+  .dk-transport-nav-header,
+  .dk-hotel-nav-header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* Edit button: 44px touch target */
+  .dk-transport-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin-left: 2px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 4px;
+  }
+
+  /* Empty state */
+  .dk-transport-empty {
+    padding: 24px 0;
+  }
+
+  /* ── B4: Next Tour card ────────────────────────────────────── */
+
+  .dk-next-up {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .dk-next-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dk-next-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* 16:9 image at top of card */
+  .dk-next-photo {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border-radius: 0;
+    overflow: hidden;
+    background: var(--warm-gold-light);
+    flex-shrink: 0;
+  }
+
+  .dk-next-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
+    display: block;
+    border-radius: 0;
+  }
+
+  .dk-next-body {
+    padding: 10px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .dk-next-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .dk-next-meta {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* View booking link: 44px min touch target */
+  .dk-next-booking-link {
+    font-size: 13px;
+    display: inline-block;
+    min-height: 44px;
+    line-height: 44px;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  /* ── B5: Calendar card ─────────────────────────────────────── */
+
+  .dk-calendar {
+    width: 100%;
+  }
+
+  /* Calendar header nav: 44px touch target */
+  .dk-cal-nav {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Cell height: ~36px minimum; 7 cols × (390-32)/7 ≈ 51px each */
+  .dk-cal-day {
+    height: 36px;
+    font-size: 11px;
+  }
+
+  /* Legend: 2 columns on narrow screens */
+  .dk-cal-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-top: 8px;
+  }
+
+  .dk-legend-item {
+    font-size: 12px;
+  }
+
+}

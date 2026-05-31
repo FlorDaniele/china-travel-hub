@@ -19,6 +19,7 @@
 
   <link rel="stylesheet" href="css/reminders.css">
   <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/travel.css">
 </head>
 <body>
 
@@ -42,10 +43,6 @@
         <!-- Row 1: Hero carousel (full width) -->
         <div class="dk-hero" role="region" aria-label="City highlights">
           <!-- Slides and dots injected by initCarousel() -->
-          <div class="dk-mode-toggle" role="group" aria-label="Switch app mode">
-            <button class="dk-mode-btn active" aria-pressed="true">Planning</button>
-            <button class="dk-mode-btn" aria-pressed="false">Travel</button>
-          </div>
         </div>
 
         <!-- Row 2, Col A: Bookings -->
@@ -148,6 +145,75 @@
           <button class="dk-view-all" id="dk-packing-see-all">View all →</button>
         </section>
 
+        <!-- Travel mode: Daily Steps + Km walked (row 3, two equal cards) -->
+        <div class="dk-steps-km-row">
+          <section class="dk-card dk-steps" aria-labelledby="dk-steps-title">
+            <div class="dk-card-header">
+              <h2 class="dk-card-title" id="dk-steps-title">Daily steps</h2>
+              <button class="dk-icon-btn dk-icon-btn--action" id="dk-steps-add" aria-label="Add steps" type="button">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+              </button>
+            </div>
+            <div class="dk-chart-wrap">
+              <div class="dk-steps-scroll" role="img" aria-label="Daily step count chart">
+                <canvas id="steps-canvas"></canvas>
+                <div class="steps-tooltip" aria-hidden="true"></div>
+                <div class="steps-dot" aria-hidden="true"></div>
+              </div>
+              <div class="dk-scroll-fade" aria-hidden="true"></div>
+              <div class="dk-scroll-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </section>
+
+          <section class="dk-card dk-km" aria-labelledby="dk-km-title">
+            <div class="dk-card-header">
+              <h2 class="dk-card-title" id="dk-km-title">Km walked</h2>
+              <button class="dk-icon-btn dk-icon-btn--action" id="dk-km-add" aria-label="Add km" type="button">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+              </button>
+            </div>
+            <div class="dk-chart-wrap">
+              <div class="dk-km-scroll" role="img" aria-label="Kilometres walked chart">
+                <canvas id="km-canvas"></canvas>
+                <div class="km-tooltip" aria-hidden="true"></div>
+                <div class="km-dot" aria-hidden="true"></div>
+              </div>
+              <div class="dk-scroll-fade" aria-hidden="true"></div>
+              <div class="dk-scroll-arrow" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Travel mode: Next Transport (col 3, row 2) -->
+        <section class="dk-card dk-transport" aria-labelledby="dk-transport-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-transport-title">Transport</h2>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-transport-add" aria-label="Add transport">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
+          </div>
+          <div class="dk-transport-body">
+            <span class="dk-transport-loading">Loading…</span>
+          </div>
+        </section>
+
+        <!-- Travel mode: Hotels carousel (full width, row 5) -->
+        <section class="dk-card dk-hotels" aria-labelledby="dk-hotels-title">
+          <div class="dk-card-header">
+            <h2 class="dk-card-title" id="dk-hotels-title">Hotels</h2>
+            <button class="dk-icon-btn dk-icon-btn--action" id="dk-hotels-add" aria-label="Add hotel">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="7" y1="1" x2="7" y2="13"/><line x1="1" y1="7" x2="13" y2="7"/></svg>
+            </button>
+          </div>
+          <div class="dk-hotels-body">
+            <span class="dk-transport-loading">Loading…</span>
+          </div>
+        </section>
+
         <!-- Row 3, Cols 1-2: Unified Itinerary -->
         <section class="dk-card dk-itinerary" aria-labelledby="dk-itinerary-title">
           <div class="dk-card-header">
@@ -166,6 +232,7 @@
             <!-- Right: activity panel -->
             <div class="dk-itin-panel" id="dk-itin-panel" aria-live="polite" aria-atomic="true">
               <p class="dk-itin-panel-label" id="dk-itin-panel-label" aria-live="polite"></p>
+              <p class="dk-itin-panel-summary" id="dk-itin-panel-summary" aria-live="polite"></p>
               <ol class="dk-timeline" role="list" id="dk-itin-timeline" aria-label="Daily itinerary"></ol>
             </div>
           </div>
@@ -209,15 +276,15 @@
                   <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-13">13</time></td>
                   <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-14">14</time></td>
                 </tr>
-                <!-- Jun 15–16: Xi'an; Jun 17–21: Chengdu -->
+                <!-- Jun 15–17: Chengdu; Jun 18–19: Chongqing; Jun 20–21: Shanghai -->
                 <tr>
-                  <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-15">15</time></td>
-                  <td class="dk-cal-day" style="background:#b8cce4"><time datetime="2026-06-16">16</time></td>
+                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-15">15</time></td>
+                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-16">16</time></td>
                   <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-17">17</time></td>
-                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-18">18</time></td>
-                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-19">19</time></td>
-                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-20">20</time></td>
-                  <td class="dk-cal-day" style="background:#dfbc5e"><time datetime="2026-06-21">21</time></td>
+                  <td class="dk-cal-day" style="background:#f4c89e"><time datetime="2026-06-18">18</time></td>
+                  <td class="dk-cal-day" style="background:#f4c89e"><time datetime="2026-06-19">19</time></td>
+                  <td class="dk-cal-day" style="background:#f4b8c0"><time datetime="2026-06-20">20</time></td>
+                  <td class="dk-cal-day" style="background:#f4b8c0"><time datetime="2026-06-21">21</time></td>
                 </tr>
                 <!-- Jun 22–28: Shanghai (22–25), post-trip muted (26–28) -->
                 <tr>
@@ -257,6 +324,13 @@
           </div>
           <ul class="dk-next-list" role="list" aria-label="Upcoming tour"></ul>
         </section>
+
+        <!-- Floating mode toggle pill — position:fixed so grid placement is irrelevant;
+             kept inside .desktop-layout so initDesktopToggle() selectors still work -->
+        <div class="dk-mode-toggle" role="group" aria-label="Switch app mode">
+          <button class="dk-mode-btn active" aria-pressed="true">Planning</button>
+          <button class="dk-mode-btn" aria-pressed="false">Travel</button>
+        </div>
 
       </div><!-- /.desktop-layout -->
     </section>

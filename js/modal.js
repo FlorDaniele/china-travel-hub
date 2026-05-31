@@ -35,7 +35,7 @@ function ensureDOM() {
 
 function focusableEls() {
   return [...(_card?.querySelectorAll(
-    'input:not([disabled]), select:not([disabled]), ' +
+    'input:not([disabled]):not([type="hidden"]), select:not([disabled]), ' +
     'button:not([disabled]), [tabindex]:not([tabindex="-1"])'
   ) ?? [])];
 }
@@ -59,20 +59,27 @@ function trapFocus(e) {
 
 /**
  * @param {object}   opts
- * @param {string}   opts.id       — prefix for child IDs (e.g. 'bk-modal')
- * @param {string}   opts.title    — heading shown in modal header
- * @param {string}   opts.bodyHTML — inner HTML for the content area
- * @param {Function} opts.onSave   — called when Guardar is clicked
+ * @param {string}   opts.id        — prefix for child IDs (e.g. 'bk-modal')
+ * @param {string}   opts.title     — heading shown in modal header
+ * @param {string}   opts.bodyHTML  — inner HTML for the content area
+ * @param {Function} opts.onSave    — called when Guardar is clicked
+ * @param {string}   [opts.maxHeight] — override CSS max-height (e.g. 'min(90vh,600px)')
  */
-export function openModal({ id, title, bodyHTML, onSave }) {
+export function openModal({ id, title, bodyHTML, onSave, maxHeight }) {
   ensureDOM();
   _trigger = document.activeElement;
+
+  if (maxHeight) {
+    _card.style.maxHeight = maxHeight;
+  } else {
+    _card.style.maxHeight = '';
+  }
 
   const titleId = `${id}-title`;
   _card.setAttribute('aria-labelledby', titleId);
 
-  /* Tab order: inputs → Guardar (primary) → Cerrar (secondary) → × close btn.
-     CSS flex order swaps Guardar/Cerrar visually: Cerrar left, Guardar right. */
+  /* Tab order: inputs → Save (primary) → Cancel (secondary) → × close btn.
+     CSS flex order swaps Save/Cancel visually: Cancel left, Save right. */
   _card.innerHTML = `
     <div class="modal-header">
       <h2 class="modal-title" id="${titleId}">${title}</h2>
@@ -82,10 +89,10 @@ export function openModal({ id, title, bodyHTML, onSave }) {
       ${bodyHTML}
     </div>
     <div class="modal-actions">
-      <button class="modal-btn-primary"   type="button" id="${id}-guardar">Guardar</button>
-      <button class="modal-btn-secondary" type="button" id="${id}-cerrar">Cerrar</button>
+      <button class="modal-btn-primary"   type="button" id="${id}-guardar">Save</button>
+      <button class="modal-btn-secondary" type="button" id="${id}-cerrar">Cancel</button>
     </div>
-    <button class="modal-close-btn" type="button" aria-label="Cerrar modal">
+    <button class="modal-close-btn" type="button" aria-label="Close modal">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
            stroke="currentColor" stroke-width="2"
            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

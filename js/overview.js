@@ -64,23 +64,23 @@ export async function initDesktopCountdown() {
 const STATIC_CITIES = [
   {
     city: 'Beijing',    city_zh: '北京',   city_pinyin: 'Běijīng',
-    date_start: '2026-06-06', date_end: '2026-06-12',
+    date_start: '2026-06-06', date_end: '2026-06-11',
   },
   {
     city: "Xi'an",      city_zh: '西安',   city_pinyin: "Xī'ān",
-    date_start: '2026-06-13', date_end: '2026-06-16',
+    date_start: '2026-06-12', date_end: '2026-06-14',
   },
   {
     city: 'Chengdu',    city_zh: '成都',   city_pinyin: 'Chéngdū',
-    date_start: '2026-06-17', date_end: '2026-06-21',
+    date_start: '2026-06-15', date_end: '2026-06-17',
   },
   {
     city: 'Chongqing',  city_zh: '重庆',   city_pinyin: 'Chóngqìng',
-    date_start: '2026-06-22', date_end: '2026-06-25',
+    date_start: '2026-06-18', date_end: '2026-06-19',
   },
   {
     city: 'Shanghai',   city_zh: '上海',   city_pinyin: 'Shànghǎi',
-    date_start: '2026-06-26', date_end: '2026-07-05',
+    date_start: '2026-06-20', date_end: '2026-06-25',
   },
 ];
 
@@ -848,7 +848,7 @@ function openBookingModal(preSelectType = null) {
       <div class="modal-error" id="bk-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <span class="modal-label" id="bk-modal-tipo-lbl">Tipo</span>
+      <span class="modal-label" id="bk-modal-tipo-lbl">Type</span>
       <div class="modal-pill-group" role="radiogroup" aria-labelledby="bk-modal-tipo-lbl">
         <button class="modal-pill" type="button" role="radio" aria-checked="false"
           data-value="hotel" tabindex="0">Hotel</button>
@@ -861,7 +861,7 @@ function openBookingModal(preSelectType = null) {
     </div>
   `;
 
-  openModal({ id: 'bk-modal', title: 'Nuevo booking', bodyHTML, onSave: handleBookingModalSave });
+  openModal({ id: 'bk-modal', title: 'Add booking', bodyHTML, onSave: handleBookingModalSave });
 
   /* Pill selection + arrow-key navigation */
   const pills = [...document.querySelectorAll('.modal-pill')];
@@ -919,7 +919,7 @@ async function handleBookingModalSave() {
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
@@ -927,7 +927,7 @@ async function handleBookingModalSave() {
   }
 
   if (!pill) {
-    if (typeErr) typeErr.textContent = 'Este campo es obligatorio';
+    if (typeErr) typeErr.textContent = 'This field is required';
     valid = false;
   } else {
     if (typeErr) typeErr.textContent = '';
@@ -962,6 +962,9 @@ async function handleBookingModalSave() {
 /* ── Modal: new reminder ───────────────────────────────────── */
 
 function openReminderModal() {
+  const CHEVRON_LEFT  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
+  const CHEVRON_RIGHT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>`;
+
   const bodyHTML = `
     <div class="modal-field">
       <label class="modal-label" for="rm-modal-name">Reminder</label>
@@ -971,14 +974,26 @@ function openReminderModal() {
       <div class="modal-error" id="rm-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="rm-modal-date">Fecha límite</label>
-      <input type="date" id="rm-modal-date" class="modal-date">
+      <label class="modal-label" id="rm-modal-date-lbl">Deadline</label>
+      <div class="modal-calendar" id="rm-modal-calendar" role="group" aria-labelledby="rm-modal-date-lbl">
+        <div class="modal-cal-header">
+          <button class="modal-cal-nav" type="button" id="rm-cal-prev" aria-label="Previous month">${CHEVRON_LEFT}</button>
+          <span class="modal-cal-title" id="rm-cal-title" aria-live="polite"></span>
+          <button class="modal-cal-nav" type="button" id="rm-cal-next" aria-label="Next month">${CHEVRON_RIGHT}</button>
+        </div>
+        <div class="modal-cal-weekdays" aria-hidden="true">
+          <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+        </div>
+        <div class="modal-cal-grid" role="grid" id="rm-cal-grid" aria-label="Select a deadline date"></div>
+      </div>
+      <input type="hidden" id="rm-modal-date">
       <div class="modal-error" id="rm-modal-date-err" role="alert"></div>
     </div>
   `;
 
-  openModal({ id: 'rm-modal', title: 'Nuevo reminder', bodyHTML, onSave: handleReminderModalSave });
+  openModal({ id: 'rm-modal', title: 'Add reminder', bodyHTML, onSave: handleReminderModalSave });
 
+  /* Character counter */
   const input   = document.getElementById('rm-modal-name');
   const counter = document.getElementById('rm-modal-counter');
   input?.addEventListener('input', () => {
@@ -988,6 +1003,80 @@ function openReminderModal() {
       document.getElementById('rm-modal-name-err').textContent = '';
     }
   });
+
+  /* Calendar */
+  const MONTH_NAMES = [
+    'January','February','March','April','May','June',
+    'July','August','September','October','November','December',
+  ];
+  const now   = new Date();
+  let   displayYear  = now.getFullYear();
+  let   displayMonth = now.getMonth();
+  let   selectedDate = null;
+
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+
+  function renderCalendar() {
+    const titleEl = document.getElementById('rm-cal-title');
+    const gridEl  = document.getElementById('rm-cal-grid');
+    if (!titleEl || !gridEl) return;
+
+    titleEl.textContent = `${MONTH_NAMES[displayMonth]} ${displayYear}`;
+
+    const firstDow    = new Date(displayYear, displayMonth, 1).getDay();
+    const startOffset = (firstDow + 6) % 7; // Mon-first offset
+    const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
+    const prevDays    = new Date(displayYear, displayMonth, 0).getDate();
+
+    let html = '';
+
+    for (let i = 0; i < startOffset; i++) {
+      html += `<button class="modal-cal-day modal-cal-day--outside" type="button" aria-hidden="true" tabindex="-1">${prevDays - startOffset + i + 1}</button>`;
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr  = `${displayYear}-${String(displayMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isToday  = dateStr === todayStr;
+      const isSel    = dateStr === selectedDate;
+      let   cls      = 'modal-cal-day';
+      if (isToday) cls += ' modal-cal-day--today';
+      if (isSel)   cls += ' modal-cal-day--selected';
+      const ariaLabel = `${d} ${MONTH_NAMES[displayMonth]} ${displayYear}${isSel ? ', selected' : ''}${isToday ? ', today' : ''}`;
+      html += `<button class="${cls}" type="button" data-date="${dateStr}" aria-label="${ariaLabel}" aria-pressed="${isSel}">${d}</button>`;
+    }
+
+    const filled  = startOffset + daysInMonth;
+    const remaining = (7 - (filled % 7)) % 7;
+    for (let d = 1; d <= remaining; d++) {
+      html += `<button class="modal-cal-day modal-cal-day--outside" type="button" aria-hidden="true" tabindex="-1">${d}</button>`;
+    }
+
+    gridEl.innerHTML = html;
+
+    gridEl.querySelectorAll('.modal-cal-day:not(.modal-cal-day--outside)').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedDate = btn.dataset.date;
+        document.getElementById('rm-modal-date').value = selectedDate;
+        document.getElementById('rm-modal-date-err').textContent = '';
+        document.getElementById('rm-modal-calendar')?.classList.remove('has-error');
+        renderCalendar();
+      });
+    });
+  }
+
+  document.getElementById('rm-cal-prev')?.addEventListener('click', () => {
+    displayMonth--;
+    if (displayMonth < 0) { displayMonth = 11; displayYear--; }
+    renderCalendar();
+  });
+
+  document.getElementById('rm-cal-next')?.addEventListener('click', () => {
+    displayMonth++;
+    if (displayMonth > 11) { displayMonth = 0; displayYear++; }
+    renderCalendar();
+  });
+
+  renderCalendar();
 }
 
 async function handleReminderModalSave() {
@@ -999,7 +1088,7 @@ async function handleReminderModalSave() {
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
@@ -1007,11 +1096,11 @@ async function handleReminderModalSave() {
   }
 
   if (!dateInput?.value) {
-    dateInput?.classList.add('has-error');
-    if (dateErr) dateErr.textContent = 'Este campo es obligatorio';
+    document.getElementById('rm-modal-calendar')?.classList.add('has-error');
+    if (dateErr) dateErr.textContent = 'This field is required';
     valid = false;
   } else {
-    dateInput.classList.remove('has-error');
+    document.getElementById('rm-modal-calendar')?.classList.remove('has-error');
     if (dateErr) dateErr.textContent = '';
   }
 
@@ -1045,9 +1134,12 @@ async function handleReminderModalSave() {
 /* ── Modal: new packing item ───────────────────────────────── */
 
 function openPackingModal() {
-  const optionsHTML = STATIC_PACKING_LIST
-    .map(c => `<option value="${esc(c.category)}">${esc(c.category)}</option>`)
-    .join('');
+  const CAT_OPTIONS = STATIC_PACKING_LIST.map(c => c.category);
+
+  const optionsHTML = CAT_OPTIONS.map(cat => `
+    <li class="modal-custom-select-option" role="option" aria-selected="false"
+        data-value="${esc(cat.toLowerCase())}" tabindex="-1">${esc(cat)}</li>
+  `).join('');
 
   const bodyHTML = `
     <div class="modal-field">
@@ -1058,17 +1150,31 @@ function openPackingModal() {
       <div class="modal-error" id="pk-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="pk-modal-cat">Categoría</label>
-      <select id="pk-modal-cat" class="modal-select">
-        <option value="" disabled selected>Select a category</option>
-        ${optionsHTML}
-      </select>
+      <label class="modal-label" id="pk-modal-cat-lbl">Category</label>
+      <div class="modal-custom-select" aria-expanded="false">
+        <button class="modal-custom-select-trigger is-placeholder" type="button"
+                id="pk-modal-cat-btn"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-controls="pk-modal-cat-list"
+                aria-labelledby="pk-modal-cat-lbl">
+          <span class="modal-custom-select-value">Select a category</span>
+          <svg class="modal-custom-select-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
+            <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="modal-custom-select-list" role="listbox" id="pk-modal-cat-list" aria-labelledby="pk-modal-cat-lbl">
+          ${optionsHTML}
+        </ul>
+        <input type="hidden" id="pk-modal-cat" value="">
+      </div>
       <div class="modal-error" id="pk-modal-cat-err" role="alert"></div>
     </div>
   `;
 
-  openModal({ id: 'pk-modal', title: 'Nuevo item', bodyHTML, onSave: handlePackingModalSave });
+  openModal({ id: 'pk-modal', title: 'Add item', bodyHTML, onSave: handlePackingModalSave });
 
+  /* Character counter */
   const input   = document.getElementById('pk-modal-name');
   const counter = document.getElementById('pk-modal-counter');
   input?.addEventListener('input', () => {
@@ -1078,37 +1184,97 @@ function openPackingModal() {
       document.getElementById('pk-modal-name-err').textContent = '';
     }
   });
+
+  /* Custom select — category */
+  const csWrap    = document.querySelector('#pk-modal-cat-list')?.closest('.modal-custom-select');
+  const csTrigger = document.getElementById('pk-modal-cat-btn');
+  const csList    = document.getElementById('pk-modal-cat-list');
+  const csValue   = csTrigger?.querySelector('.modal-custom-select-value');
+  const csHidden  = document.getElementById('pk-modal-cat');
+  const csOptions = [...(csList?.querySelectorAll('.modal-custom-select-option') ?? [])];
+
+  function pkCsOutside(e) {
+    if (!csWrap?.contains(e.target)) pkCsClose();
+  }
+
+  function pkCsOpen() {
+    csWrap?.setAttribute('aria-expanded', 'true');
+    csTrigger?.setAttribute('aria-expanded', 'true');
+    csList?.classList.add('is-open');
+    const sel = csOptions.find(o => o.getAttribute('aria-selected') === 'true') ?? csOptions[0];
+    sel?.focus();
+    setTimeout(() => document.addEventListener('click', pkCsOutside, { capture: true }), 0);
+  }
+
+  function pkCsClose() {
+    csWrap?.setAttribute('aria-expanded', 'false');
+    csTrigger?.setAttribute('aria-expanded', 'false');
+    csList?.classList.remove('is-open');
+    document.removeEventListener('click', pkCsOutside, { capture: true });
+  }
+
+  function pkCsSelect(opt) {
+    csOptions.forEach(o => o.setAttribute('aria-selected', 'false'));
+    opt.setAttribute('aria-selected', 'true');
+    if (csHidden)  csHidden.value      = opt.dataset.value ?? '';
+    if (csValue)   csValue.textContent = opt.textContent;
+    csTrigger?.classList.remove('is-placeholder');
+    csTrigger?.classList.remove('has-error');
+    document.getElementById('pk-modal-cat-err').textContent = '';
+    pkCsClose();
+    csTrigger?.focus();
+  }
+
+  csTrigger?.addEventListener('click', () => {
+    csList?.classList.contains('is-open') ? pkCsClose() : pkCsOpen();
+  });
+
+  csTrigger?.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pkCsOpen(); }
+    if (e.key === 'Escape') pkCsClose();
+  });
+
+  csOptions.forEach((opt, idx) => {
+    opt.addEventListener('click', () => pkCsSelect(opt));
+    opt.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ')  { e.preventDefault(); pkCsSelect(opt); }
+      if (e.key === 'Escape')                  { pkCsClose(); csTrigger?.focus(); }
+      if (e.key === 'ArrowDown')               { e.preventDefault(); csOptions[Math.min(idx + 1, csOptions.length - 1)]?.focus(); }
+      if (e.key === 'ArrowUp')                 { e.preventDefault(); csOptions[Math.max(idx - 1, 0)]?.focus(); }
+    });
+  });
 }
 
 async function handlePackingModalSave() {
-  const nameInput = document.getElementById('pk-modal-name');
-  const catSelect = document.getElementById('pk-modal-cat');
-  const nameErr   = document.getElementById('pk-modal-name-err');
-  const catErr    = document.getElementById('pk-modal-cat-err');
+  const nameInput  = document.getElementById('pk-modal-name');
+  const catHidden  = document.getElementById('pk-modal-cat');
+  const catTrigger = document.getElementById('pk-modal-cat-btn');
+  const nameErr    = document.getElementById('pk-modal-name-err');
+  const catErr     = document.getElementById('pk-modal-cat-err');
   let valid = true;
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
     if (nameErr) nameErr.textContent = '';
   }
 
-  if (!catSelect?.value) {
-    catSelect?.classList.add('has-error');
-    if (catErr) catErr.textContent = 'Este campo es obligatorio';
+  if (!catHidden?.value) {
+    catTrigger?.classList.add('has-error');
+    if (catErr) catErr.textContent = 'This field is required';
     valid = false;
   } else {
-    catSelect.classList.remove('has-error');
+    catTrigger?.classList.remove('has-error');
     if (catErr) catErr.textContent = '';
   }
 
   if (!valid) return;
 
   const label    = nameInput.value.trim();
-  const category = catSelect.value.toLowerCase();
+  const category = catHidden.value;
   const btn      = document.getElementById('pk-modal-guardar');
   if (btn) btn.disabled = true;
 
@@ -1526,6 +1692,60 @@ export function initDesktopReminders() {
   });
 }
 
+/* ── Weather widget ───────────────────────────────────────── */
+
+const WEATHER_COORDS = {
+  beijing:   [39.9042, 116.4074],
+  xian:      [34.3416, 108.9398],
+  chengdu:   [30.5728, 104.0668],
+  chongqing: [29.5630, 106.5516],
+  shanghai:  [31.2304, 121.4737],
+};
+
+/* WMO weather code → SVG icon (Lucide-style, 20×20) */
+function weatherIcon(code) {
+  const c = Number(code);
+  // Clear sky
+  if (c === 0) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>`;
+  // Partly cloudy
+  if (c >= 1 && c <= 3) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>`;
+  // Fog
+  if (c >= 45 && c <= 48) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M9 21h6"/><path d="M11 23h2"/></svg>`;
+  // Rain
+  if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82)) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="8" y1="23" x2="8" y2="23"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="16" y1="19" x2="16" y2="21"/></svg>`;
+  // Snow
+  if (c >= 71 && c <= 77) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><path d="M8 16h.01"/><path d="M8 20h.01"/><path d="M12 18h.01"/><path d="M12 22h.01"/><path d="M16 16h.01"/><path d="M16 20h.01"/></svg>`;
+  // Thunderstorm
+  if (c >= 95 && c <= 99) return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/><path d="M13 10 9 18h5l-1 4 5-8h-5l1-4Z"/></svg>`;
+  // Default: cloud
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>`;
+}
+
+/* Module-level weather widget element (shared between carousel + mode toggle) */
+let weatherWidgetEl = null;
+
+async function fetchAndUpdateWeather(cityKey) {
+  if (!weatherWidgetEl) return;
+  const coords = WEATHER_COORDS[cityKey];
+  if (!coords) return;
+  const [lat, lon] = coords;
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weathercode&timezone=auto`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('weather fetch failed');
+    const json = await res.json();
+    const temp = Math.round(json?.current?.temperature_2m ?? 0);
+    const code = json?.current?.weathercode ?? 0;
+
+    weatherWidgetEl.querySelector('.dk-weather-icon').innerHTML = weatherIcon(code);
+    weatherWidgetEl.querySelector('.dk-weather-temp').textContent = `${temp}°C`;
+    weatherWidgetEl.classList.add('is-visible');
+  } catch (_) {
+    /* Silent fail — hide widget */
+    weatherWidgetEl.classList.remove('is-visible');
+  }
+}
+
 /* ── Hero carousel ─────────────────────────────────────────── */
 
 const CAROUSEL_CITIES = [
@@ -1660,6 +1880,16 @@ export async function initCarousel() {
   const slides = carouselEl.querySelectorAll('.dk-carousel-slide');
   const dots   = dotsEl.querySelectorAll('.dk-carousel-dot');
 
+  /* ── Weather widget (Travel mode only, bottom-right of hero) ── */
+  weatherWidgetEl = document.createElement('div');
+  weatherWidgetEl.className = 'dk-weather-widget';
+  weatherWidgetEl.setAttribute('aria-hidden', 'true');
+  weatherWidgetEl.innerHTML = `
+    <span class="dk-weather-icon"></span>
+    <span class="dk-weather-temp"></span>
+  `;
+  hero.appendChild(weatherWidgetEl);
+
   function goTo(index) {
     slides[currentIndex].classList.remove('is-active');
     slides[currentIndex].setAttribute('aria-hidden', 'true');
@@ -1670,6 +1900,12 @@ export async function initCarousel() {
     slides[currentIndex].classList.add('is-active');
     slides[currentIndex].setAttribute('aria-hidden', 'false');
     dots[currentIndex].classList.add('is-active');
+
+    /* Fetch weather for the new city if we're in travel mode */
+    const layout = document.querySelector('.desktop-layout');
+    if (layout && layout.classList.contains('mode-travel')) {
+      fetchAndUpdateWeather(cities[currentIndex].key);
+    }
   }
 
   let timer = null;
@@ -1685,6 +1921,12 @@ export async function initCarousel() {
   dots.forEach((dot, i) => {
     dot.addEventListener('click', () => { goTo(i); resetTimer(); });
   });
+
+  /* If already in travel mode on init, fetch weather for current slide */
+  const layout = document.querySelector('.desktop-layout');
+  if (layout && layout.classList.contains('mode-travel')) {
+    fetchAndUpdateWeather(cities[currentIndex].key);
+  }
 
   resetTimer();
 }
@@ -1717,6 +1959,18 @@ export function initDesktopToggle() {
       const isTravel = btn.textContent.trim() === 'Travel';
       layout.classList.toggle('mode-travel', isTravel);
       localStorage.setItem('dashboardMode', isTravel ? 'travel' : 'planning');
+
+      /* Show weather when switching to Travel; hide for Planning */
+      if (weatherWidgetEl) {
+        if (!isTravel) {
+          weatherWidgetEl.classList.remove('is-visible');
+        } else {
+          /* Fetch for whichever carousel slide is currently active */
+          const activeSlide = document.querySelector('.dk-carousel-slide.is-active');
+          const cityKey     = activeSlide?.dataset?.city;
+          if (cityKey) fetchAndUpdateWeather(cityKey);
+        }
+      }
     });
   });
 }
@@ -1813,189 +2067,176 @@ export async function initOverview() {
 const STATIC_ACTIVITIES = {
   beijing: {
     '2026-06-06': [
-      { period: 'Morning', items: [
-        { title: 'Arrive Beijing Capital Airport', time: '10:00', source: 'Self-organised', type: 'transport' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Check-in Yitel Hotel', time: '14:00', source: 'Self-organised', type: 'accommodation' },
+      { period: 'Day', items: [
+        { title: 'Arrive Beijing Capital Airport', time: '15:55', end_time: null, duration: null, type: 'transport', source: 'Self-organised' },
+        { title: 'Check-in Yitel Hotel', time: '18:00', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
       ]},
     ],
     '2026-06-07': [
-      { period: 'Morning', items: [
-        { title: 'Mutianyu Great Wall', time: '07:50', source: 'GetYourGuide', type: 'tour' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Forbidden City', time: '13:00', source: 'Self-organised', type: 'sightseeing' },
+      { period: 'Day', items: [
+        { title: 'Mutianyu Great Wall Tour', time: '07:40', end_time: '12:00', duration: null, type: 'tour', source: 'GetYourGuide' },
+        { title: 'Forbidden City Tour', time: null, end_time: null, duration: '3h30m', period: 'Afternoon', type: 'sightseeing', source: 'Self-organised' },
       ]},
     ],
     '2026-06-08': [
-      { period: 'Morning', items: [
-        { title: 'Walking Tour', time: '10:00', source: 'GetYourGuide', type: 'tour' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Qianmen Street', time: '14:00', source: 'Self-organised', type: 'street' },
-        { title: 'Wangfujing', time: '15:30', source: 'Self-organised', type: 'street' },
-        { title: 'Nanluogu Xiang', time: '17:00', source: 'Self-organised', type: 'street' },
-        { title: 'Shichahai Scenic Area', time: '18:30', source: 'Self-organised', type: 'sightseeing' },
+      { period: 'Day', items: [
+        { title: 'Walking Tour', time: '10:00', end_time: '13:30', duration: null, type: 'tour', source: 'GetYourGuide' },
+        { title: 'Qianmen Street', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Wangfujing', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Nanluogu Xiang', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Shichahai Scenic Area', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: 'Self-organised' },
       ]},
     ],
     '2026-06-09': [
-      { period: 'Morning', items: [
-        { title: 'Drum Tower', time: '09:00', source: 'Self-organised', type: 'cultural' },
-        { title: 'Jingshan Park', time: '10:30', source: 'Self-organised', type: 'park' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'National Museum of China', time: '13:00', source: 'Self-organised', type: 'cultural' },
-        { title: 'Beihai Park', time: '15:30', source: 'Self-organised', type: 'park' },
+      { period: 'Day', items: [
+        { title: 'Drum Tower', time: '09:30', end_time: null, duration: null, type: 'cultural', source: 'Self-organised' },
+        { title: 'Jingshan Park', time: null, end_time: null, duration: null, period: 'Morning', type: 'park', source: 'Self-organised' },
+        { title: 'National Museum of China', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: 'Self-organised' },
+        { title: 'Beihai Park', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: 'Self-organised' },
       ]},
     ],
     '2026-06-10': [
-      { period: 'Morning', items: [
-        { title: 'Temple of Heaven', time: '09:00', source: 'Self-organised', type: 'temple' },
-        { title: 'Hongqiao Pearl Market', time: '11:30', source: 'Self-organised', type: 'market' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Eight Great Hutongs', time: '14:00', source: 'Self-organised', type: 'street' },
-        { title: 'Jiuwan Hutong', time: '15:30', source: 'Self-organised', type: 'street' },
-        { title: "Prince Kung's Palace Museum", time: '16:30', source: 'Self-organised', type: 'cultural' },
-        { title: 'Sanlitun', time: '19:00', source: 'Self-organised', type: 'street' },
+      { period: 'Day', items: [
+        { title: 'Temple of Heaven', time: '08:30', end_time: null, duration: null, type: 'temple', source: 'Self-organised' },
+        { title: 'Hongqiao Pearl Market', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'market', source: 'Self-organised' },
+        { title: 'Eight Great Hutongs', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: 'Jiuwan Hutong', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: 'Self-organised' },
+        { title: "Prince Kung's Palace Museum", time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: 'Self-organised' },
+        { title: 'Sanlitun', time: null, end_time: null, duration: null, period: 'Evening', type: 'street', source: 'Self-organised' },
       ]},
     ],
     '2026-06-11': [
-      { period: 'Morning', items: [
-        { title: 'Summer Palace', time: '09:00', source: 'Self-organised', type: 'sightseeing' },
-        { title: 'Yuanmingyuan Park', time: '12:00', source: 'Self-organised', type: 'park' },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Xiushui Street', time: '14:30', source: 'Self-organised', type: 'street' },
-        { title: 'Lama Temple', time: '16:30', source: 'Self-organised', type: 'temple' },
+      { period: 'Day', items: [
+        { title: 'Summer Palace', time: '08:30', end_time: null, duration: null, type: 'sightseeing', source: 'Self-organised' },
+        { title: 'Yuanmingyuan Park', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: 'Self-organised' },
+        { title: 'Xiushui Street', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'market', source: 'Self-organised' },
+        { title: 'Lama Temple', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: 'Self-organised' },
+        { title: 'Wudaoying Alley', time: null, end_time: null, duration: null, period: 'Evening', type: 'street', source: null },
       ]},
     ],
     '2026-06-12': [
-      { period: 'Morning', items: [
-        { title: 'Check-out Yitel Hotel', time: '10:00', source: 'Self-organised', type: 'accommodation' },
-        { title: "Train Beijing to Xi'an", time: '13:00', source: 'Self-organised', type: 'transport' },
+      { period: 'Day', items: [
+        { title: 'Check-out Yitel Hotel', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
+        { title: "Train Beijingxi → Xi'anbei", time: '08:10', end_time: '12:31', duration: null, type: 'transport', source: 'Self-organised' },
       ]},
     ],
   },
   xian: {
-    '2026-06-13': [
-      { period: 'Morning', items: [
-        { title: 'Train Beijing → Xi\'an (G87)', time: '09:00', source: 'Self-organised', type: null },
-        { title: 'Arrive Xi\'an North', time: '13:30', source: 'Self-organised', type: null },
+    '2026-06-12': [
+      { period: 'Day', items: [
+        { title: "Check-in Xi'an LanOuShangPin Hotel", time: '13:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Walking Tour', time: '14:00', end_time: '16:30', duration: null, type: 'tour', source: null },
+        { title: 'Muslim Quarter', time: null, end_time: null, duration: null, period: 'Evening', type: 'street', source: null },
       ]},
-      { period: 'Afternoon', items: [
-        { title: 'City Wall cycling', time: '15:00', source: 'Self-organised', type: null },
+    ],
+    '2026-06-13': [
+      { period: 'Day', items: [
+        { title: 'Terracotta Warriors and Huaqing Palace + Lunch Tour', time: '07:30', end_time: '16:00', duration: null, type: 'tour', source: null },
       ]},
     ],
     '2026-06-14': [
-      { period: 'Morning', items: [
-        { title: 'Terracotta Warriors', time: '08:00', source: 'GetYourGuide', type: null },
-        { title: 'Huaqing Hot Springs', time: '13:00', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Evening', items: [
-        { title: 'Muslim Quarter Night Market', time: '18:30', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: 'Grand Tang Mall', time: null, end_time: null, duration: null, period: 'Morning', type: 'street', source: null },
+        { title: 'Big Wild Goose Pagoda', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: null },
+        { title: 'Shaanxi History Museum', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: null },
       ]},
     ],
     '2026-06-15': [
-      { period: 'Morning', items: [
-        { title: 'Big Wild Goose Pagoda', time: '09:00', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Shaanxi History Museum', time: '13:00', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: "Check-out Xi'an LanOuShangPin Hotel", time: '06:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: "Train Xi'anbei → Chengdudong", time: '08:39', end_time: '12:40', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
   chengdu: {
+    '2026-06-15': [
+      { period: 'Day', items: [
+        { title: 'Check-in Chupin Hotel', time: '13:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Walking Tour', time: '18:00', end_time: '20:30', duration: null, type: 'tour', source: null },
+      ]},
+    ],
+    '2026-06-16': [
+      { period: 'Day', items: [
+        { title: 'Panda Base & Leshan Buddha Tour', time: '07:35', end_time: '19:35', duration: null, type: 'tour', source: null },
+      ]},
+    ],
     '2026-06-17': [
-      { period: 'Morning', items: [
-        { title: 'Train Xi\'an → Chengdu (G309)', time: '08:30', source: 'Self-organised', type: null },
-        { title: 'Arrive Chengdu East', time: '12:00', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: "People's Park", time: null, end_time: null, duration: null, period: 'Morning', type: 'park', source: null },
+        { title: 'Wuhou Shrine Museum', time: null, end_time: null, duration: null, period: 'Morning', type: 'cultural', source: null },
+        { title: 'Yeyou Jinjiang', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Kuanzhai Alleys', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
       ]},
     ],
     '2026-06-18': [
-      { period: 'Morning', items: [
-        { title: 'Giant Panda Breeding Base', time: '08:00', source: 'GetYourGuide', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Jinli Ancient Street', time: '14:00', source: 'Self-organised', type: null },
-      ]},
-    ],
-    '2026-06-19': [
-      { period: 'All day', items: [
-        { title: 'Day trip to Leshan Giant Buddha', time: '07:30', source: 'GetYourGuide', type: null },
-      ]},
-    ],
-    '2026-06-20': [
-      { period: 'Morning', items: [
-        { title: 'Wenshu Monastery', time: '09:00', source: 'Self-organised', type: null },
-        { title: 'Kuanzhai Xiangzi lanes', time: '11:00', source: 'Self-organised', type: null },
-      ]},
-    ],
-    '2026-06-21': [
-      { period: 'Morning', items: [
-        { title: 'People\'s Park tea ceremony', time: '09:30', source: 'Self-organised', type: null },
+      { period: 'Day', items: [
+        { title: 'Check-out Chupin Hotel', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Train Chengdudong → Chongqingbei', time: '08:02', end_time: '09:56', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
   chongqing: {
-    '2026-06-22': [
-      { period: 'Morning', items: [
-        { title: 'Train Chengdu → Chongqing (G8632)', time: '10:00', source: 'Self-organised', type: null },
-        { title: 'Arrive Chongqing North', time: '11:15', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Hongya Cave & Jialing River view', time: '14:00', source: 'Self-organised', type: null },
+    '2026-06-18': [
+      { period: 'Day', items: [
+        { title: 'Check-in Yubo River View Hotel', time: '11:00', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: "The People's Great Hall", time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: null },
+        { title: 'Luohan Temple', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: null },
+        { title: 'Huguang Huiguan Guild Complex', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'cultural', source: null },
+        { title: 'Walking Tour', time: '17:00', end_time: '19:15', duration: null, type: 'tour', source: null },
+        { title: "Chongqing's People's Square", time: null, end_time: null, duration: null, period: 'Evening', type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-06-23': [
-      { period: 'Morning', items: [
-        { title: 'Yangtze River cruise', time: '09:00', source: 'GetYourGuide', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Ciqikou Ancient Town', time: '15:00', source: 'Self-organised', type: null },
+    '2026-06-19': [
+      { period: 'Day', items: [
+        { title: 'Check-out Yubo River View Hotel', time: '08:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Raffles City', time: null, end_time: null, duration: null, period: 'Morning', type: 'street', source: null },
+        { title: 'Liziba Monorail', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'sightseeing', source: null },
+        { title: 'Eling Park', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'park', source: null },
+        { title: 'Train Chongqingbei → Shanghai Hongqiao', time: '20:13', end_time: '08:04+1', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
   shanghai: {
-    '2026-06-26': [
-      { period: 'Morning', items: [
-        { title: 'Train Chongqing → Shanghai (G570)', time: '08:00', source: 'Self-organised', type: null },
-        { title: 'Arrive Shanghai Hongqiao', time: '14:30', source: 'Self-organised', type: null },
+    '2026-06-20': [
+      { period: 'Day', items: [
+        { title: 'Check-in MoYu Movie Hotel', time: '09:15', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Walking Tour', time: '14:00', end_time: '18:00', duration: null, type: 'tour', source: null },
+        { title: 'The Bund', time: null, end_time: null, duration: null, period: 'Evening', type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-06-27': [
-      { period: 'Morning', items: [
-        { title: 'The Bund morning walk', time: '08:00', source: 'Self-organised', type: null },
-        { title: 'Yu Garden + Old Town', time: '10:30', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Evening', items: [
-        { title: 'Bund evening walk', time: '19:00', source: 'Self-organised', type: null },
-      ]},
-    ],
-    '2026-06-28': [
-      { period: 'Morning', items: [
-        { title: 'Shanghai Museum', time: '09:00', source: 'Self-organised', type: null },
-      ]},
-      { period: 'Afternoon', items: [
-        { title: 'Xintiandi', time: '13:30', source: 'Self-organised', type: null },
-        { title: 'Former French Concession walk', time: '15:00', source: 'Self-organised', type: null },
+    '2026-06-21': [
+      { period: 'Day', items: [
+        { title: 'Coffee at 13 de Marzo', time: null, end_time: null, duration: null, period: 'Morning', type: 'cultural', source: null },
+        { title: 'Nanjing Road Street', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Oriental Pearl Tower', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'sightseeing', source: null },
+        { title: 'Shanghai Tower', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'sightseeing', source: null },
+        { title: 'Huangpu River Cruise', time: null, end_time: null, duration: null, period: 'Evening', type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-06-29': [
-      { period: 'Morning', items: [
-        { title: 'Zhujiajiao Water Town day trip', time: '08:30', source: 'GetYourGuide', type: null },
+    '2026-06-22': [
+      { period: 'Day', items: [
+        { title: 'Yu Garden', time: null, end_time: null, duration: null, period: 'Morning', type: 'sightseeing', source: null },
+        { title: 'Xintiandi', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Jingan Temple', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'temple', source: null },
       ]},
     ],
-    '2026-07-04': [
-      { period: 'Evening', items: [
-        { title: 'Last night dinner · Lost Heaven', time: '19:30', source: 'Self-organised', type: null },
+    '2026-06-23': [
+      { period: 'Day', items: [
+        { title: 'Suzhou Day Trip', time: null, end_time: null, duration: null, type: 'sightseeing', source: null },
       ]},
     ],
-    '2026-07-05': [
-      { period: 'Morning', items: [
-        { title: 'Transfer to Pudong Airport', time: '06:00', source: 'Self-organised', type: null },
-        { title: 'Flight to Tokyo', time: '09:30', source: 'Self-organised', type: null },
+    '2026-06-24': [
+      { period: 'Day', items: [
+        { title: 'Shanghai Museum', time: null, end_time: null, duration: null, period: 'Morning', type: 'cultural', source: null },
+        { title: 'Tianzifang', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Sinan Mansions', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+        { title: 'Wukan Road', time: null, end_time: null, duration: null, period: 'Afternoon', type: 'street', source: null },
+      ]},
+    ],
+    '2026-06-25': [
+      { period: 'Day', items: [
+        { title: 'Check-out MoYu Movie Hotel', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: null },
+        { title: 'Flight Shanghai → Tokyo', time: '11:30', end_time: '20:00', duration: null, type: 'transport', source: null },
       ]},
     ],
   },
@@ -2146,16 +2387,45 @@ function getPeriod(timeStr) {
 
 function regroupByTime(groups) {
   const flat = groups.flatMap(g => g.items);
-  flat.sort((a, b) => (a.time ?? '').localeCompare(b.time ?? ''));
+  flat.sort((a, b) => {
+    const ta = a.time ?? 'zzz';
+    const tb = b.time ?? 'zzz';
+    return ta.localeCompare(tb);
+  });
   const buckets = {};
   for (const item of flat) {
-    const p = getPeriod(item.time) ?? 'Other';
+    const p = getPeriod(item.time) ?? item.period ?? 'Other';
     if (!buckets[p]) buckets[p] = [];
     buckets[p].push(item);
   }
   const result = PERIOD_ORDER.filter(p => buckets[p]).map(p => ({ period: p, items: buckets[p] }));
-  if (buckets['Other']) result.push({ period: '', items: buckets['Other'] });
+  if (buckets['Other']) result.push({ period: 'All day', items: buckets['Other'] });
   return result;
+}
+
+/* ── Time display helper ──────────────────────────────────── */
+
+function formatActivityTime(item) {
+  if (item.time && item.end_time) return `${item.time} – ${item.end_time}`;
+  if (item.time) return item.time;
+  if (item.duration) return `~${item.duration}`;
+  return '';
+}
+
+/* ── Helper: time row for activity cards ───────────────────── */
+
+function buildTimeRow(item) {
+  const ts = formatActivityTime(item);
+  if (item.time) {
+    const endBtn = !item.end_time
+      ? `<button class="dk-add-end-time-btn" type="button" aria-label="Add end time">+ end time</button>`
+      : '';
+    return `<span class="dk-activity-meta dk-time-trigger" role="button" tabindex="0" aria-label="Edit time">${esc(ts)}</span>${endBtn}`;
+  }
+  if (item.duration) {
+    return `<span class="dk-activity-meta dk-time-trigger" role="button" tabindex="0" aria-label="Edit duration">${esc(ts)}</span>`;
+  }
+  return `<button class="dk-add-time-btn" type="button" aria-label="Add time">+ Add time</button>`;
 }
 
 /* ── Render: activity timeline ─────────────────────────────── */
@@ -2203,10 +2473,17 @@ function renderActivityTimeline(cityKey, dateStr) {
         <span class="dk-timeline-period">${esc(group.period)}</span>
         <ul class="dk-activity-list" role="list" data-period="${esc(group.period)}">
           ${group.items.map(item => `
-            <li class="dk-activity-card" data-title="${esc(item.title)}">
+            <li class="dk-activity-card"
+                data-title="${esc(item.title)}"
+                data-original-title="${esc(item.title)}"
+                data-city="${esc(cityKey)}"
+                data-date="${esc(dateStr)}"
+                data-time="${esc(item.time ?? '')}"
+                data-end-time="${esc(item.end_time ?? '')}"
+                data-duration="${esc(item.duration ?? '')}">
               <div class="dk-activity-body">
-                <span class="dk-activity-title">${esc(item.title)}</span>
-                <span class="dk-activity-meta">${esc(item.time)}</span>
+                <span class="dk-activity-title" role="button" tabindex="0" aria-label="Edit: ${esc(item.title)}">${esc(item.title)}</span>
+                <div class="dk-activity-time-row">${buildTimeRow(item)}</div>
               </div>
               <svg class="dk-drag-handle" width="10" height="14" viewBox="0 0 10 14" fill="currentColor" aria-label="Drag to reorder" focusable="false">
                 <circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/>
@@ -2244,6 +2521,161 @@ async function persistSortOrder(listEl, cityKeyStr, dateStr) {
   }
 }
 
+/* ── Inline edit: patch to Supabase + in-memory ────────────── */
+
+async function patchActivity(cityKeyStr, dateStr, originalTitle, patch) {
+  /* Update in-memory STATIC_ACTIVITIES */
+  const dayGroups = (STATIC_ACTIVITIES[cityKeyStr] ?? {})[dateStr] ?? [];
+  for (const group of dayGroups) {
+    const item = group.items?.find(i => i.title === originalTitle);
+    if (item) { Object.assign(item, patch); break; }
+  }
+  /* PATCH Supabase */
+  try {
+    await supabase.from('activities').update(patch)
+      .eq('city', cityKeyStr).eq('date', dateStr).eq('title', originalTitle);
+  } catch (err) {
+    console.warn('[inline-edit] PATCH failed:', err);
+  }
+}
+
+/* ── Inline edit: title ─────────────────────────────────────── */
+
+function activateTitleEdit(cardEl) {
+  if (cardEl.querySelector('.dk-activity-title-input')) return; /* already editing */
+  const titleEl = cardEl.querySelector('.dk-activity-title');
+  if (!titleEl) return;
+
+  const currentTitle = titleEl.textContent;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'dk-activity-title-input';
+  input.value = currentTitle;
+  input.setAttribute('aria-label', 'Edit activity title');
+  titleEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  function commitTitle() {
+    const newTitle = input.value.trim();
+    if (!newTitle || newTitle === currentTitle) {
+      _restoreTitleSpan(cardEl, currentTitle);
+      return;
+    }
+    _restoreTitleSpan(cardEl, newTitle);
+    const originalTitle = cardEl.dataset.originalTitle;
+    patchActivity(cardEl.dataset.city, cardEl.dataset.date, originalTitle, { title: newTitle });
+    cardEl.dataset.title = newTitle;
+    cardEl.dataset.originalTitle = newTitle;
+  }
+
+  input.addEventListener('blur', commitTitle);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') {
+      input.removeEventListener('blur', commitTitle);
+      _restoreTitleSpan(cardEl, currentTitle);
+    }
+  });
+}
+
+function _restoreTitleSpan(cardEl, text) {
+  const input = cardEl.querySelector('.dk-activity-title-input');
+  if (!input) return;
+  const span = document.createElement('span');
+  span.className = 'dk-activity-title';
+  span.setAttribute('role', 'button');
+  span.setAttribute('tabindex', '0');
+  span.textContent = text;
+  input.replaceWith(span);
+}
+
+/* ── Inline edit: time ──────────────────────────────────────── */
+
+function activateTimeEdit(cardEl) {
+  if (cardEl.querySelector('.dk-time-panel')) return; /* already open */
+  const currentTime     = cardEl.dataset.time     || '';
+  const currentEndTime  = cardEl.dataset.endTime  || '';
+  const currentDuration = cardEl.dataset.duration || '';
+  const isDuration = !currentTime && !!currentDuration;
+
+  const panel = document.createElement('div');
+  panel.className = 'dk-time-panel';
+  panel.innerHTML = `
+    <div class="dk-time-panel-tabs" role="tablist">
+      <button class="dk-time-tab${!isDuration ? ' is-active' : ''}" data-mode="exact" role="tab" aria-selected="${!isDuration}" type="button">Exact</button>
+      <button class="dk-time-tab${isDuration ? ' is-active' : ''}" data-mode="duration" role="tab" aria-selected="${isDuration}" type="button">Duration</button>
+    </div>
+    <div class="dk-time-fields dk-time-exact"${isDuration ? ' hidden' : ''}>
+      <input type="time" class="dk-time-start-input" value="${esc(currentTime)}" aria-label="Start time">
+      <span class="dk-time-sep" aria-hidden="true">–</span>
+      <input type="time" class="dk-time-end-input" value="${esc(currentEndTime)}" aria-label="End time (optional)">
+    </div>
+    <div class="dk-time-fields dk-time-duration"${!isDuration ? ' hidden' : ''}>
+      <input type="text" class="dk-time-dur-input" value="${esc(currentDuration)}" placeholder="e.g. 3h30m" aria-label="Duration">
+    </div>
+    <div class="dk-time-panel-actions">
+      <button class="dk-time-save-btn" type="button">Save</button>
+      <button class="dk-time-cancel-btn" type="button">Cancel</button>
+    </div>
+  `;
+  cardEl.appendChild(panel);
+  panel.querySelector('.dk-time-exact:not([hidden]) input, .dk-time-duration:not([hidden]) input')?.focus();
+}
+
+function _switchTimeMode(cardEl, mode) {
+  const panel = cardEl.querySelector('.dk-time-panel');
+  if (!panel) return;
+  panel.querySelectorAll('.dk-time-tab').forEach(tab => {
+    const active = tab.dataset.mode === mode;
+    tab.classList.toggle('is-active', active);
+    tab.setAttribute('aria-selected', String(active));
+  });
+  const exactFields = panel.querySelector('.dk-time-exact');
+  const durFields   = panel.querySelector('.dk-time-duration');
+  if (mode === 'exact') {
+    exactFields?.removeAttribute('hidden');
+    durFields?.setAttribute('hidden', '');
+    exactFields?.querySelector('input')?.focus();
+  } else {
+    exactFields?.setAttribute('hidden', '');
+    durFields?.removeAttribute('hidden');
+    durFields?.querySelector('input')?.focus();
+  }
+}
+
+function saveTimeEdit(cardEl) {
+  const panel = cardEl.querySelector('.dk-time-panel');
+  if (!panel) return;
+  const mode = panel.querySelector('.dk-time-tab.is-active')?.dataset.mode ?? 'exact';
+  let patch;
+  if (mode === 'exact') {
+    const t = panel.querySelector('.dk-time-start-input')?.value || null;
+    const e = panel.querySelector('.dk-time-end-input')?.value   || null;
+    patch = { time: t, end_time: e, duration: null };
+  } else {
+    const d = panel.querySelector('.dk-time-dur-input')?.value || null;
+    patch = { time: null, end_time: null, duration: d };
+  }
+
+  /* Update data attributes on the card */
+  cardEl.dataset.time     = patch.time     ?? '';
+  cardEl.dataset.endTime  = patch.end_time ?? '';
+  cardEl.dataset.duration = patch.duration ?? '';
+
+  /* Rebuild the time row display */
+  const fakeItem = { time: patch.time, end_time: patch.end_time, duration: patch.duration };
+  const timeRow  = cardEl.querySelector('.dk-activity-time-row');
+  if (timeRow) timeRow.innerHTML = buildTimeRow(fakeItem);
+
+  panel.remove();
+  patchActivity(cardEl.dataset.city, cardEl.dataset.date, cardEl.dataset.originalTitle, patch);
+}
+
+function cancelTimeEdit(cardEl) {
+  cardEl.querySelector('.dk-time-panel')?.remove();
+}
+
 function initTimelineSortable(containerEl, cityKeyStr, dateStr) {
   if (typeof Sortable === 'undefined') return;
   containerEl.querySelectorAll('.dk-activity-list').forEach(listEl => {
@@ -2277,23 +2709,30 @@ function fadePanel(panelEl, renderFn) {
 function openActivityModal(cityKeyStr, dateStr, refreshFn) {
   const bodyHTML = `
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-name">Nombre de la actividad</label>
+      <label class="modal-label" for="act-modal-name">Activity name</label>
       <input type="text" id="act-modal-name" class="modal-input"
-        placeholder="Nombre de la actividad" maxlength="60" autocomplete="off">
+        placeholder="e.g. Mutianyu Great Wall" maxlength="60" autocomplete="off">
       <div class="modal-counter" id="act-modal-counter" aria-live="polite">0 / 60</div>
       <div class="modal-error" id="act-modal-name-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-time">Hora de inicio</label>
-      <input type="time" id="act-modal-time" class="modal-input">
+      <span class="modal-label" id="act-modal-time-lbl">Time</span>
+      <div class="dk-time-panel-tabs modal-time-tabs" role="tablist" aria-labelledby="act-modal-time-lbl">
+        <button class="dk-time-tab is-active" data-mode="exact" role="tab" aria-selected="true" type="button">Exact</button>
+        <button class="dk-time-tab" data-mode="duration" role="tab" aria-selected="false" type="button">Duration</button>
+      </div>
+      <div class="dk-time-fields" id="act-modal-exact-fields">
+        <input type="time" id="act-modal-time" class="dk-time-start-input" aria-label="Start time">
+        <span class="dk-time-sep" aria-hidden="true">–</span>
+        <input type="time" id="act-modal-end" class="dk-time-end-input" aria-label="End time (optional)">
+      </div>
+      <div class="dk-time-fields" id="act-modal-dur-fields" hidden>
+        <input type="text" id="act-modal-dur" class="dk-time-dur-input" placeholder="e.g. 3h30m" aria-label="Duration">
+      </div>
       <div class="modal-error" id="act-modal-time-err" role="alert"></div>
     </div>
     <div class="modal-field">
-      <label class="modal-label" for="act-modal-end">Hora de fin (opcional)</label>
-      <input type="time" id="act-modal-end" class="modal-input">
-    </div>
-    <div class="modal-field">
-      <label class="modal-label" id="act-modal-type-lbl">Tipo</label>
+      <label class="modal-label" id="act-modal-type-lbl">Type</label>
       <div class="modal-custom-select" aria-expanded="false">
         <button class="modal-custom-select-trigger is-placeholder" type="button"
                 id="act-modal-type-btn"
@@ -2301,13 +2740,13 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
                 aria-expanded="false"
                 aria-controls="act-modal-type-list"
                 aria-labelledby="act-modal-type-lbl">
-          <span class="modal-custom-select-value">— Sin tipo —</span>
+          <span class="modal-custom-select-value">— No type —</span>
           <svg class="modal-custom-select-chevron" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">
             <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
         <ul class="modal-custom-select-list" role="listbox" id="act-modal-type-list" aria-labelledby="act-modal-type-lbl">
-          <li class="modal-custom-select-option" role="option" aria-selected="true"  data-value="" data-placeholder tabindex="-1">— Sin tipo —</li>
+          <li class="modal-custom-select-option" role="option" aria-selected="true"  data-value="" data-placeholder tabindex="-1">— No type —</li>
           <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="tour"          tabindex="-1">Tour</li>
           <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="transport"     tabindex="-1">Transport</li>
           <li class="modal-custom-select-option" role="option" aria-selected="false" data-value="accommodation" tabindex="-1">Accommodation</li>
@@ -2325,7 +2764,7 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
 
   openModal({
     id: 'act-modal',
-    title: 'Nueva actividad',
+    title: 'Add activity',
     bodyHTML,
     onSave: () => handleActivityModalSave(cityKeyStr, dateStr, refreshFn),
   });
@@ -2338,6 +2777,34 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
       input.classList.remove('has-error');
       document.getElementById('act-modal-name-err').textContent = '';
     }
+  });
+
+  /* ── Time mode toggle (Exact / Duration) ─────────────────── */
+  const modalTimeTabs  = [...document.querySelectorAll('.modal-time-tabs .dk-time-tab')];
+  const exactFields    = document.getElementById('act-modal-exact-fields');
+  const durFields      = document.getElementById('act-modal-dur-fields');
+  modalTimeTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      modalTimeTabs.forEach(t => {
+        const active = t === tab;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', String(active));
+      });
+      if (tab.dataset.mode === 'exact') {
+        exactFields?.removeAttribute('hidden');
+        durFields?.setAttribute('hidden', '');
+        document.getElementById('act-modal-time')?.focus();
+      } else {
+        exactFields?.setAttribute('hidden', '');
+        durFields?.removeAttribute('hidden');
+        document.getElementById('act-modal-dur')?.focus();
+      }
+      /* Clear any time error when switching modes */
+      const timeErrEl = document.getElementById('act-modal-time-err');
+      if (timeErrEl) timeErrEl.textContent = '';
+      document.getElementById('act-modal-time')?.classList.remove('has-error');
+      document.getElementById('act-modal-dur')?.classList.remove('has-error');
+    });
   });
 
   /* ── Custom select: Tipo ─────────────────────────────────── */
@@ -2377,6 +2844,7 @@ function openActivityModal(cityKeyStr, dateStr, refreshFn) {
       csTrigger.classList.remove('is-placeholder');
     } else {
       csTrigger.classList.add('is-placeholder');
+      csValue.textContent = '— No type —';
     }
     csClose();
     csTrigger.focus();
@@ -2406,43 +2874,65 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
   const nameInput  = document.getElementById('act-modal-name');
   const timeInput  = document.getElementById('act-modal-time');
   const endInput   = document.getElementById('act-modal-end');
+  const durInput   = document.getElementById('act-modal-dur');
   const typeSelect = document.getElementById('act-modal-type');
   const nameErr    = document.getElementById('act-modal-name-err');
   const timeErr    = document.getElementById('act-modal-time-err');
+  const activeMode = document.querySelector('.modal-time-tabs .dk-time-tab.is-active')?.dataset.mode ?? 'exact';
   let valid = true;
 
   if (!nameInput?.value.trim()) {
     nameInput?.classList.add('has-error');
-    if (nameErr) nameErr.textContent = 'Este campo es obligatorio';
+    if (nameErr) nameErr.textContent = 'This field is required';
     valid = false;
   } else {
     nameInput.classList.remove('has-error');
     if (nameErr) nameErr.textContent = '';
   }
 
-  if (!timeInput?.value) {
-    timeInput?.classList.add('has-error');
-    if (timeErr) timeErr.textContent = 'Este campo es obligatorio';
-    valid = false;
+  if (activeMode === 'exact') {
+    if (!timeInput?.value) {
+      timeInput?.classList.add('has-error');
+      if (timeErr) timeErr.textContent = 'Start time is required';
+      valid = false;
+    } else {
+      timeInput.classList.remove('has-error');
+      if (timeErr) timeErr.textContent = '';
+    }
   } else {
-    timeInput.classList.remove('has-error');
-    if (timeErr) timeErr.textContent = '';
+    if (!durInput?.value.trim()) {
+      durInput?.classList.add('has-error');
+      if (timeErr) timeErr.textContent = 'Duration is required (e.g. 3h30m)';
+      valid = false;
+    } else {
+      durInput?.classList.remove('has-error');
+      if (timeErr) timeErr.textContent = '';
+    }
   }
 
   if (!valid) return;
 
   const title    = nameInput.value.trim();
-  const time     = timeInput.value;
-  const end_time = endInput?.value || null;
   const type     = typeSelect?.value || null;
   const btn      = document.getElementById('act-modal-guardar');
   if (btn) btn.disabled = true;
+
+  let time, end_time, duration;
+  if (activeMode === 'exact') {
+    time     = timeInput?.value || null;
+    end_time = endInput?.value  || null;
+    duration = null;
+  } else {
+    time     = null;
+    end_time = null;
+    duration = durInput?.value.trim() || null;
+  }
 
   const existingCount = (STATIC_ACTIVITIES[cityKeyStr]?.[dateStr] ?? [])
     .flatMap(g => g.items).length;
   const sort_order = existingCount;
 
-  const newEntry = { city: cityKeyStr, date: dateStr, title, time, end_time, type, sort_order };
+  const newEntry = { city: cityKeyStr, date: dateStr, title, time, end_time, duration, type, sort_order };
 
   try {
     const { error } = await supabase.from('activities').insert([newEntry]);
@@ -2453,7 +2943,7 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
   }
 
   /* Update in-memory data so the timeline re-render shows the new item */
-  const newItem  = { title, time, end_time, type, source: 'User added' };
+  const newItem  = { title, time, end_time, duration, type, source: 'User added' };
   const period   = getPeriod(time) ?? 'Other';
   if (!STATIC_ACTIVITIES[cityKeyStr])        STATIC_ACTIVITIES[cityKeyStr] = {};
   if (!STATIC_ACTIVITIES[cityKeyStr][dateStr]) STATIC_ACTIVITIES[cityKeyStr][dateStr] = [];
@@ -2474,28 +2964,81 @@ async function handleActivityModalSave(cityKeyStr, dateStr, refreshFn) {
   refreshFn(cityKeyStr, dateStr);
 }
 
+/* ── Daily stats cache (for day summary km lookup) ─────────── */
+
+let dailyStatsCache = null; /* { [dateStr]: { steps, km } } */
+
+async function loadDailyStatsCache() {
+  try {
+    const { data, error } = await supabase
+      .from('daily_stats')
+      .select('date, steps, km');
+    if (error) throw error;
+    const map = {};
+    (data ?? []).forEach(r => { map[r.date] = r; });
+    dailyStatsCache = map;
+  } catch (_) {
+    dailyStatsCache = {};
+  }
+}
+
 /* ── Main itinerary init ───────────────────────────────────── */
 
 export function initItinerary() {
-  const listEl    = document.getElementById('dk-itin-city-list');
-  const panelEl   = document.getElementById('dk-itin-panel');
-  const labelEl   = document.getElementById('dk-itin-panel-label');
+  const listEl     = document.getElementById('dk-itin-city-list');
+  const panelEl    = document.getElementById('dk-itin-panel');
+  const labelEl    = document.getElementById('dk-itin-panel-label');
+  const summaryEl  = document.getElementById('dk-itin-panel-summary');
   const timelineEl = document.getElementById('dk-itin-timeline');
 
   if (!listEl || !panelEl) return;
 
   const cities = STATIC_CITIES;
 
+  /* Kick off daily_stats load in the background */
+  loadDailyStatsCache().then(() => {
+    /* If a panel is already showing, refresh its summary */
+    if (summaryEl && summaryEl.dataset.date) {
+      const key     = summaryEl.dataset.cityKey;
+      const dateStr = summaryEl.dataset.date;
+      renderPanelSummary(summaryEl, key, dateStr);
+    }
+  });
+
   /* Track selected city and the active day per city */
   let selectedCityKey  = cityKey(cities[0].city);  /* Beijing on load */
   const activeDates    = {};
   cities.forEach(c => { activeDates[cityKey(c.city)] = c.date_start; });
+
+  function renderPanelSummary(el, key, dateStr) {
+    if (!el) return;
+    /* Count all activities for this day */
+    const groups = (STATIC_ACTIVITIES[key] ?? {})[dateStr] ?? [];
+    const total  = groups.reduce((acc, g) => acc + (g.items?.length ?? 0), 0);
+
+    /* Look up km from cache */
+    const kmVal = dailyStatsCache?.[dateStr]?.km ?? null;
+
+    /* Store for potential cache-ready refresh */
+    el.dataset.date    = dateStr;
+    el.dataset.cityKey = key;
+
+    if (total === 0 && kmVal == null) {
+      el.textContent = '';
+      return;
+    }
+
+    const actLabel = `${total} activit${total === 1 ? 'y' : 'ies'}`;
+    const kmLabel  = kmVal != null ? `<span class="summary-sep">·</span>${kmVal} km` : '';
+    el.innerHTML   = actLabel + kmLabel;
+  }
 
   function updatePanel(key, dateStr) {
     const city = cities.find(c => cityKey(c.city) === key);
     if (!city) return;
     fadePanel(panelEl, () => {
       labelEl.textContent  = itinFormatDateLabel(dateStr, city.city);
+      renderPanelSummary(summaryEl, key, dateStr);
       timelineEl.innerHTML = renderActivityTimeline(key, dateStr);
       initTimelineSortable(timelineEl, key, dateStr);
     });
@@ -2590,13 +3133,52 @@ export function initItinerary() {
   const firstCity = cities[0];
   const firstDate = activeDates[selectedCityKey];
   labelEl.textContent  = itinFormatDateLabel(firstDate, firstCity.city);
+  renderPanelSummary(summaryEl, selectedCityKey, firstDate);
   timelineEl.innerHTML = renderActivityTimeline(selectedCityKey, firstDate);
   initTimelineSortable(timelineEl, selectedCityKey, firstDate);
 
-  /* Event delegation: "+" button in timeline — attached once, works after every re-render */
+  /* Event delegation: all timeline interactions — attached once, works after every re-render */
   timelineEl.addEventListener('click', e => {
+    /* Add activity */
     if (e.target.closest('.dk-add-activity-btn')) {
       openActivityModal(selectedCityKey, activeDates[selectedCityKey], updatePanel);
+      return;
+    }
+    const card = e.target.closest('.dk-activity-card');
+    if (!card) return;
+
+    /* Title edit — but not when input is already active */
+    if (e.target.closest('.dk-activity-title') && !e.target.closest('.dk-activity-title-input')) {
+      activateTitleEdit(card); return;
+    }
+    /* Time edit — meta click, + Add time, or + end time */
+    if (e.target.closest('.dk-time-trigger') || e.target.closest('.dk-add-time-btn') || e.target.closest('.dk-add-end-time-btn')) {
+      activateTimeEdit(card); return;
+    }
+    /* Time panel: tab switch */
+    const tab = e.target.closest('.dk-time-tab');
+    if (tab) { _switchTimeMode(card, tab.dataset.mode); return; }
+    /* Time panel: save / cancel */
+    if (e.target.closest('.dk-time-save-btn'))   { saveTimeEdit(card);   return; }
+    if (e.target.closest('.dk-time-cancel-btn')) { cancelTimeEdit(card); return; }
+  });
+
+  /* Keyboard: activate title/time edits via Enter/Space; close time panel via Escape */
+  timelineEl.addEventListener('keydown', e => {
+    const card = e.target.closest('.dk-activity-card');
+    if (!card) return;
+    if (e.key === 'Escape') {
+      cancelTimeEdit(card); return;
+    }
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    if (e.target.classList.contains('dk-activity-title')) {
+      e.preventDefault(); activateTitleEdit(card);
+    } else if (
+      e.target.classList.contains('dk-time-trigger') ||
+      e.target.classList.contains('dk-add-time-btn') ||
+      e.target.classList.contains('dk-add-end-time-btn')
+    ) {
+      e.preventDefault(); activateTimeEdit(card);
     }
   });
 }

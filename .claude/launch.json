@@ -2,6 +2,12 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "Dev Server (no-cache)",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["server.py", "8001"],
+      "port": 8001
+    },
+    {
       "name": "Python HTTP Server",
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8001"],
@@ -12,6 +18,12 @@
       "runtimeExecutable": "python3",
       "runtimeArgs": ["-m", "http.server", "8002"],
       "port": 8002
+    },
+    {
+      "name": "Python HTTP Server 8003",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8003"],
+      "port": 8003
     },
     {
       "name": "npx serve",

@@ -5,6 +5,9 @@
 
 import { initOverview, initDesktopToggle, initDesktopNextUp, initDesktopBookings, initDesktopPacking, initItinerary, initDesktopCountdown, initDesktopReminders, initCarousel } from './overview.js';
 import { initSidebar } from './sidebar.js';
+import { initTravelSteps } from './travel-steps.js';
+import { initTravelTransport } from './travel-transport.js';
+import { initTravelHotels } from './travel-hotels.js';
 
 /* ── Tab switching ─────────────────────────────────────────── */
 
@@ -46,7 +49,8 @@ async function init() {
   initItinerary();
   initCalendar();
   initDesktopReminders();
-  await Promise.all([initOverview(), initDesktopNextUp(), initDesktopCountdown(), initCarousel()]);
+  await Promise.all([initOverview(), initDesktopNextUp(), initDesktopCountdown(), initCarousel(), initTravelTransport(), initTravelHotels()]);
+  initTravelSteps();
 }
 
 init();
