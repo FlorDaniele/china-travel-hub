@@ -200,14 +200,14 @@
 }
 
 .booking-check-item input[type="checkbox"]:checked {
-  background: var(--color-success);
-  border-color: var(--color-success);
+  background: var(--status-checked);
+  border-color: var(--status-checked);
 }
 
 .booking-check-item input[type="checkbox"]:checked::after {
   content: '';
   position: absolute;
-  left: 3px;
+  left: 4px;
   top: 0px;
   width: 5px;
   height: 9px;
@@ -760,14 +760,14 @@
   }
 
   .dk-checkbox:checked {
-    background: var(--status-success);
-    border-color: var(--status-success);
+    background: var(--status-checked);
+    border-color: var(--status-checked);
   }
 
   .dk-checkbox:checked::after {
     content: '';
     position: absolute;
-    left: 4px;
+    left: 5px;
     top: 1px;
     width: 5px;
     height: 9px;
@@ -988,14 +988,14 @@
   }
 
   .dk-booking-cb:checked {
-    background: var(--action);
-    border-color: var(--action);
+    background: var(--status-checked);
+    border-color: var(--status-checked);
   }
 
   .dk-booking-cb:checked::after {
     content: '';
     position: absolute;
-    left: 4px;
+    left: 5px;
     top: 1px;
     width: 5px;
     height: 9px;
@@ -2652,14 +2652,14 @@
   }
 
   .dk-checkbox:checked {
-    background: var(--status-success);
-    border-color: var(--status-success);
+    background: var(--status-checked);
+    border-color: var(--status-checked);
   }
 
   .dk-checkbox:checked::after {
     content: '';
     position: absolute;
-    left: 4px;
+    left: 5px;
     top: 1px;
     width: 5px;
     height: 9px;
@@ -2933,14 +2933,14 @@
   }
 
   .dk-booking-cb:checked {
-    background: var(--action);
-    border-color: var(--action);
+    background: var(--status-checked);
+    border-color: var(--status-checked);
   }
 
   .dk-booking-cb:checked::after {
     content: '';
     position: absolute;
-    left: 4px;
+    left: 5px;
     top: 1px;
     width: 5px;
     height: 9px;
