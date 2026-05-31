@@ -256,10 +256,19 @@ function renderBookingCard(type, items) {
   const pending   = items.filter(b => b.status !== 'booked' && b.status !== 'done');
   const allDone   = items.length > 0 && confirmed === items.length;
 
-  const checklistHTML = pending.length > 0
+  // CASE A: ≤ 5 total → show all pending, no "View all"
+  // CASE B: ≥ 6 total → show first 5 unchecked, show "View all →"
+  const showViewAll    = items.length >= 6;
+  const visiblePending = showViewAll ? pending.slice(0, 5) : pending;
+
+  const viewAllBtn = showViewAll
+    ? `<button class="booking-view-all-btn" data-booking-type="${esc(type)}" type="button">View all →</button>`
+    : '';
+
+  const checklistHTML = visiblePending.length > 0
     ? `<div class="booking-card-divider" aria-hidden="true"></div>
        <div class="booking-checklist">
-         ${pending.map(b => `
+         ${visiblePending.map(b => `
            <div class="booking-check-item" data-booking-id="${esc(b.id)}">
              <input
                type="checkbox"
@@ -269,9 +278,10 @@ function renderBookingCard(type, items) {
              <label for="booking-cb-${esc(b.id)}">${esc(b.title)}</label>
            </div>
          `).join('')}
+         ${viewAllBtn}
        </div>`
     : `<div class="booking-card-divider" aria-hidden="true"></div>
-       <p class="booking-all-done">All booked ✓</p>`;
+       <p class="booking-all-done">All booked ✓</p>${viewAllBtn}`;
 
   return `
     <div class="booking-card" data-type="${esc(type)}">
@@ -1329,6 +1339,34 @@ export function initDesktopBookings() {
     if (!btn) return;
     openBookingModal(btn.dataset.bookingType);
   });
+
+  // Sidebar booking checkboxes — toggle status in Supabase and refresh cards
+  document.getElementById('sidebar-content')?.addEventListener('change', async e => {
+    const cb = e.target;
+    if (!cb.matches('.sb-booking-cb[data-booking-id]')) return;
+    const bookingId = cb.dataset.bookingId;
+    const newStatus = cb.checked ? 'booked' : 'pending';
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status: newStatus })
+        .eq('id', bookingId);
+      if (error) throw error;
+
+      const cached = loadFromStorage('bookings') ?? [];
+      saveToStorage('bookings', cached.map(b =>
+        String(b.id) === String(bookingId) ? { ...b, status: newStatus } : b
+      ));
+      // Refresh the booking cards without closing the sidebar
+      const updated = loadFromStorage('bookings') ?? STATIC_BOOKINGS_FALLBACK;
+      refreshDesktopBookings(updated);
+      renderDesktopBookingChecklist(updated);
+      initOverview();
+    } catch (err) {
+      console.warn('[overview] sidebar booking toggle failed:', err);
+      cb.checked = !cb.checked;
+    }
+  });
 }
 
 /* ── Build merged packing categories (static + Supabase) ──── */
@@ -2055,6 +2093,16 @@ export async function initOverview() {
       if (cb.matches('input[type="checkbox"]') && cb.dataset.bookingId) {
         handleBookingCheck(cb.dataset.bookingId, cb);
       }
+    });
+
+  // "View all →" buttons in booking cards — open sidebar
+  document.getElementById('booking-bento')
+    ?.addEventListener('click', e => {
+      const btn = e.target.closest('.booking-view-all-btn[data-booking-type]');
+      if (!btn) return;
+      const bookingsSource = loadFromStorage('bookings') ?? STATIC_BOOKINGS_FALLBACK;
+      openSidebar('Bookings', renderBookingsSidebarContent(bookingsSource));
+      window.lucide?.createIcons();
     });
 }
 

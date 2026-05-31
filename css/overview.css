@@ -176,7 +176,7 @@
 
 .booking-check-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-sm);
   min-height: 44px;
   padding: 2px 0;
@@ -192,7 +192,6 @@
   border: 2px solid var(--color-border);
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 2px;
   background: var(--color-surface);
   transition: background 0.12s ease, border-color 0.12s ease;
   flex-shrink: 0;
@@ -243,6 +242,20 @@
   color: var(--color-success);
   font-weight: var(--font-weight-semibold);
   padding: var(--space-xs) 0;
+}
+
+.booking-view-all-btn {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
 }
 
 /* ── Planning: urgent reminders (compact row below cards) ──── */
