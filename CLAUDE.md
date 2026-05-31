@@ -49,6 +49,13 @@ Follow the structure defined in the brief exactly:
 - Never delete existing working code without asking first.
 - If something is unclear, ask before building the wrong thing.
 
+## Branching and deployment
+- Vercel auto-deploys every push to `main`. Never push directly to `main` mid-session.
+- At the start of each session, create a feature branch: `git checkout -b feature/short-topic`.
+- Make all changes on that branch. Push to `main` only at the end of the session.
+- After merging to `main`, delete the feature branch: `git branch -d feature/short-topic && git push origin --delete feature/short-topic`.
+- One session = one branch = one deploy. This keeps git history clean and token usage efficient.
+
 ## Context-aware mode logic
 The app has two modes: planning (before June 6 2026) and travel (from June 6 2026).
 - Mode is stored in Supabase `settings` table (key: `mode`, key: `manual_mode_override`)
