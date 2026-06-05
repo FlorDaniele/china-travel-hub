@@ -1544,7 +1544,7 @@ function renderRemindersSidebarContent(reminders) {
   `;
 }
 
-/* ── Render: desktop reminders card (max 5, dynamic) ──────── */
+/* ── Render: desktop reminders card ────────────────────────── */
 
 function renderDesktopReminders(reminders) {
   const list       = document.querySelector('.dk-reminders .dk-reminder-list');
@@ -1554,16 +1554,18 @@ function renderDesktopReminders(reminders) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Pending items first (soonest due), then done
-  const pending = reminders.filter(r => r.status !== 'done')
-    .sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''));
-  const done    = reminders.filter(r => r.status === 'done');
-  const sorted  = [...pending, ...done];
-
-  const visible = sorted.slice(0, 6);
   const total   = reminders.length;
+  const pending = reminders
+    .filter(r => r.status !== 'done')
+    .sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''));
 
-  list.innerHTML = visible.map(r => {
+  // CASE A: ≤ 6 total — show all regardless of checked state, no "View all"
+  // CASE B: ≥ 7 total — show first 6 unchecked (by due_date asc) only
+  const visible = total <= 6
+    ? reminders.slice().sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''))
+    : pending.slice(0, 6);
+
+  function reminderItemHTML(r) {
     const isDone = r.status === 'done';
 
     const dueClass = (() => {
@@ -1597,11 +1599,13 @@ function renderDesktopReminders(reminders) {
         </div>
       </li>
     `;
-  }).join('') || `<li class="dk-reminder-item"><span class="dk-reminder-title" style="color:var(--text-secondary)">No reminders yet</span></li>`;
+  }
 
-  // Show "View all →" only when there are more than 6 reminders
+  list.innerHTML = visible.map(reminderItemHTML).join('')
+    || `<li class="dk-reminder-item"><span class="dk-reminder-title" style="color:var(--text-secondary)">No reminders yet</span></li>`;
+
   if (viewAllBtn) {
-    viewAllBtn.style.display = total > 6 ? '' : 'none';
+    viewAllBtn.style.display = total >= 7 ? '' : 'none';
   }
 }
 
@@ -1699,6 +1703,42 @@ export function initDesktopReminders() {
     const reminders = loadFromStorage('reminders') ?? STATIC_REMINDERS;
     const source = Array.isArray(reminders) && reminders.length > 0 ? reminders : STATIC_REMINDERS;
     openSidebar('Reminders', renderRemindersSidebarContent(source));
+  });
+
+  // Desktop reminders card — checkbox toggle
+  document.querySelector('.dk-reminders')?.addEventListener('change', async e => {
+    const cb = e.target;
+    if (!cb.matches('.dk-checkbox[data-reminder-id]')) return;
+    const reminderId = cb.dataset.reminderId;
+    const newStatus  = cb.checked ? 'done' : 'pending';
+    try {
+      const { error } = await supabase
+        .from('reminders')
+        .update({ status: newStatus })
+        .eq('id', reminderId);
+      if (error) throw error;
+
+      // Fetch fresh from Supabase then re-render
+      const { data, error: fetchErr } = await supabase.from('reminders').select('*');
+      if (!fetchErr && data) {
+        saveToStorage('reminders', data);
+        renderDesktopReminders(data);
+        renderPlanningHeader(
+          loadFromStorage('bookings') ?? [],
+          data
+        );
+      } else {
+        const cached = loadFromStorage('reminders') ?? [];
+        const updated = cached.map(r =>
+          String(r.id) === String(reminderId) ? { ...r, status: newStatus } : r
+        );
+        saveToStorage('reminders', updated);
+        renderDesktopReminders(updated);
+      }
+    } catch (err) {
+      console.warn('[reminders] checkbox toggle failed:', err);
+      cb.checked = !cb.checked;
+    }
   });
 
   // Inline edit — desktop reminders card
