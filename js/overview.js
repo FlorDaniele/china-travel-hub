@@ -1766,6 +1766,44 @@ export function initDesktopReminders() {
     if (!reminderId) return;
     startReminderInlineEdit(labelEl, reminderId, 'sb-booking-label');
   });
+
+  // Sidebar reminders — checkbox toggle with CASE B swap logic
+  document.getElementById('sidebar-content')?.addEventListener('change', async e => {
+    const cb = e.target;
+    if (!cb.matches('.sb-booking-cb[data-reminder-id]')) return;
+    const reminderId = cb.dataset.reminderId;
+    const newStatus  = cb.checked ? 'done' : 'pending';
+    try {
+      const { error } = await supabase
+        .from('reminders')
+        .update({ status: newStatus })
+        .eq('id', reminderId);
+      if (error) throw error;
+
+      // Fetch fresh, update storage and card
+      const { data, error: fetchErr } = await supabase.from('reminders').select('*');
+      const fresh = (!fetchErr && data) ? data : (() => {
+        const cached = loadFromStorage('reminders') ?? [];
+        return cached.map(r =>
+          String(r.id) === String(reminderId) ? { ...r, status: newStatus } : r
+        );
+      })();
+      if (!fetchErr && data) saveToStorage('reminders', fresh);
+
+      // Re-render card (CASE B swap logic applied inside renderDesktopReminders)
+      renderDesktopReminders(fresh);
+
+      // Re-render sidebar content so panel stays in sync (all items, current state)
+      const sidebarContent = document.getElementById('sidebar-content');
+      if (sidebarContent) {
+        sidebarContent.innerHTML = renderRemindersSidebarContent(fresh);
+        window.lucide?.createIcons();
+      }
+    } catch (err) {
+      console.warn('[reminders] sidebar checkbox toggle failed:', err);
+      cb.checked = !cb.checked;
+    }
+  });
 }
 
 /* ── Weather widget ───────────────────────────────────────── */
