@@ -62,6 +62,14 @@
     overflow: hidden;
   }
 
+  /* Skeleton placeholder shown before chart data loads */
+  .dk-chart-skeleton {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    min-height: 120px;
+  }
+
   /* Scrollable chart container — hides scrollbar, native scroll */
   .dk-steps-scroll,
   .dk-km-scroll {
@@ -297,6 +305,10 @@
     justify-content: flex-end;
     flex-shrink: 0;
     overflow: hidden;
+    background: #ffffff;
+    border-radius: 4px;
+    padding: 4px 8px;
+    box-sizing: content-box;
   }
 
   .dk-transport-logo img {

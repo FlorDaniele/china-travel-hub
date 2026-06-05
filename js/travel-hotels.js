@@ -428,7 +428,7 @@ function openHotelModal(existingHotel, onSaved) {
 /* ── Refresh helper ────────────────────────────────────────── */
 
 async function refreshHotels(card, body) {
-  body.innerHTML = `<span class="dk-transport-loading">Loading…</span>`;
+  body.innerHTML = `<div class="dk-card-skeleton" aria-hidden="true" aria-busy="true"><div class="skeleton" style="height:90px;border-radius:8px;margin-bottom:12px"></div><div class="skeleton skeleton-text medium" style="height:12px;margin-bottom:8px"></div><div class="skeleton skeleton-text short" style="height:12px"></div></div>`;
   let hotels;
   let today;
   try {
@@ -472,7 +472,7 @@ export async function initTravelHotels() {
   const body = card.querySelector('.dk-hotels-body');
   if (!body) return;
 
-  body.innerHTML = `<span class="dk-transport-loading">Loading…</span>`;
+  body.innerHTML = `<div class="dk-card-skeleton" aria-hidden="true" aria-busy="true"><div class="skeleton" style="height:90px;border-radius:8px;margin-bottom:12px"></div><div class="skeleton skeleton-text medium" style="height:12px;margin-bottom:8px"></div><div class="skeleton skeleton-text short" style="height:12px"></div></div>`;
 
   let hotels;
   let today;

@@ -67,16 +67,22 @@
   display: block;
 }
 
-/* Gradient — dark bottom so white text is readable (>7:1 contrast) */
+/* Gradient — layered: bottom-left darkened for text legibility on all 5 city photos */
 .hero-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 20%,
-    rgba(0, 0, 0, 0.18) 55%,
-    rgba(0, 0, 0, 0.62) 100%
-  );
+  background:
+    linear-gradient(
+      to top right,
+      rgba(0, 0, 0, 0.65) 0%,
+      transparent 60%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 20%,
+      rgba(0, 0, 0, 0.18) 55%,
+      rgba(0, 0, 0, 0.62) 100%
+    );
   pointer-events: none;
 }
 
@@ -816,12 +822,18 @@
   .dk-hero-gradient {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent 15%,
-      rgba(0, 0, 0, 0.18) 50%,
-      rgba(0, 0, 0, 0.52) 100%
-    );
+    background:
+      linear-gradient(
+        to top right,
+        rgba(0, 0, 0, 0.65) 0%,
+        transparent 60%
+      ),
+      linear-gradient(
+        to bottom,
+        transparent 15%,
+        rgba(0, 0, 0, 0.18) 50%,
+        rgba(0, 0, 0, 0.52) 100%
+      );
     pointer-events: none;
   }
 
@@ -871,9 +883,9 @@
   }
 
   .dk-mode-btn {
-    font-size: 16px;
+    font-size: 8px;
     font-weight: 500;
-    padding: 7px 20px;
+    padding: 8px 20px;
     min-height: 36px;
     border-radius: 999px;
     border: none;
@@ -2871,7 +2883,7 @@
   }
 
   .dk-mode-btn {
-    font-size: 14px;
+    font-size: 8px;
     font-weight: 500;
     padding: 7px 20px;
     min-height: 44px;
@@ -4066,7 +4078,7 @@
   }
 
   .dk-mode-btn {
-    font-size: 20px;
+    font-size: 12px;
     padding: 8px 24px;
     min-height: 44px;
   }

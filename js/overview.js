@@ -1560,7 +1560,7 @@ function renderDesktopReminders(reminders) {
   const done    = reminders.filter(r => r.status === 'done');
   const sorted  = [...pending, ...done];
 
-  const visible = sorted.slice(0, 5);
+  const visible = sorted.slice(0, 6);
   const total   = reminders.length;
 
   list.innerHTML = visible.map(r => {
@@ -1599,9 +1599,9 @@ function renderDesktopReminders(reminders) {
     `;
   }).join('') || `<li class="dk-reminder-item"><span class="dk-reminder-title" style="color:var(--text-secondary)">No reminders yet</span></li>`;
 
-  // Show "View all →" only when there are more than 5 reminders
+  // Show "View all →" only when there are more than 6 reminders
   if (viewAllBtn) {
-    viewAllBtn.style.display = total > 5 ? '' : 'none';
+    viewAllBtn.style.display = total > 6 ? '' : 'none';
   }
 }
 
@@ -1677,6 +1677,20 @@ export function initDesktopReminders() {
 
   const viewAllBtn = document.getElementById('dk-reminders-view-all');
   if (!viewAllBtn) return;
+
+  // Skeleton while Supabase loads
+  const list = document.querySelector('.dk-reminders .dk-reminder-list');
+  if (list) {
+    list.innerHTML = [1,2,3].map(() =>
+      `<li class="dk-reminder-item" aria-hidden="true">
+        <div class="skeleton" style="width:16px;height:16px;border-radius:4px;flex-shrink:0"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <div class="skeleton skeleton-text medium" style="height:12px"></div>
+          <div class="skeleton skeleton-text short" style="height:10px"></div>
+        </div>
+      </li>`
+    ).join('');
+  }
 
   // Hidden until data loads — renderDesktopReminders sets final visibility
   viewAllBtn.style.display = 'none';

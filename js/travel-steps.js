@@ -715,6 +715,19 @@ export async function initTravelSteps() {
   const kmCanvas    = document.getElementById('km-canvas');
   if (!stepsCanvas && !kmCanvas) return;
 
+  // Show skeleton placeholders while Supabase data loads
+  const stepsSkel = document.createElement('div');
+  stepsSkel.className = 'dk-chart-skeleton';
+  stepsSkel.setAttribute('aria-hidden', 'true');
+  stepsSkel.innerHTML = '<div class="skeleton" style="width:100%;height:100%;border-radius:8px"></div>';
+  stepsCanvas?.parentElement?.prepend(stepsSkel);
+
+  const kmSkel = document.createElement('div');
+  kmSkel.className = 'dk-chart-skeleton';
+  kmSkel.setAttribute('aria-hidden', 'true');
+  kmSkel.innerHTML = '<div class="skeleton" style="width:100%;height:100%;border-radius:8px"></div>';
+  kmCanvas?.parentElement?.prepend(kmSkel);
+
   let data;
   let today;
   try {
@@ -723,6 +736,9 @@ export async function initTravelSteps() {
     data  = getFallbackData();
     today = new Date().toISOString().split('T')[0];
   }
+
+  stepsSkel.remove();
+  kmSkel.remove();
 
   /* Reload + redraw both charts after a save */
   async function onSaved() {

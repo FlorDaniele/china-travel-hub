@@ -281,7 +281,7 @@ function wireEditButtons(card, body, transports, goTo) {
 /* ── Refresh helper ────────────────────────────────────────── */
 
 async function refreshTransports(card, body) {
-  body.innerHTML = `<span class="dk-transport-loading">Loading…</span>`;
+  body.innerHTML = `<div class="dk-card-skeleton" aria-hidden="true" aria-busy="true"><div class="skeleton skeleton-text medium" style="height:12px;margin-bottom:8px"></div><div class="skeleton skeleton-text short" style="height:12px;margin-bottom:16px"></div><div class="skeleton" style="height:80px;border-radius:8px;margin-bottom:12px"></div><div class="skeleton skeleton-text medium" style="height:12px"></div></div>`;
   let transports;
   try {
     transports = await loadAllTransports();
@@ -662,7 +662,7 @@ export async function initTravelTransport() {
   const body = card.querySelector('.dk-transport-body');
   if (!body) return;
 
-  body.innerHTML = `<span class="dk-transport-loading">Loading…</span>`;
+  body.innerHTML = `<div class="dk-card-skeleton" aria-hidden="true" aria-busy="true"><div class="skeleton skeleton-text medium" style="height:12px;margin-bottom:8px"></div><div class="skeleton skeleton-text short" style="height:12px;margin-bottom:16px"></div><div class="skeleton" style="height:80px;border-radius:8px;margin-bottom:12px"></div><div class="skeleton skeleton-text medium" style="height:12px"></div></div>`;
 
   let transports;
   try {
