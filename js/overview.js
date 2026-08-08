@@ -1026,8 +1026,8 @@ function initReminderCalendar(prefix, initialDate) {
       html += `<button class="${cls}" type="button" data-date="${dateStr}" aria-label="${ariaLabel}" aria-pressed="${isSel}">${d}</button>`;
     }
 
-    const filled  = startOffset + daysInMonth;
-    const remaining = (7 - (filled % 7)) % 7;
+    const filled    = startOffset + daysInMonth;
+    const remaining = 42 - filled;
     for (let d = 1; d <= remaining; d++) {
       html += `<button class="modal-cal-day modal-cal-day--outside" type="button" aria-hidden="true" tabindex="-1">${d}</button>`;
     }

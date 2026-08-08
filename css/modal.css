@@ -635,6 +635,7 @@
 .modal-cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 36px);
   gap: 2px;
 }
 
@@ -674,7 +675,7 @@
 }
 
 .modal-cal-day--outside {
-  color: var(--text-secondary);
+  color: #C8C8D0;
   pointer-events: none;
   cursor: default;
 }
