@@ -11,8 +11,8 @@
 1. **[2026-05-26] Browser caches ES modules aggressively**
    Do instead: switch preview server to a new port (e.g. 8002 vs 8001) to bust the module registry. Revert after confirming fix.
 
-2. **[2026-05-26] Nav bar must be light theme (white/frosted glass pill)**
-   Do instead: never apply dark styles to the nav bar. Entire app is light theme.
+2. **[2026-07-10] Nav bar is currently removed from markup (desktop mid-fidelity prototype)**
+   Do instead: index.html has no <nav> element; nav.css is still linked but unused. If reintroduced, it must be light theme (white/frosted glass pill) — never dark. Entire app is light theme.
 
 ## Supabase Patterns
 

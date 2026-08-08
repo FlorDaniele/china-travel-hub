@@ -1159,7 +1159,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     padding-top: 1px;
   }
 
@@ -3054,7 +3054,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     padding-top: 1px;
   }
 

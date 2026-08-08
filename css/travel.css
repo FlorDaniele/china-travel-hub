@@ -220,9 +220,9 @@
   /* NEXT TRANSPORT                                               */
   /* ─────────────────────────────────────────────────────────── */
 
-  /* 24px padding all sides, 16px bottom so secondary note is 16px from card edge */
+  /* Top padding matches default .dk-card (32px) to align title with Hotels/Reminders; 16px bottom so secondary note is 16px from card edge */
   .dk-transport.dk-card {
-    padding: 24px 24px 16px 24px;
+    padding: 32px 24px 16px 24px;
   }
 
   .dk-transport-body {
@@ -950,7 +950,7 @@
   /* ── B2: Transport card ────────────────────────────────────── */
 
   .dk-transport.dk-card {
-    padding: 16px 16px 12px;
+    padding: 24px 16px 12px;
   }
 
   .dk-transport-body {
