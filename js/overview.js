@@ -1705,8 +1705,8 @@ function renderDesktopReminders(reminders) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const mode  = detectMode(loadFromStorage('settings') ?? []);
-  const limit = mode === 'travel' ? 6 : 5;
+  const isTravel = (localStorage.getItem('dashboardMode') ?? 'planning') === 'travel';
+  const limit    = isTravel ? 6 : 5;
 
   const total   = reminders.length;
   const pending = reminders
@@ -2264,6 +2264,9 @@ export function initDesktopToggle() {
       const isTravel = btn.textContent.trim() === 'Travel';
       layout.classList.toggle('mode-travel', isTravel);
       localStorage.setItem('dashboardMode', isTravel ? 'travel' : 'planning');
+
+      const remindersSource = loadFromStorage('reminders') ?? STATIC_REMINDERS;
+      renderDesktopReminders(remindersSource.length > 0 ? remindersSource : STATIC_REMINDERS);
 
       /* Show weather when switching to Travel; hide for Planning */
       if (weatherWidgetEl) {
