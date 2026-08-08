@@ -1,0 +1,10 @@
+{
+  "name": "china-travel-hub",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.8.1",
+    "globals": "^17.9.0"
+  }
+}

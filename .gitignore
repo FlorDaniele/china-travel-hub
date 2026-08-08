@@ -1,5 +1,6 @@
 config.js
 CLAUDE.local.md
+node_modules/
 .DS_Store
 .DS_Store?
 ._*

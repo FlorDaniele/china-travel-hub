@@ -429,7 +429,7 @@ function renderCityCards(itinerary) {
     <div class="city-bento-grid">
       ${cities.map((city, index) => {
         let statusClass = '';
-        let badge = '';
+        let badge;
 
         if (today >= city.date_start && today <= city.date_end) {
           statusClass = 'is-current';
