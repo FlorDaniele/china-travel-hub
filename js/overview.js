@@ -1705,16 +1705,19 @@ function renderDesktopReminders(reminders) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  const mode  = detectMode(loadFromStorage('settings') ?? []);
+  const limit = mode === 'travel' ? 6 : 5;
+
   const total   = reminders.length;
   const pending = reminders
     .filter(r => r.status !== 'done')
     .sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''));
 
-  // CASE A: ≤ 5 total — show all regardless of checked state, no "View all"
-  // CASE B: ≥ 6 total — show first 5 unchecked (by due_date asc) only
-  const visible = total <= 5
+  // CASE A: total ≤ limit — show all regardless of checked state, no "View all"
+  // CASE B: total > limit — show first `limit` unchecked (by due_date asc) only
+  const visible = total <= limit
     ? reminders.slice().sort((a, b) => (a.due_date ?? '').localeCompare(b.due_date ?? ''))
-    : pending.slice(0, 5);
+    : pending.slice(0, limit);
 
   function reminderItemHTML(r) {
     const isDone = r.status === 'done';
@@ -1756,7 +1759,7 @@ function renderDesktopReminders(reminders) {
     || `<li class="dk-reminder-item"><span class="dk-reminder-title" style="color:var(--text-secondary)">No reminders yet</span></li>`;
 
   if (viewAllBtn) {
-    viewAllBtn.style.display = total >= 6 ? '' : 'none';
+    viewAllBtn.style.display = total > limit ? '' : 'none';
   }
 }
 
