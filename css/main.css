@@ -707,17 +707,61 @@ a {
 
 /* ── Reminder inline edit input ────────────────────────────── */
 
-.reminder-inline-input {
+.reminder-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
   width: 100%;
-  border: none;
+}
+
+.reminder-inline-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid transparent;
   background: transparent;
   font: inherit;
   color: inherit;
-  padding: 0;
-  outline: 2px solid rgba(238, 97, 70, 0.4);
-  outline-offset: 2px;
-  border-radius: 2px;
+  padding: 0 4px;
+  border-radius: 6px;
   line-height: inherit;
+}
+
+.reminder-inline-input:focus {
+  border-color: var(--border);
+  outline: none;
+}
+
+/* 44x44 tap target around a 16px icon. The icon sits 14px inset from the button's
+   own box; margin-left is offset by that 14px so the VISIBLE icon lands exactly
+   8px from the input, while the rest of the box still expands for touch/click area. */
+.reminder-edit-pencil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -14px -14px -14px -6px;
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--terracotta);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.reminder-edit-pencil:focus-visible {
+  outline: 2px solid var(--terracotta);
+  outline-offset: 1px;
+}
+
+/* Tap targets: title/date rows in the reminders sidebar expand to 44px tall without shifting layout */
+.sb-reminder-item .sb-booking-label,
+.sb-reminder-item .sb-booking-meta {
+  cursor: pointer;
+  display: block;
+  padding: 16px 0;
+  margin: -16px 0;
 }
 
 /* ── Ghost button ──────────────────────────────────────────── */

@@ -1168,12 +1168,17 @@
     font-weight: 400;
     color: var(--text-primary);
     line-height: var(--line-height-normal);
+    cursor: pointer;
   }
 
   .dk-reminder-due {
     font-size: 12px;
     font-weight: 400;
     line-height: 1.2;
+    cursor: pointer;
+    display: inline-block;
+    padding: 16px 0;
+    margin: -16px 0;
   }
 
   .dk-due-overdue { color: var(--due-overdue); }
@@ -3063,13 +3068,18 @@
     font-weight: 400;
     color: var(--text-primary);
     line-height: 1.4;
+    cursor: pointer;
   }
 
   .dk-reminder-due {
     font-size: 12px;
     font-weight: 400;
     line-height: 1.2;
-    margin-top: 4px;
+    cursor: pointer;
+    display: inline-block;
+    padding: 16px 0;
+    margin-top: -12px;
+    margin-bottom: -16px;
   }
 
   .dk-due-overdue { color: var(--due-overdue); }

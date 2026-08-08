@@ -64,8 +64,9 @@ function trapFocus(e) {
  * @param {string}   opts.bodyHTML  — inner HTML for the content area
  * @param {Function} opts.onSave    — called when Guardar is clicked
  * @param {string}   [opts.maxHeight] — override CSS max-height (e.g. 'min(90vh,600px)')
+ * @param {string}   [opts.leftActionHTML] — optional markup rendered left of Save/Cancel (e.g. a Delete link)
  */
-export function openModal({ id, title, bodyHTML, onSave, maxHeight }) {
+export function openModal({ id, title, bodyHTML, onSave, maxHeight, leftActionHTML }) {
   ensureDOM();
   _trigger = document.activeElement;
 
@@ -88,9 +89,12 @@ export function openModal({ id, title, bodyHTML, onSave, maxHeight }) {
     <div class="modal-content">
       ${bodyHTML}
     </div>
-    <div class="modal-actions">
-      <button class="modal-btn-primary"   type="button" id="${id}-guardar">Save</button>
-      <button class="modal-btn-secondary" type="button" id="${id}-cerrar">Cancel</button>
+    <div class="modal-actions${leftActionHTML ? ' modal-actions--with-left' : ''}">
+      ${leftActionHTML ?? ''}
+      <div class="modal-actions-right">
+        <button class="modal-btn-primary"   type="button" id="${id}-guardar">Save</button>
+        <button class="modal-btn-secondary" type="button" id="${id}-cerrar">Cancel</button>
+      </div>
     </div>
     <button class="modal-close-btn" type="button" aria-label="Close modal">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none"

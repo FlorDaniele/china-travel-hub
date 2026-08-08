@@ -955,64 +955,51 @@ async function handleBookingModalSave() {
 
 /* ── Modal: new reminder ───────────────────────────────────── */
 
-function openReminderModal() {
-  const CHEVRON_LEFT  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
-  const CHEVRON_RIGHT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>`;
+const CAL_CHEVRON_LEFT  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>`;
+const CAL_CHEVRON_RIGHT = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>`;
 
-  const bodyHTML = `
+/* Deadline calendar field markup — shared by "Add reminder" and the reminder detail panel */
+function reminderCalendarFieldHTML(prefix) {
+  return `
     <div class="modal-field">
-      <label class="modal-label" for="rm-modal-name">Reminder</label>
-      <input type="text" id="rm-modal-name" class="modal-input"
-        placeholder="e.g. Book train tickets" maxlength="50" autocomplete="off">
-      <div class="modal-counter" id="rm-modal-counter" aria-live="polite">0/50</div>
-      <div class="modal-error" id="rm-modal-name-err" role="alert"></div>
-    </div>
-    <div class="modal-field">
-      <label class="modal-label" id="rm-modal-date-lbl">Deadline</label>
-      <div class="modal-calendar" id="rm-modal-calendar" role="group" aria-labelledby="rm-modal-date-lbl">
+      <label class="modal-label" id="${prefix}-date-lbl">Deadline</label>
+      <div class="modal-calendar" id="${prefix}-calendar" role="group" aria-labelledby="${prefix}-date-lbl">
         <div class="modal-cal-header">
-          <button class="modal-cal-nav" type="button" id="rm-cal-prev" aria-label="Previous month">${CHEVRON_LEFT}</button>
-          <span class="modal-cal-title" id="rm-cal-title" aria-live="polite"></span>
-          <button class="modal-cal-nav" type="button" id="rm-cal-next" aria-label="Next month">${CHEVRON_RIGHT}</button>
+          <button class="modal-cal-nav" type="button" id="${prefix}-cal-prev" aria-label="Previous month">${CAL_CHEVRON_LEFT}</button>
+          <span class="modal-cal-title" id="${prefix}-cal-title" aria-live="polite"></span>
+          <button class="modal-cal-nav" type="button" id="${prefix}-cal-next" aria-label="Next month">${CAL_CHEVRON_RIGHT}</button>
         </div>
         <div class="modal-cal-weekdays" aria-hidden="true">
           <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
         </div>
-        <div class="modal-cal-grid" role="grid" id="rm-cal-grid" aria-label="Select a deadline date"></div>
+        <div class="modal-cal-grid" role="grid" id="${prefix}-cal-grid" aria-label="Select a deadline date"></div>
       </div>
-      <input type="hidden" id="rm-modal-date">
-      <div class="modal-error" id="rm-modal-date-err" role="alert"></div>
+      <input type="hidden" id="${prefix}-date">
+      <div class="modal-error" id="${prefix}-date-err" role="alert"></div>
     </div>
   `;
+}
 
-  openModal({ id: 'rm-modal', title: 'Add reminder', bodyHTML, onSave: handleReminderModalSave });
-
-  /* Character counter */
-  const input   = document.getElementById('rm-modal-name');
-  const counter = document.getElementById('rm-modal-counter');
-  input?.addEventListener('input', () => {
-    counter.textContent = `${input.value.length}/50`;
-    if (input.value.length > 0) {
-      input.classList.remove('has-error');
-      document.getElementById('rm-modal-name-err').textContent = '';
-    }
-  });
-
-  /* Calendar */
+/* Wires up a deadline calendar widget rendered by reminderCalendarFieldHTML(prefix).
+   initialDate: 'YYYY-MM-DD' or null. Returns nothing — reads happen via the hidden #${prefix}-date input. */
+function initReminderCalendar(prefix, initialDate) {
   const MONTH_NAMES = [
     'January','February','March','April','May','June',
     'July','August','September','October','November','December',
   ];
-  const now   = new Date();
-  let   displayYear  = now.getFullYear();
-  let   displayMonth = now.getMonth();
-  let   selectedDate = null;
+  const now = new Date();
+  const [iy, im, id] = initialDate ? initialDate.split('-').map(Number) : [];
+  let displayYear  = iy ?? now.getFullYear();
+  let displayMonth = im ? im - 1 : now.getMonth();
+  let selectedDate = initialDate ?? null;
+
+  if (initialDate) document.getElementById(`${prefix}-date`).value = initialDate;
 
   const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
 
   function renderCalendar() {
-    const titleEl = document.getElementById('rm-cal-title');
-    const gridEl  = document.getElementById('rm-cal-grid');
+    const titleEl = document.getElementById(`${prefix}-cal-title`);
+    const gridEl  = document.getElementById(`${prefix}-cal-grid`);
     if (!titleEl || !gridEl) return;
 
     titleEl.textContent = `${MONTH_NAMES[displayMonth]} ${displayYear}`;
@@ -1050,27 +1037,55 @@ function openReminderModal() {
     gridEl.querySelectorAll('.modal-cal-day:not(.modal-cal-day--outside)').forEach(btn => {
       btn.addEventListener('click', () => {
         selectedDate = btn.dataset.date;
-        document.getElementById('rm-modal-date').value = selectedDate;
-        document.getElementById('rm-modal-date-err').textContent = '';
-        document.getElementById('rm-modal-calendar')?.classList.remove('has-error');
+        document.getElementById(`${prefix}-date`).value = selectedDate;
+        document.getElementById(`${prefix}-date-err`).textContent = '';
+        document.getElementById(`${prefix}-calendar`)?.classList.remove('has-error');
         renderCalendar();
       });
     });
   }
 
-  document.getElementById('rm-cal-prev')?.addEventListener('click', () => {
+  document.getElementById(`${prefix}-cal-prev`)?.addEventListener('click', () => {
     displayMonth--;
     if (displayMonth < 0) { displayMonth = 11; displayYear--; }
     renderCalendar();
   });
 
-  document.getElementById('rm-cal-next')?.addEventListener('click', () => {
+  document.getElementById(`${prefix}-cal-next`)?.addEventListener('click', () => {
     displayMonth++;
     if (displayMonth > 11) { displayMonth = 0; displayYear++; }
     renderCalendar();
   });
 
   renderCalendar();
+}
+
+function openReminderModal() {
+  const bodyHTML = `
+    <div class="modal-field">
+      <label class="modal-label" for="rm-modal-name">Reminder</label>
+      <input type="text" id="rm-modal-name" class="modal-input"
+        placeholder="e.g. Book train tickets" maxlength="50" autocomplete="off">
+      <div class="modal-counter" id="rm-modal-counter" aria-live="polite">0/50</div>
+      <div class="modal-error" id="rm-modal-name-err" role="alert"></div>
+    </div>
+    ${reminderCalendarFieldHTML('rm-modal')}
+  `;
+
+  openModal({ id: 'rm-modal', title: 'Add reminder', bodyHTML, onSave: handleReminderModalSave });
+
+  /* Character counter */
+  const input   = document.getElementById('rm-modal-name');
+  const counter = document.getElementById('rm-modal-counter');
+  input?.addEventListener('input', () => {
+    counter.textContent = `${input.value.length}/50`;
+    if (input.value.length > 0) {
+      input.classList.remove('has-error');
+      document.getElementById('rm-modal-name-err').textContent = '';
+    }
+  });
+
+  initReminderCalendar('rm-modal', null);
 }
 
 async function handleReminderModalSave() {
@@ -1123,6 +1138,142 @@ async function handleReminderModalSave() {
 
   const updated = loadFromStorage('reminders') ?? [];
   renderDesktopReminders(updated.length > 0 ? updated : STATIC_REMINDERS);
+}
+
+/* ── Modal: reminder detail (edit + delete) ────────────────── */
+
+function findReminderById(id) {
+  const source = loadFromStorage('reminders') ?? STATIC_REMINDERS;
+  return (source ?? []).find(r => String(r.id) === String(id));
+}
+
+async function refreshRemindersAfterEdit() {
+  let fresh;
+  try {
+    const { data, error } = await supabase.from('reminders').select('*');
+    if (error) throw error;
+    fresh = data;
+    saveToStorage('reminders', fresh);
+  } catch (err) {
+    console.warn('[reminders] refresh failed:', err);
+    fresh = loadFromStorage('reminders') ?? [];
+  }
+
+  renderDesktopReminders(fresh.length > 0 ? fresh : STATIC_REMINDERS);
+  renderPlanningHeader(loadFromStorage('bookings') ?? [], fresh);
+
+  const sidebarContent = document.getElementById('sidebar-content');
+  if (sidebarContent?.querySelector('.sb-reminder-item, [data-reminder-add]')) {
+    sidebarContent.innerHTML = renderRemindersSidebarContent(fresh);
+    window.lucide?.createIcons();
+  }
+
+  return fresh;
+}
+
+function openReminderDetailModal(reminder) {
+  const bodyHTML = `
+    <div class="modal-field">
+      <label class="modal-label" for="rmd-modal-name">Reminder</label>
+      <input type="text" id="rmd-modal-name" class="modal-input"
+        value="${esc(reminder.title)}" maxlength="50" autocomplete="off">
+      <div class="modal-counter" id="rmd-modal-counter" aria-live="polite">${reminder.title.length}/50</div>
+      <div class="modal-error" id="rmd-modal-name-err" role="alert"></div>
+    </div>
+    ${reminderCalendarFieldHTML('rmd-modal')}
+  `;
+
+  const leftActionHTML = `<div id="rmd-delete-slot"><button class="modal-delete-link" type="button" id="rmd-delete-link">Delete</button></div>`;
+
+  openModal({
+    id: 'rmd-modal',
+    title: 'Edit reminder',
+    bodyHTML,
+    leftActionHTML,
+    onSave: () => handleReminderDetailSave(reminder.id),
+  });
+
+  const input   = document.getElementById('rmd-modal-name');
+  const counter = document.getElementById('rmd-modal-counter');
+  input?.addEventListener('input', () => {
+    counter.textContent = `${input.value.length}/50`;
+    if (input.value.length > 0) {
+      input.classList.remove('has-error');
+      document.getElementById('rmd-modal-name-err').textContent = '';
+    }
+  });
+
+  initReminderCalendar('rmd-modal', reminder.due_date ?? null);
+
+  function bindDeleteLink() {
+    document.getElementById('rmd-delete-link')?.addEventListener('click', () => {
+      const slot = document.getElementById('rmd-delete-slot');
+      if (!slot) return;
+      slot.innerHTML = `
+        <div class="modal-delete-confirm">
+          <span>Are you sure?</span>
+          <button class="modal-delete-confirm-yes" type="button" id="rmd-delete-yes">Yes, delete</button>
+          <button class="modal-delete-confirm-cancel" type="button" id="rmd-delete-cancel">Cancel</button>
+        </div>
+      `;
+      document.getElementById('rmd-delete-yes')?.addEventListener('click', () => handleReminderDetailDelete(reminder.id));
+      document.getElementById('rmd-delete-cancel')?.addEventListener('click', () => {
+        slot.innerHTML = `<button class="modal-delete-link" type="button" id="rmd-delete-link">Delete</button>`;
+        bindDeleteLink();
+      });
+    });
+  }
+  bindDeleteLink();
+}
+
+async function handleReminderDetailSave(reminderId) {
+  const nameInput = document.getElementById('rmd-modal-name');
+  const dateInput = document.getElementById('rmd-modal-date');
+  const nameErr   = document.getElementById('rmd-modal-name-err');
+
+  if (!nameInput?.value.trim()) {
+    nameInput?.classList.add('has-error');
+    if (nameErr) nameErr.textContent = 'This field is required';
+    return;
+  }
+  nameInput.classList.remove('has-error');
+  if (nameErr) nameErr.textContent = '';
+
+  const title    = nameInput.value.trim();
+  const due_date = dateInput?.value || null;
+  const btn      = document.getElementById('rmd-modal-guardar');
+  if (btn) btn.disabled = true;
+
+  try {
+    const { error } = await supabase
+      .from('reminders')
+      .update({ title, due_date })
+      .eq('id', reminderId);
+    if (error) throw error;
+  } catch (err) {
+    console.warn('[reminders] detail save failed:', err);
+    if (nameErr) nameErr.textContent = 'Could not save. Try again.';
+    if (btn) btn.disabled = false;
+    return;
+  }
+
+  closeModal();
+  await refreshRemindersAfterEdit();
+  showToast('Reminder updated');
+}
+
+async function handleReminderDetailDelete(reminderId) {
+  try {
+    const { error } = await supabase.from('reminders').delete().eq('id', reminderId);
+    if (error) throw error;
+  } catch (err) {
+    console.warn('[reminders] detail delete failed:', err);
+  }
+  const cached = loadFromStorage('reminders') ?? [];
+  saveToStorage('reminders', cached.filter(r => String(r.id) !== String(reminderId)));
+
+  closeModal();
+  await refreshRemindersAfterEdit();
 }
 
 /* ── Modal: new packing item ───────────────────────────────── */
@@ -1611,14 +1762,36 @@ function renderDesktopReminders(reminders) {
 
 /* ── Inline edit for reminder labels ──────────────────────── */
 
-async function startReminderInlineEdit(el, reminderId, titleClass) {
+/* Only one reminder can be in edit mode at a time */
+let _activeReminderEdit = null;
+
+async function startReminderInlineEdit(el, reminderId, titleClass, reminder) {
+  if (_activeReminderEdit) {
+    await _activeReminderEdit.commit();
+  }
+
   const original = el.textContent;
+
+  const wrap = document.createElement('span');
+  wrap.className = 'reminder-edit-row';
 
   const input = document.createElement('input');
   input.type = 'text';
   input.value = original;
   input.className = 'reminder-inline-input';
-  el.replaceWith(input);
+  input.setAttribute('aria-label', 'Reminder title');
+
+  const pencilBtn = document.createElement('button');
+  pencilBtn.type = 'button';
+  pencilBtn.className = 'reminder-edit-pencil';
+  pencilBtn.setAttribute('aria-label', 'Edit reminder details');
+  pencilBtn.innerHTML = '<i data-lucide="pencil" width="16" height="16" aria-hidden="true"></i>';
+  /* Keep focus on the input on mousedown so blur doesn't tear the row down before the click fires */
+  pencilBtn.addEventListener('mousedown', e => e.preventDefault());
+
+  wrap.append(input, pencilBtn);
+  el.replaceWith(wrap);
+  window.lucide?.createIcons();
   input.focus();
   input.select();
 
@@ -1627,6 +1800,7 @@ async function startReminderInlineEdit(el, reminderId, titleClass) {
   async function commit() {
     if (committed) return;
     committed = true;
+    _activeReminderEdit = null;
     const val = input.value.trim();
 
     if (val === '') {
@@ -1635,14 +1809,14 @@ async function startReminderInlineEdit(el, reminderId, titleClass) {
         const cached = loadFromStorage('reminders') ?? [];
         saveToStorage('reminders', cached.filter(r => String(r.id) !== String(reminderId)));
       } catch (err) { console.warn('[reminders] delete failed:', err); }
-      input.closest('.dk-reminder-item, .sb-reminder-item')?.remove();
+      wrap.closest('.dk-reminder-item, .sb-reminder-item')?.remove();
       return;
     }
 
     const span = document.createElement('span');
     span.className = titleClass;
     span.textContent = val;
-    input.replaceWith(span);
+    wrap.replaceWith(span);
 
     if (val !== original) {
       try {
@@ -1658,10 +1832,11 @@ async function startReminderInlineEdit(el, reminderId, titleClass) {
   function cancel() {
     if (committed) return;
     committed = true;
+    _activeReminderEdit = null;
     const span = document.createElement('span');
     span.className = titleClass;
     span.textContent = original;
-    input.replaceWith(span);
+    wrap.replaceWith(span);
   }
 
   input.addEventListener('keydown', e => {
@@ -1669,7 +1844,18 @@ async function startReminderInlineEdit(el, reminderId, titleClass) {
     if (e.key === 'Escape') { e.preventDefault(); cancel(); }
   });
 
-  input.addEventListener('blur', commit);
+  input.addEventListener('blur', e => {
+    if (e.relatedTarget === pencilBtn) return;
+    commit();
+  });
+
+  pencilBtn.addEventListener('click', async () => {
+    await commit();
+    const latest = findReminderById(reminderId) ?? reminder ?? { id: reminderId, title: original, due_date: null };
+    openReminderDetailModal(latest);
+  });
+
+  _activeReminderEdit = { commit, cancel };
 }
 
 /* ── Desktop reminders handler ─────────────────────────────── */
@@ -1741,14 +1927,15 @@ export function initDesktopReminders() {
     }
   });
 
-  // Inline edit — desktop reminders card
+  // Inline edit — desktop reminders card (tap title or date)
   document.querySelector('.dk-reminders')?.addEventListener('click', e => {
-    const titleEl = e.target.closest('.dk-reminder-title');
-    if (!titleEl) return;
-    const item = titleEl.closest('.dk-reminder-item');
+    const trigger = e.target.closest('.dk-reminder-title, .dk-reminder-due');
+    if (!trigger) return;
+    const item = trigger.closest('.dk-reminder-item');
+    const titleEl = item?.querySelector('.dk-reminder-title');
     const reminderId = item?.querySelector('[data-reminder-id]')?.dataset?.reminderId;
-    if (!reminderId) return;
-    startReminderInlineEdit(titleEl, reminderId, 'dk-reminder-title');
+    if (!reminderId || !titleEl) return;
+    startReminderInlineEdit(titleEl, reminderId, 'dk-reminder-title', findReminderById(reminderId));
   });
 
   // Sidebar "+ Add reminder" — delegated from sidebar content
@@ -1757,14 +1944,15 @@ export function initDesktopReminders() {
     openReminderModal();
   });
 
-  // Inline edit — reminders sidebar
+  // Inline edit — reminders sidebar (tap title or date)
   document.getElementById('sidebar-content')?.addEventListener('click', e => {
-    const labelEl = e.target.closest('.sb-reminder-item .sb-booking-label');
-    if (!labelEl || labelEl.tagName === 'INPUT') return;
-    const row = labelEl.closest('.sb-reminder-item');
+    const trigger = e.target.closest('.sb-reminder-item .sb-booking-label, .sb-reminder-item .sb-booking-meta');
+    if (!trigger) return;
+    const row = trigger.closest('.sb-reminder-item');
+    const labelEl = row?.querySelector('.sb-booking-label');
     const reminderId = row?.querySelector('[data-reminder-id]')?.dataset?.reminderId;
-    if (!reminderId) return;
-    startReminderInlineEdit(labelEl, reminderId, 'sb-booking-label');
+    if (!reminderId || !labelEl) return;
+    startReminderInlineEdit(labelEl, reminderId, 'sb-booking-label', findReminderById(reminderId));
   });
 
   // Sidebar reminders — checkbox toggle with CASE B swap logic
