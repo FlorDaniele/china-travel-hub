@@ -505,7 +505,7 @@
     border: none;
     padding: 0;
     margin-left: 6px;
-    color: var(--text-secondary);
+    color: var(--action);
     cursor: pointer;
     vertical-align: middle;
     flex-shrink: 0;
@@ -550,10 +550,12 @@
   .dk-hotel-viewport {
     overflow: hidden;
     border-radius: 8px;
+    height: 100%;
   }
 
   .dk-hotel-track {
     display: flex;
+    height: 100%;
     transition: transform 250ms ease;
   }
 
@@ -625,7 +627,7 @@
 
   /* Hotel name: strictly smaller than section title (20px) */
   .dk-hotel-name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.25;
@@ -637,6 +639,12 @@
     align-items: center;
     gap: 2px;
     flex-shrink: 0;
+  }
+
+  /* Scaled to match .dk-hotel-name's 16→18px bump (ratio applied, rounded to 4px grid) */
+  .dk-hotel-rating svg {
+    width: 16px;
+    height: 16px;
   }
 
   .dk-hotel-dates {
@@ -734,11 +742,16 @@
     border: none;
     padding: 0;
     margin-left: 0;
-    color: var(--text-secondary);
+    color: var(--action);
     cursor: pointer;
     vertical-align: middle;
     flex-shrink: 0;
     line-height: 1;
+  }
+
+  .dk-hotel-edit-btn svg {
+    width: 16px;
+    height: 16px;
   }
 
   .dk-hotel-edit-btn:focus-visible {
@@ -1071,6 +1084,7 @@
     min-width: 44px;
     min-height: 44px;
     border-radius: 4px;
+    color: var(--action);
   }
 
   /* Empty state */

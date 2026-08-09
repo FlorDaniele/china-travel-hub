@@ -1903,7 +1903,7 @@
   }
 
   .dk-next-booking-link:hover {
-    color: var(--text-primary);
+    color: var(--terracotta);
   }
 
   .dk-next-booking-link:focus-visible {
@@ -1992,13 +1992,14 @@
 
   .dk-itin-panel-label {
     font-size: 16px;
-    color: var(--text-secondary);
+    font-weight: 500;
+    color: var(--text-primary);
     margin-bottom: 4px;
   }
 
   /* Day summary: "N activities · X km" below the date/city header */
   .dk-itin-panel-summary {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
     margin-bottom: 12px;
     line-height: 1.4;
@@ -2691,7 +2692,9 @@
     cursor: pointer;
     padding: 0;
     margin-top: 12px;
-    display: block;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
     text-align: left;
     transition: color 0.15s ease;
   }
@@ -3377,10 +3380,19 @@
   }
 
   .dk-itin-panel-label {
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-primary);
     margin-bottom: 10px;
     padding: 0;
+  }
+
+  /* Day summary: matches .dk-activity-meta (mobile) */
+  .dk-itin-panel-summary {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    line-height: 1.4;
   }
 
   /* Empty state */
@@ -3851,6 +3863,11 @@
     transition: color 0.15s ease;
   }
 
+  .dk-next-booking-link:hover,
+  .dk-next-booking-link:active {
+    color: var(--terracotta);
+  }
+
   .dk-next-booking-link:focus-visible {
     outline: 2px solid var(--terracotta);
     outline-offset: 2px;
@@ -3937,7 +3954,7 @@
     border: none;
     padding: 10px;
     margin-left: 2px;
-    color: var(--text-secondary);
+    color: var(--action);
     cursor: pointer;
     vertical-align: middle;
     flex-shrink: 0;
@@ -3991,7 +4008,7 @@
   }
 
   .dk-hotel-info {
-    padding: 12px 0 4px;
+    padding: 12px 0 0;
   }
 
   .dk-hotel-name-row {
@@ -4014,6 +4031,7 @@
   }
 
   .dk-hotel-dates {
+    display: block;
     font-size: 12px;
     font-weight: 500;
     color: var(--text-secondary);
@@ -4021,6 +4039,7 @@
   }
 
   .dk-hotel-address {
+    display: block;
     font-size: 12px;
     color: var(--text-secondary);
     margin-top: 2px;

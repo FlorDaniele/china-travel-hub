@@ -2387,7 +2387,7 @@ const STATIC_ACTIVITIES = {
     '2026-06-06': [
       { period: 'Day', items: [
         { title: 'Arrive Beijing Capital Airport', time: '15:55', end_time: null, duration: null, type: 'transport', source: 'Self-organised' },
-        { title: 'Check-in Yitel Hotel', time: '18:00', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
+        { title: 'Check-in Yitel Collection', time: '18:00', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
       ]},
     ],
     '2026-06-07': [
@@ -2434,7 +2434,7 @@ const STATIC_ACTIVITIES = {
     ],
     '2026-06-12': [
       { period: 'Day', items: [
-        { title: 'Check-out Yitel Hotel', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
+        { title: 'Check-out Yitel Collection', time: '06:30', end_time: null, duration: null, type: 'accommodation', source: 'Self-organised' },
         { title: "Train Beijingxi → Xi'anbei", time: '08:10', end_time: '12:31', duration: null, type: 'transport', source: 'Self-organised' },
       ]},
     ],
